@@ -1,0 +1,73 @@
+<loading></loading>
+<div class="row room-call">
+	<div class="col-xs-8 col-sm-8 col-md-10">
+		<div id="doctorPublisher">
+			<p ng-if="!isDocPublishing">
+				Hello There! Thanks for joining me on my personal consultation room. Please make sure you allow the portal to access your camera and microphone when prompted.
+			</p>
+			<div id="patientPublisher"></div>
+			<span id="" ng-click="disconnectSession()">
+            	<i class="fa fa-phone"></i>
+            </span>
+		</div>
+	</div>
+	<div class="col-xs-4 col-sm-4 col-md-2">
+		
+	</div>
+</div>
+
+
+<script type="text/ng-template" id="callDisconnectedDocModal.html">
+    <div class="modal-header bootstrap-modal-header">
+        <h3 class="modal-title" id="modal-title">Call Disconnected By Doctor.</h3>
+    </div>
+    <div class="modal-body bootstrap-modal-body" id="modal-body">
+        
+    </div>
+    <div class="modal-footer bootstrap-modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="gotoRoom()">OK</button>
+    </div>
+</script>
+
+<script type="text/ng-template" id="callDisconnectedPatientModal.html">
+    <div class="modal-header bootstrap-modal-header">
+        <h3 class="modal-title" id="modal-title">Do you want to end the call?</h3>
+    </div>
+    <div class="modal-body bootstrap-modal-body" id="modal-body">
+        
+    </div>
+    <div class="modal-footer bootstrap-modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="callEndPatient()">OK</button>
+        <button class="btn btn-primary" type="button" ng-click="cancel()">Cancel</button>
+    </div>
+</script>
+
+
+
+<style type="text/css">
+	.modal-sm {
+        float:none;    
+        margin-top:10%;
+
+        
+    }
+    .bootstrap-modal-body p {
+        font-size: 14px;
+        padding: 10px;
+        text-align: center;
+    }
+    .bootstrap-modal-header {
+        background: #337ab7;
+        padding: 8px;
+    }
+    .bootstrap-modal-header h3.modal-title {
+        color: #fff;
+        font-size: 16px;
+        text-align: center;
+    }
+    .bootstrap-modal-footer {
+        padding: 5px;
+    }
+</style>
+
+

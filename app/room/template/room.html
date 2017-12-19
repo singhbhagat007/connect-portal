@@ -1,0 +1,19 @@
+<loading></loading>
+ <div class="row">
+    <div class="col-md-12 text-center">
+        <h4>Tell Us About Yourself</h4>
+        <p>Enter your phone number or email address to begin the check-in process 
+    </div>
+    <div class="room_enter_box"> 
+        <div class="form">
+            <form class="enter-room form-inline" method="POST" ng-submit="enterRoomForm(useremailphone)" name="enterRoom">
+                <div class="form-group">
+                    <input type="text" class="form-control" ng-model="useremailphone"  placeholder=" Phone Number / Email">
+                </div>
+                <button type="submit" class="btn btn-default" ng-disabled="(!(isvalidNumber(useremailphone)) && (!isValidEmail(useremailphone)))" >
+                    Next
+                </button>
+            </form>
+        </div>
+    </div>
+</div>

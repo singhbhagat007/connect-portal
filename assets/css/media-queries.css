@@ -1,0 +1,13 @@
+/* media for ipad screen */
+@media only screen and (max-width: 768px) {
+	#contentBlock{
+		height:75%;
+	}
+}
+
+/* media for iphone screen */
+@media only screen and (max-width: 414px) {
+	#contentBlock{
+		height:70%;
+	}
+}

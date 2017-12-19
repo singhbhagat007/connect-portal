@@ -1,0 +1,692 @@
+@import url(https://fonts.googleapis.com/css?family=Titillium+Web:400,200,300,600,700,900);
+*{margin:0; padding:0; outline:0;}
+.outline_none{outline:0!important;}
+html{
+	overflow:hidden; 
+}
+body{font:normal 14px 'Titillium Web', sans-serif; margin: 0!important;}
+.loading{
+	position: absolute;
+	width: 100%;
+	z-index:9999;
+	text-align: center;
+}
+/* scroll bars */
+::-webkit-scrollbar{
+  width:5px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+}
+::-webkit-scrollbar-thumb {
+    background: #888; 
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #555; 
+}
+#toast-container{
+  margin-top:40px !important;
+}
+
+.custom-navbar-link{
+  color:#fff !important;
+  text-decoration:none !important; 
+  float: left;
+  height: 50px;
+  padding: 15px 15px;
+  font-size: 18px;
+  line-height: 20px;
+}
+
+#contentBlock{
+  overflow-x: hidden;
+  overflow-y: scroll;
+  height:80%;
+}
+
+nav.navbar a.logo-dynamic-anchor{
+  padding-right: 0px;
+  margin-top: -5px;
+}
+nav.navbar a.first-nav-icon{
+  margin-left:10px !important;
+}
+nav.navbar a{
+  padding-left:0px;
+}
+nav.navbar  figure.login-page-logo img{
+  width:50%;
+}
+
+/*  login page  */
+figure.login-page-logo img{
+  margin:0 auto;
+  display:block;
+  padding:1% 0 0 0;
+}
+/* header */
+.moment-picker{
+  z-index:1200;
+}
+.navbar-inverse{
+  background-color: #337ab7;
+  border-color: #337ab7;
+}
+.navbar{
+  border-radius:0px;
+}
+.navbar-inverse .navbar-brand,.navbar-inverse .navbar-nav>li>a {
+  color:#fff;
+}
+.navbar-inverse .navbar-brand,.navbar-inverse .navbar-nav>li:first-child {
+  pointer-events: none;
+  text-transform: capitalize;
+}
+/*header{
+	background:#337ab7;
+	position:fixed;
+	width:100%;
+  height:40px;
+}
+header figure{
+	padding:20px;
+}*/
+/* header end*/
+
+/* footer start*/
+footer{
+	padding:10px;
+	color:#fff;
+	bottom:0;
+	background:#777777;
+	position:fixed;
+	width:100%; 
+}
+footer p{
+	padding-top:5px;
+	margin-bottom:0px;
+}
+/* footer end*/
+
+
+/* call-patient start*/
+
+.newSubscriber{
+    width:20%;
+    height:20%;
+    overflow:hidden;
+    border:1px solid #000;
+    position:relative;
+    z-index:99;
+}
+#displaytoggle{
+	display:none;
+	z-index:999;
+}
+.call-patient {
+	height:100%;
+	position:absolute;
+	width:100%;
+}
+.call-patient .col-md-12{
+	/*height:74%;*/
+}
+
+
+
+div.doc_dash_header .panel-body .header-input-group{
+  display:inline-flex;
+  width: 100%;
+  margin-bottom:10px; 
+}
+div.doc_dash_header .panel-body .header-input-group .btn{
+  border-radius:2px; 
+  margin-right: 5px;
+}
+
+
+
+.margin-left-col-5{
+  margin-left:20px;
+  padding-left:0px;
+
+}
+.margin-left-col-5 .col-md-5{
+  padding-left:0px;
+}
+.custom-input-doc-col-4{
+  width:100%;
+  margin-bottom:10px;
+}
+.custom-input-doc-col-4 .btn{ 
+  color:#808080;
+  margin-top: -4px;
+  border-radius: 0px;
+  background: #fff;
+  border: 1px solid #33333369;
+  border-left: 0px;
+  margin-left:-3px;
+}
+.custom-input-doc-col-4 input{
+  color:#808080c7;
+  font-size: 15px;
+  width:75% ;
+  padding: 7px;
+  background: #f8f8f8;
+  border: 1px solid #33333369;
+}
+.custom-btn-1{
+      padding: 4px 25px;
+}
+.custom-btn-2{
+  color: #808080;
+  border-radius: 0px;
+  background: #fff;
+  border: 1px solid #33333369;
+}
+
+#videos {
+	height:100%;
+	width:50%;
+	overflow:hidden;
+	border:1px solid #dcdcdc;
+	position: relative;
+    margin-left: auto;
+    margin-right: auto;
+}
+#videos span{
+	position: absolute;
+    bottom: 0;
+    
+    margin: 0 auto;
+    text-align: center;
+    width: 100%;
+    
+}
+#videos span i{
+	transform: rotate(139deg);
+	-webkit-transform:rotate(139deg);
+	-moz-transform:rotate(139deg);
+	background: #e61515;
+    padding: 12px 13px 12px 16px;
+    border-radius: 100%;
+    margin-bottom: 5px;
+    color: #fff;
+    text-align: center;
+    font-size: 17px;
+    cursor: pointer;
+}
+
+/*#subscriber {
+	height:100%;
+	width:100%;
+	overflow:hidden;
+	border:1px solid #dcdcdc;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 10;
+}
+#doctorPublisher { 
+	width:25% ;
+	height:30%;
+	z-index:99;
+	left:0;
+	bottom:0px;
+	border:1px solid #dcdcdc;
+    position: absolute;
+    
+}*/
+/* call-patient end*/
+
+/* login page */
+.login-page {
+  width: 360px;
+  padding: 3% 0 0;
+  margin: auto;
+}
+.login-page .form {
+  position: relative;
+  z-index: 1;
+  background: #FFFFFF;
+  max-width: 360px;
+  margin: 0 auto 100px;
+  padding: 45px;
+  text-align: center;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+}
+.login-page .form input {
+  outline: 0;
+  background: #f2f2f2;
+  width: 100%;
+  border: 0;
+  margin: 0 0 15px;
+  padding: 15px;
+  box-sizing: border-box;
+  font-size: 14px;
+  font-family:Titillium Web;
+}
+.login-page .form .btn {
+  text-transform: uppercase;
+  outline: 0;
+  background: rgba(51,122,183,1);
+  width: 100%;
+  border: 0;
+  padding: 15px;
+  color: #FFFFFF;
+  font-size: 14px;
+  -webkit-transition: all 0.3 ease;
+  transition: all 0.3 ease;
+  cursor: pointer;
+  font-family:Titillium Web;
+}
+.login-page .form .btn:hover,.login-page .form .btn:active,.login-page .form .btn:focus {
+  background: rgba(51,122,183,0.7);
+}
+
+/* enter room user */
+.room_enter_box{
+  width: 360px;
+  padding: 3% 0 0;
+  margin: auto; 
+}
+.room_enter_box .form {
+  position: relative;
+  z-index: 1;
+  max-width: 360px;
+  margin: 0 auto 100px;
+  padding: 45px;
+  text-align: center;
+}
+.room_enter_box .form .form-group{
+  width: 70%;
+}
+.room_enter_box .form input {
+  outline: 0;
+  background: #f2f2f2;
+  border: 0;
+  width:100%;
+  box-sizing: border-box;
+  font-size: 14px;
+  font-family:Titillium Web;
+}
+.room_enter_box .form .btn {
+  text-transform: uppercase;
+  outline: 0;
+  background: rgba(51,122,183,1);
+  border: 0;
+  color: #FFFFFF;
+  font-size: 14px;
+  -webkit-transition: all 0.3 ease;
+  transition: all 0.3 ease;
+  cursor: pointer;
+  font-family:Titillium Web;
+}
+.room_enter_box .form .btn:hover,.login-page .form .btn:active,.login-page .form .btn:focus {
+  background: rgba(51,122,183,0.7);
+}
+/* doc dashboard */
+div.center_div_doc_0 .input-group{
+  width:50%;
+  margin:0 auto;
+}
+div.center_div_doc .form-group{
+  width: 360px;
+  padding: 5px 0 0;
+  margin: auto; 
+  display:inline-flex;
+  margin-bottom:5px;
+}
+div.center_div_doc .form-group .btn,div.center_div_doc .form-group input{
+  border-radius:0px;
+}
+
+div.doc_dash_waiting_room_div .col-md-3 h3{
+  margin:20px;
+}
+div.doc_dash_waiting_room_div div.doc_user_waiting_box{
+  padding:4px;
+  border:1px solid #dcdcdc;
+}
+div.doc_dash_waiting_room_div div.doc_user_waiting_box ul{
+  width:100%;
+  list-style: none;
+  display: inline-flex;
+}
+div.doc_dash_waiting_room_div div.doc_user_waiting_box ul li{
+  width:33%;
+  padding:0 25px 0 25px;
+}
+div.doc_dash_waiting_room_div div.doc_user_waiting_box ul li:nth-child(2){
+  font-size:18px;
+  padding-left:5px;
+  padding-top:8px;
+  text-transform: capitalize;
+}
+
+div.doc_dash_waiting_room_div div.doc_user_waiting_box ul li:nth-child(2) span{
+  font-size: 13px;
+  display:block;
+}
+div.doc_dash_waiting_room_div div.doc_user_waiting_box ul li:nth-child(2) span i.italic-class{
+  text-transform: lowercase;
+  display:block;
+  font-size:10px; 
+  color:#333;
+}
+
+div.doc_dash_waiting_room_div div.doc_user_waiting_box ul li:nth-child(3){
+  padding-top:8px;
+  margin-top:5px;
+}
+div.doc_dash_waiting_room_div div.doc_user_waiting_box ul li:nth-child(3) i.fa-video-camera,
+div.doc_dash_waiting_room_div div.doc_user_waiting_box ul li:nth-child(3) i.fa-comments{
+  background: #337ab7;
+  padding: 10px;
+  color: #fff;
+  border-radius: 100px;
+  font-size: 17px;
+}
+
+div.doc_dash_waiting_room_div div.doc_user_waiting_box ul li img{ 
+  width:35%;
+}
+
+
+/* user room */
+div.user_room_div_box .login-page {
+  padding: 10px 0 0;
+  margin: auto;
+  width:100%;
+}
+div.user_room_div_box .panel-info{
+  height:575px;
+}
+
+div.user_room_div_box .login-page .form {
+  position: relative;
+  z-index: 1;
+  max-width: 80%;
+  background: #FFFFFF;
+  margin: 0 auto 100px;
+  padding: 45px;
+  text-align: center;
+  box-shadow: 0 0 0;
+}
+div.user_room_div_box .login-page .form .form-group{
+  text-align: left;
+}
+div.user_room_div_box .login-page .form input {
+  outline: 0;
+  background: #f2f2f2;
+  width: 100%;
+  border: 0;
+  margin: 0 0 15px;
+  padding: 15px;
+  box-sizing: border-box;
+  font-size: 14px;
+  font-family:Titillium Web;
+}
+div.user_room_div_box .login-page .form input[type="radio"] {
+  margin-left:-20px;
+  margin-top:6px;
+  width:inherit;
+}
+
+div.user_room_div_box .login-page .form .btn-active {
+  background: rgb(221, 221, 221);
+  color:#333;
+}
+div.user_room_div_box .login-page .form .btn {
+  text-transform: capitalize;
+  outline: 0;
+  width:inherit;
+  float:left;
+  border: 0;
+  padding: 5px 15px 5px 15px;
+  font-size:16px;
+  margin-right:10px;
+  color: #FFFFFF;
+  -webkit-transition: all 0.3 ease;
+  transition: all 0.3 ease;
+  cursor: pointer;
+  font-family:Titillium Web;
+}
+
+div.user_room_div_box  .terms-user p input[type="checkbox"]{
+  width:2%;
+  position: absolute;
+  margin-top: 5px;
+  margin-left: -17px;
+}
+
+div.user_room_div_box .login-page .form .btn:hover,.login-page .form .btn:active,.login-page .form .btn:focus {
+  /*background: rgba(51,122,183,0.7);*/
+}
+/* user medication history */
+div.user-medication-history .panel{
+  width:30%;
+  margin:0 auto;
+}
+div.user-medication-history .panel-default{
+  width:99%;
+}
+div.user-medication-history .panel-default ul{
+  list-style: none;
+}
+div.user-medication-history .panel-default ul li{
+  border:1px solid #dcdcdc;
+  padding:5px;
+  margin:3px;
+  border-radius:5px;
+}
+div.user-medication-history .panel-default span{
+  font-size:14px;
+}
+div.user-medication-history .panel-default ul li input[type="checkbox"]{
+  float:right;
+}
+
+div.user-medication-history .panel-body{
+  padding:0px;
+}
+div.user-medication-history .panel table tr td:nth-child(3){
+  /*float:right;*/
+  margin-right:4px;
+}
+div.user-medication-history .panel-body  .col-md-12 h5{
+  background:#3478B7;
+  color:#fff;
+  padding:10px;
+  margin-top:0px; 
+
+}
+div.user-medication-history .panel-body .col-md-12 .form-group{
+  display:inline-flex;
+  width:95%;
+  margin-left:8px;
+}
+/*div.user-medication-history .panel-body .col-md-12 .col-body{
+  padding:10px;
+}*/
+div.user-medication-history .panel-body .col-md-12 .form-group .btn{
+  margin-left:5px;
+}
+div.fixed-button-bottom{
+  margin-top:11px;
+  margin-bottom:11px;
+} 
+div.user-medication-history .panel-body .col-md-12 .form-group .dynamic_search{
+  overflow-x:hidden;
+  overflow-y:scroll; 
+  width: 75%;
+  z-index:9;
+  height: 120px;
+  background: #d9edf7;
+  position: absolute;
+  margin-top: 35px;
+}
+div.user-medication-history .panel-body .col-md-12 .form-group .dynamic_search ul{
+  list-style:none;
+  padding-left:5px; 
+}
+div.user-medication-history .panel-body .col-md-12 .form-group .dynamic_search ul li{
+  cursor:pointer;
+}
+div.user-medication-history .panel-body .col-md-12 .form-group .dynamic_search ul li:hover{
+  color:#337ab7;
+}
+.hasSymptomBackground{
+    background: #3495ed;
+    color:#fff;
+  }
+  .hasSymptomBackground::after{
+    content : "\2713";
+    float:right;
+    margin-right:5px;
+  }
+
+.custom-form-group{
+  display:inline-flex;
+  width:92%;
+  margin-left:6px;
+}
+.custom-form-group .btn{
+ margin-left:6px; 
+}
+.center-custom-buttons{
+  margin-top:15px;
+  width:100%;
+}
+.cc_btn-active{
+  background: rgb(221,221,221) !important;
+  color:#333 !important;
+}
+.center-custom-buttons .cc_button,.cc_button{
+  padding:5px 15px;
+  text-transform: uppercase;
+  outline: 0;
+  background: rgba(51,122,183,1);
+  border-radius: 3px !important;
+  border-color:transparent !important;
+  box-shadow: 0px 0px 0px;
+  color: #FFFFFF;
+  font-size: 14px;
+  -webkit-transition: all 0.3 ease;
+  transition: all 0.3 ease;
+  cursor: pointer;
+  font-family: Titillium Web;
+}
+.doc_loginbtn{
+ padding:5px 15px;
+  text-transform: uppercase;
+  outline: 0;
+  background: rgba(51,122,183,1);
+  border-radius: 3px !important;
+  border-color:transparent !important;
+  box-shadow: 0px 0px 0px;
+  color: #FFFFFF;
+  font-size: 14px;
+  -webkit-transition: all 0.3 ease;
+  transition: all 0.3 ease;
+  cursor: pointer;
+  font-family: Titillium Web; 
+}
+.room-call #patientPublisher{
+  border:1px solid #dcdcdc;
+  width:200px;
+  height:200px;
+  bottom:-40px;
+  z-index:9999;
+  position:absolute;
+}
+.room-call #doctorPublisher{
+  float:right;
+  /*margin:0 auto;*/
+  width:80%;
+  border:1px solid #dcdcdc;
+  height:500px;
+}
+.room-call #doctorPublisher p{
+  width:95%;
+  font-size:16px;
+  margin:0 auto;
+  margin-top:10px;
+  text-align:justify;
+}
+.room-call #doctorPublisher span{
+  position: absolute;
+  bottom: 0;
+  margin: 0 auto;
+  text-align: center;
+  width: 80%;
+  z-index:999;
+}
+
+.room-call #doctorPublisher span i{
+  transform: rotate(139deg);
+  -webkit-transform:rotate(139deg);
+  -moz-transform:rotate(139deg);
+  background: #e61515;
+  padding: 12px 13px 12px 16px;
+  border-radius: 100%;
+  margin-bottom: 5px;
+  color: #fff;
+  text-align: center;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.doc-call .col-md-6{
+  height:95%;
+}
+.doc-call{
+  height:100%;
+}
+.doc-call #patientPublisher{
+  width:100%;
+  height:100%;
+  margin-left:10px;
+  border:1px solid #dcdcdc; 
+}
+.doc-call #patientPublisher #doctorPublisher{
+  width:120px;
+  height: 120px;
+  border:1px solid #dcdcdc;
+}
+
+.doc-call #patientPublisher span{
+  position: absolute;
+  bottom: 0;
+  margin: 0 auto;
+  text-align: center;
+  width: 100%;
+}
+
+.doc-call #patientPublisher span i{
+  transform: rotate(139deg);
+  -webkit-transform:rotate(139deg);
+  -moz-transform:rotate(139deg);
+  background: #e61515;
+  padding: 12px 13px 12px 16px;
+  border-radius: 100%;
+  margin-bottom: 5px;
+  color: #fff;
+  text-align: center;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+.doc-call .doc-call-progress-note h3{
+  margin-top:0px;
+}
+.doc-call .doc-call-progress-note a{
+  text-align: left;  
+  font-weight: bold;
+  cursor: pointer;
+  color: #262626;
+}
+.doc-call .doc-call-progress-note ul.textwrap span{
+  position:relative;
+  z-index:9;
+}

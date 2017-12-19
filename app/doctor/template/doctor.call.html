@@ -1,0 +1,421 @@
+<loading></loading>
+<div class="row doc-call">
+    <div class="col-md-6">
+        <div id="videos">
+            <div id="subscriber"></div>
+            <div id="publisher"></div>
+            <span id="" ng-click="disconnectSession()">
+              <i class="fa fa-phone"></i>
+        </span>
+        </div>
+    </div>
+    <div class="col-md-6 doc-call-progress-note">
+        <h3>Progress note</h3>
+        <a href="javascript:void(0);" ng-click="openProgressModal(1,progressArray.chiefComplaints)">
+            <u>Chief Complaint</u>
+        </a>
+
+        <ul class="textwrap">
+            {{progressArray.chiefComplaints}}
+            <span ng-click="removeDialogText(1)" ng-hide="progressArray.chiefComplaints == '' || progressArray.chiefComplaints == undefined" style="font-weight: bold;">&times;
+      </span>
+        </ul>
+
+        <a href="javascript:void(0);" ng-click="openProgressModal(2,progressArray.hpi)">
+            <u>History of Present Illness (HPI)</u>
+        </a>
+
+        <ul class="textwrap">
+            {{progressArray.hpi}}
+            <span ng-click="removeDialogText(2)" ng-hide="progressArray.hpi == '' || progressArray.hpi == undefined" style="font-weight: bold;">&times;
+      </span>
+        </ul>
+
+        <a href="javascript:void(0);" ng-click="openProgressModal(3,progressArray.pastMedicalHistory)" >
+            <u>Past Medical History</u>
+        </a>
+
+        <ul class="textwrap">
+            {{progressArray.pastMedicalHistory}}
+            <span ng-click="removeDialogText(3)" ng-hide="progressArray.pastMedicalHistory == '' || progressArray.pastMedicalHistory == undefined" style="font-weight: bold;">&times;
+      </span>
+        </ul>
+
+        <a href="javascript:void(0);" ng-click="openProgressModal(4,progressArray.pastSurgicalHistory)" >
+            <u>Past Surgical History</u>
+        </a>
+
+        <ul class="textwrap">
+            {{progressArray.pastSurgicalHistory}}
+            <span ng-click="removeDialogText(4)" ng-hide="progressArray.pastSurgicalHistory == '' || progressArray.pastSurgicalHistory == undefined" style="font-weight: bold;">&times;
+      </span>
+        </ul>
+
+        <a href="javascript:void(0);" ng-click="openProgressModal(5,progressArray.socialHistory)">
+            <u>Social History</u>
+        </a>
+
+        <ul class="textwrap">
+            {{progressArray.socialHistory}}
+            <span ng-click="removeDialogText(5)" ng-hide="progressArray.socialHistory == '' || progressArray.socialHistory == undefined" style="font-weight: bold;">&times;
+      </span>
+        </ul>
+
+        <a href="javascript:void(0);" ng-click="openProgressModal(6,progressArray.familyHistory)">
+            <u>Family History</u>
+        </a>
+
+        <ul class="textwrap">
+            {{progressArray.familyHistory}}
+            <span ng-click="removeDialogText(6)" ng-hide="progressArray.familyHistory == '' || progressArray.familyHistory == undefined" style="font-weight: bold;">&times;
+      </span>
+        </ul>
+
+        <a href="javascript:void(0);" ng-click="openProgressModal(7,progressArray.reviewsOfSystemsvalue)" >
+            <u>Review of systems</u>
+        </a>
+
+        <ul class="textwrap">
+            {{progressArray.reviewsOfSystemsvalue}}
+            <span ng-click="removeDialogText(7)" ng-hide="progressArray.reviewsOfSystemsvalue == '' || progressArray.reviewsOfSystemsvalue == undefined" style="font-weight: bold;">&times;
+      </span>
+        </ul>
+
+        <a href="javascript:void(0);" ng-click="openProgressModal(8,progressArray.physicalExam)" > 
+            <u>Physical Exam</u>
+        </a>
+
+        <ul class="textwrap">
+            {{progressArray.physicalExam}}
+            <span ng-click="removeDialogText(8)" ng-hide="progressArray.physicalExam == '' || progressArray.physicalExam == undefined" style="font-weight: bold;">&times;
+      </span>
+        </ul>
+
+        <a href="javascript:void(0);" ng-click="openProgressModal(9,progressArray.labs)" >
+            <u>Labs</u>
+        </a>
+
+        <ul class="textwrap">
+            {{progressArray.labs}}
+            <span ng-click="removeDialogText(9)" ng-hide="progressArray.labs == '' || progressArray.labs == undefined" style="font-weight: bold;">&times;
+      </span>
+        </ul>
+
+        <a href="javascript:void(0);" ng-click="openProgressModal(10,progressArray.imaging)" >
+            <u>Imaging</u>
+        </a>
+
+        <ul class="textwrap">
+            {{progressArray.imaging}}
+            <span ng-click="removeDialogText(10)" ng-hide="progressArray.imaging == '' || progressArray.imaging == undefined" style="font-weight: bold;">&times;
+      </span>
+        </ul>
+
+        <a href="javascript:void(0);" ng-click="openProgressModal(11,progressArray.otherStudies)" >
+            <u>Other Studies</u>
+        </a>
+
+        <ul class="textwrap">
+            {{progressArray.otherStudies}}
+            <span ng-click="removeDialogText(11)" ng-hide="progressArray.otherStudies == '' || progressArray.otherStudies == undefined" style="font-weight: bold;">&times;
+      </span>
+        </ul>
+
+        <a href="javascript:void(0);" >
+            <u>Diagnosis Impression</u>
+        </a>
+
+        <input type="text" autocomplete="off" 
+          class="form-control" ng-keydown="searchgenerateICD($event)" 
+          ng-keyup="searchgenerateICD($event)" ng-keypress="searchgenerateICD($event)" 
+          ng-model="searchDiagnosismodel" id="searchICDText" 
+          placeholder=" Diagnosis">
+        </label>
+
+        <div class="box-for-diagnosis" ng-if="ICDArray.length >= 1" id="searchboxfordiagnosis">
+            <ul style="list-style:none;padding-left:8px;padding-top:5px;">
+                <li ng-repeat="x in ICDArray">
+                    <span ng-click="adddiagnosis(x[0],x[1])"> {{x[1]}} </span>
+                </li>
+            </ul>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table table-responsive table-striped">
+                    <thead>
+                        <tr>
+                            <th style="width:38%;">Diagnosis</th>
+                            <th>ICD Code</th>
+                            <th>Description</th>
+                            <th> </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                      <tr ng-repeat="x in addeddiagnosisArray" class="diagnosisClass">
+                        <td> {{x.description}} </td>
+                        <td> {{x.icdCode}} </td>
+                        <td>
+                          <input type="text" style="width: 80%;" id="freetextcallid_{{$index}}"> 
+                        </td>
+                        <td> 
+                          <span ng-click="removeDiagnosis(addeddiagnosis1.icdCode)"> x </span> 
+                        </td>
+                      </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <a href="javascript:void(0);" ng-click="openProgressModal(12,progressArray.assesment)" >
+            <u>Assesment</u>
+        </a>
+
+        <ul class="textwrap">
+            {{progressArray.assesment}}
+            <span ng-click="removeDialogText(12)" ng-hide="progressArray.assesment == '' || progressArray.assesment == undefined" style="font-weight: bold;">&times;
+      </span>
+        </ul>
+
+        <a href="javascript:void(0);" ng-click="openProgressModal(13,progressArray.planOfCare)">
+            <u>Plan of Care</u>
+        </a>
+
+        <ul class="textwrap">
+            {{progressArray.planOfCare}}
+            <span ng-click="removeDialogText(13)" ng-hide="progressArray.planOfCare == '' || progressArray.planOfCare == undefined" style="font-weight: bold;">&times;
+      </span>
+        </ul>
+
+        <a href="javascript:void(0);" ng-click="openProgressModal(14,progressArray.followUp)" >
+            <u>Follow Up</u>
+        </a>
+
+        <ul class="textwrap">
+            {{progressArray.followUp}}
+            <span ng-click="removeDialogText(14)" ng-hide="progressArray.followUp == '' || progressArray.followUp == undefined" style="font-weight: bold;">&times;
+      </span>
+        </ul>
+
+        <a href="javascript:void(0);"  ng-click="selectCPT()">
+          Billing Details
+        </a>
+        <br>
+        <ul style="display:inline-flex;list-style:none;" class="textwrap">
+            <li ng-repeat="x in CPTArray  track by $index">
+                {{x}} <span ng-show="CPTArray.length >= 1" ng-click="removeSelectedCptBilling(x)">&times;</span>
+                <span ng-if="!$last">,</span> &nbsp;
+            </li>
+        </ul>
+
+
+
+        <div class="row">
+            <div class="col-md-12 text-center lock-doc-progress-btn">
+                <button class="btn btn-primary" ng-click="lockEncounter()">Lock the Encounter</button>
+                <button class="btn btn-primary" ng-click="downloadPDF(progressArray,addeddiagnosisArray,CPTArray)">Download PDF</button>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+
+<script type="text/ng-template" id="progressNoteLockModal.html">
+    <div class="modal-header bootstrap-modal-header">
+        <h3 class="modal-title" id="modal-title">Lock the Encounter</h3>
+    </div>
+    <div class="modal-body bootstrap-modal-body" id="modal-body">
+        <p>
+            Are you sure you want to lock the encounter? After locking the encounter, you will not be able to edit, although you can enter addenda as needed. Alternatively, you can save the entries now and come back later to finish charting.
+        </p>
+    </div>
+    <div class="modal-footer bootstrap-modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="cancel()">Lock</button>
+        <button class="btn btn-primary" type="button" ng-click="cancel()">Cancel</button>
+    </div>
+</script>
+
+
+
+
+<script type="text/ng-template" id="progressNoteModal.html">
+    <div class="modal-header bootstrap-modal-header">
+        <h3 class="modal-title" id="modal-title">{{modalHead}}</h3>
+    </div>
+    <div class="modal-body bootstrap-modal-body" id="modal-body">
+        <div class="form-group">
+            <textarea class="form-control" rows="3" ng-model="modalInputValue">{{modalInputValue}}</textarea>
+        </div>
+    </div>
+    <div class="modal-footer bootstrap-modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="saveProgressNote(modalInputValue)">Save</button>
+        <button class="btn btn-primary" type="button" ng-click="cancel()">Cancel</button>
+    </div>
+</script>
+
+
+<script type="text/ng-template" id="CPTProgressNoteModal.html">
+    <div class="modal-header bootstrap-modal-header">
+        <h3 class="modal-title" id="modal-title">Select CPT Billing</h3>
+    </div>
+    <div class="modal-body bootstrap-modal-body" id="modal-body">
+        <p ng-repeat="x in cptBilling" class="justified-text">
+          <input type="checkbox" ng-model="cptCode" ng-change="selectedCPTCode(cptCode,x.code)"> {{x.description}}
+
+        </p>
+    </div>
+    <div class="modal-footer bootstrap-modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="cancel()">Save</button>
+        <button class="btn btn-primary" type="button" ng-click="cancel()">Cancel</button>
+    </div>
+</script>
+
+
+<script type="text/ng-template" id="CallDisconnectedPatient.html">
+    <div class="modal-header bootstrap-modal-header">
+        <h3 class="modal-title" id="modal-title">Call disconnected by patient</h3>
+    </div>
+    <div class="modal-body bootstrap-modal-body" id="modal-body">
+        
+    </div>
+    <div class="modal-footer bootstrap-modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="callDisconnect()">Ok</button>
+    </div>
+</script>
+
+
+<script type="text/ng-template" id="CallDisconnectedPop1.html">
+    <div class="modal-header bootstrap-modal-header">
+        <h3 class="modal-title" id="modal-title">Are you sure you want to end the call?</h3>
+    </div>
+    <div class="modal-body bootstrap-modal-body" id="modal-body">
+        
+    </div>
+    <div class="modal-footer bootstrap-modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="callDisconnect()">Yes</button>
+        <button class="btn btn-primary" type="button" ng-click="cancel()">Cancel</button>
+    </div>
+</script>
+
+<script type="text/ng-template" id="CallDisconnectedPop2.html">
+    <div class="modal-header bootstrap-modal-header">
+        <h3 class="modal-title" id="modal-title">Was your call successful?</h3>
+    </div>
+    <div class="modal-body bootstrap-modal-body" id="modal-body">
+        <p>If you mark the call successful, patient will be removed from the waiting room.</p>
+    </div>
+    <div class="modal-footer bootstrap-modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="callSuccess()">Yes</button>
+        <button class="btn btn-primary" type="button" ng-click="cancel()">No</button>
+    </div>
+</script>
+
+
+
+
+
+<style type="text/css">
+table tbody tr.diagnosisClass span{
+  position: relative;
+  z-index: 10;
+}
+  .box-for-diagnosis{
+    position: absolute;
+    border: 1px solid #dcdcdc;
+    background: #808080;
+    width: 100%;
+    height: 118px;
+    z-index: 9;
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
+
+  .box-for-diagnosis ul li span{
+    position: relative;
+    z-index: 10;
+    color:#fff;
+  }
+
+    .lock-doc-progress-btn .btn {
+        margin-bottom: 15px;
+    }
+    .bootstrap-modal-body p.justified-text{
+      text-align: justify;
+    }
+    /*.disconnect-pop1-class{
+        margin: 0 auto;
+        float:left;
+        margin-right: 0;
+    }*/
+    .modal-sm {
+        float: right;
+        margin-right: 14%;
+        margin-top: 10%;
+    }
+    .bootstrap-modal-body p {
+        font-size: 14px;
+        padding: 10px;
+        text-align: center;
+    }
+    .bootstrap-modal-header {
+        background: #337ab7;
+        padding: 8px;
+    }
+    .bootstrap-modal-header h3.modal-title {
+        color: #fff;
+        font-size: 16px;
+        text-align: center;
+    }
+    .bootstrap-modal-footer {
+        padding: 5px;
+    }
+    #videos {
+        position: fixed;
+        width: 50%;
+        height: 75%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    #subscriber {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 10;
+    }
+    #publisher {
+        position: absolute;
+        width: 360px;
+        height: 240px;
+        bottom: 10px;
+        left: 10px;
+        z-index: 100;
+        border: 3px solid white;
+        border-radius: 3px;
+    }
+    .doc-call span {
+        z-index: 999;
+        position: absolute;
+        bottom: 0;
+        margin: 0 auto;
+        text-align: center;
+        width: 80%;
+    }
+    .doc-call span i {
+        transform: rotate(139deg);
+        -webkit-transform: rotate(139deg);
+        -moz-transform: rotate(139deg);
+        background: #e61515;
+        padding: 12px 13px 12px 16px;
+        border-radius: 100%;
+        margin-bottom: 5px;
+        color: #fff;
+        text-align: center;
+        font-size: 17px;
+        cursor: pointer;
+    }
+</style>
