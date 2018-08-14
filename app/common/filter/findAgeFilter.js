@@ -13,6 +13,7 @@
     		{
         		age--;
     		}
+    		if(isNaN(age)) return 0;
     		return age;
 		}
 	}		

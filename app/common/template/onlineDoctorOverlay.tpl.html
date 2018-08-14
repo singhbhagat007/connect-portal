@@ -1,0 +1,119 @@
+<loading></loading>
+<div id="onLineDocPanel" class="onLineDocPanel" ng-controller = "onlineDoctorCtrl">
+    <span onclick="removeOnLineDocPanel()" class="closeOnLineDocPanel">&times;</span>
+    <div class="form-group">
+        <input type="text" placeholder="Search by state" ng-model="onlineDocState" >
+    </div>
+    <div class="content">
+        <div ng-repeat="x in onlineDoctor | filter : onlineDocState track by $index" ng-if="x.status == 1" class="dynamicDOM" ng-class="x.is_available  ? 'opacityHigh' : 'opacityLow'" >   <!--ng-attr-title="{{(x.timer == 'available') ? 'Available' : 'Busy'}}"-->
+            <ul>
+                <li>
+                    <img ng-src="{{x.imageUrl ? x.imageUrl : './assets/images/muser.png'}}">
+                </li>
+
+                <li>
+                    <div class="off-online-div" ng-class="(x.is_available == 1) ? 'availableClass' : 'disableClass'"> </div>
+                </li>
+                <li>
+                    <p>
+                        <span ng-if="x.gender == 'male'">Dr. {{x.name}}</span>
+                        <span ng-if="x.gender == 'female'">Ms. {{x.name}}</span>
+                    </p>
+                    <br>
+                    <p>{{x.phoneNo}} </p><br>
+                    <p>{{x.email}} </p> <br>
+                    <p ng-if="x.timer && (x.timer != 'available') && (!x.is_available)">{{x.timer }} mins left</p>
+                    <p ng-if="(x.timer == 'available') && !x.is_available">Anytime Available Now</p>
+                </li>
+                <li style="display: none;">
+
+                    <button ng-disabled="x.is_available != 1" ng-class="(x.is_available != 1) ? 'disableButtonClass' : ''" ng-click="sendWCStaffNotification(x.id)">Notify</button>
+
+
+
+                    <div class="dropdown">
+                        <a class="dropbtn">Invite- <i class="fas fa-caret-down"></i></a>
+                        <div class="dropdown-content">
+                            <a href ng-click="inviteOtherFriendMeeting(x.email,ppmeetingBaseUrl1)">By email</a>
+                            <a href ng-click="inviteOtherFriendMeetingSMS(x.phoneNo,ppmeetingBaseUrl1)">By text</a>
+                        </div>
+                    </div>
+
+
+                </li>
+            </ul>    
+             <div style="margin-bottom: 8px;padding-left: 3px;">
+                 
+                    <div style="width: 46%;float: left;text-align: right;margin-right: 8px;"">
+                        <button  style="border: none;color: #fff;padding: 3px;border-radius: 3px;font-size: 12px;" ng-disabled="x.is_available != 1" ng-class="(x.is_available != 1) ? 'disableButtonClass' : ''"  ng-click="sendWCStaffNotification(x.id)">Notify</button>
+                    </div>
+              
+                       
+                    <div class="dropdown">
+                      <a class="dropbtn" style="border-radius: 3px;padding: 3px 5px;font-family: Roboto,Helvetica Neue,sans-serif;font-size: 12px;">Invite <i class="fa fa-caret-down"></i></a>
+                      <div class="dropdown-content">
+                        <a href ng-click="inviteOtherFriendMeeting(x.email,ppmeetingBaseUrl1)">By email</a>
+                        <a href ng-click="inviteOtherFriendMeetingSMS(x.phoneNo,ppmeetingBaseUrl1)">By text</a>
+                      </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+    
+</div>
+
+
+
+
+
+<link rel="stylesheet" href="./assets/css/jQueryMobile.css"/>
+<script src="./assets/js/jQueryMobile.js"></script>
+<style>
+    .dropbtn {
+        background-color: #25406B !important;
+        color: white;
+        border: none;
+    }
+
+
+        .dropbtn:hover {
+            color: #fff;
+            text-decoration: none;
+        }
+
+    .dropdown {
+        position: relative;
+        display: inline-block;
+        width: 30%;
+    }
+
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: #f1f1f1;
+        min-width: 65px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+        text-align: left;
+        padding: 2px;
+    }
+
+        .dropdown-content a {
+            color: black;
+            padding: 2px 2px;
+            text-decoration: none;
+            display: block;
+        }
+
+            .dropdown-content a:hover {
+                background-color: #ddd;
+            }
+
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+
+    .dropdown:hover .dropbtn {
+        background-color: #3e8e41;
+    }
+</style>

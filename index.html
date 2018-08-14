@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
-    <title>See Your Doctor: {{title}}</title>
+    <title>Akos Connect: {{title}}</title>
     <style>
         /* This helps the ng-show/ng-hide animations start at the right place. */
         /* Since Angular has this but needs to load, this gives us the class early. */
@@ -28,13 +28,14 @@
     <!-- endinject -->
     
 </head>
-<body>
+<body class="bodyindex">
     
     <!--header start -->
     <div  ng-include="'./app/common/template/header.tpl.html'"></div>
     <!--header end -->
     <div data-ui-view id="contentBlock">
     </div>
+    
     <!--header start -->
     <div ng-include="'./app/common/template/footer.tpl.html'"></div>
     <!--header end -->
@@ -61,7 +62,7 @@
     <script src="./bower_components/ngMask/dist/ngMask.min.js"></script>
     <script src="./bower_components/socket-cdn/socket.io.min.js"></script>
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script> -->
-    
+    <!-- ab-plivo(070718) -->
     
     
     
@@ -70,12 +71,14 @@
 
     <!--custom dependencies -->
     <script src="https://static.opentok.com/v2/js/opentok.js"></script><!-- Opentok sdk -->
-
-
+    
+    <script src="https://cdn.plivo.com/sdk/browser/v2/plivo.min.js"/></script>
     <!-- inject:js -->
     <!-- Bootstrapping -->
     <script src="./app/app.module.js"></script>
-
+    
+    <!-- added 250718 -->
+    <script src="app/app.config.js"></script>
 
 
     <!-- Reusable Blocks/Modules -->
@@ -83,32 +86,52 @@
 
     <!-- core module -->
     
-
+    <!-- braintree -->
+    <script src="https://js.braintreegateway.com/web/dropin/1.11.0/js/dropin.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.5/require.min.js"></script> -->
+    <script src="./bower_components/clipboard/dist/braintree.js"></script>
     <!-- layout -->
     
+    <!-- ab-mask library-(071018) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.10/jquery.mask.js"></script>
 
     <!--widgets-->
     
     <!-- home -->
-    <script src="./app/home/home.module.js"></script>
+    <!--<script src="./app/home/home.module.js"></script>-->
+    <script>document.write('<script src="./app/home/home.module.js?v=' + Math.floor(Math.random() * 1000) + '"\><\/script>');</script>
     <!--<script src="/app/home/config.route.js"></script>-->
-    <script src="./app/home/controller/home.js"></script>
-    <script src="./app/home/service/opentokSessionService.js"></script>
+    <!-- <script src="./app/home/controller/home.js"></script>
+    <script src="./app/home/service/opentokSessionService.js"></script> -->
+    <script>document.write('<script src="./app/home/controller/home.js?v=' + Math.floor(Math.random() * 1000) + '"\><\/script>');</script>
+    <script>document.write('<script src="./app/home/service/opentokSessionService.js?v=' + Math.floor(Math.random() * 1000) + '"\><\/script>');</script>
+
 
     <!--doctor-->
-    <script src="./app/doctor/doctor.module.js"></script>
+    <!-- <script src="./app/doctor/doctor.module.js"></script>
     <script src="./app/doctor/controller/doctor.js"></script>
-    <script src="./app/doctor/service/doctorServices.js"></script>
+    <script src="./app/doctor/service/doctorServices.js"></script> -->
+    <script>document.write('<script src="./app/doctor/doctor.module.js?v=' + Math.floor(Math.random() * 1000) + '"\><\/script>');</script>
+    <script>document.write('<script src="./app/doctor/controller/doctor.js?v=' + Math.floor(Math.random() * 1000) + '"\><\/script>');</script>
+    <script>document.write('<script src="./app/doctor/service/doctorServices.js?v=' + Math.floor(Math.random() * 1000) + '"\><\/script>');</script>
 
     <!--room-->
-    <script src="./app/room/room.module.js"></script>
+    <!-- <script src="./app/room/room.module.js"></script>
     <script src="./app/room/controller/room.js"></script>
-    <script src="./app/room/service/roomServices.js"></script>
+    <script src="./app/room/service/roomServices.js"></script> -->
+    <script>document.write('<script src="./app/room/room.module.js?v=' + Math.floor(Math.random() * 1000) + '"\><\/script>');</script>
+    <script>document.write('<script src="./app/room/controller/room.js?v=' + Math.floor(Math.random() * 1000) + '"\><\/script>');</script>
+    <script>document.write('<script src="./app/room/service/roomServices.js?v=' + Math.floor(Math.random() * 1000) + '"\><\/script>');</script>
 
+    <!--AppLink-->
+    <!-- <script src="./app/appLink/appLink.module.js"></script>
+    <script src="./app/appLink/controller/appLink.js"></script> -->
+    <script>document.write('<script src="./app/appLink/appLink.module.js?v=' + Math.floor(Math.random() * 1000) + '"\><\/script>');</script>
+    <script>document.write('<script src="./app/appLink/controller/appLink.js?v=' + Math.floor(Math.random() * 1000) + '"\><\/script>');</script>
     
 
     <!--custom directive, filters, services -->
-    <script src="./app/common/directive/loading.js"></script>
+    <!-- <script src="./app/common/directive/loading.js"></script>
     <script src="./app/common/filter/reverseArrayFilter.js"></script>
     <script src="./app/common/function/commonfunctions.js"></script>
     <script src="./app/common/service/tokenValidatorService.js"></script>
@@ -121,6 +144,108 @@
     <script src="./app/common/service/socketService.js"></script>
     <script src="./app/common/filter/convertDateToSecondFilter.js"></script>
     <script src="./app/common/filter/convertStateToCapitalFormFilter.js"></script>
+    <script src="./app/common/filter/convertToSixDigitMRNFilter.js"></script>
+    <script src="./app/common/controller/pdfChartingCtrl.js"></script>
+    <script src="./app/common/service/pdfChartingService.js"></script>
+    <script src="./app/common/directive/chattemplate.js"></script>
+    <script src="./app/common/directive/onlinedoctortemplate.js"></script>
+    <script src="./app/common/controller/ChatCtrl.js"></script>
+    <script src="./app/common/controller/onlineDoctorCtrl.js"></script>
+    <script src="./app/common/filter/setTimerOnlineDoctorFilter.js"></script> -->
+
+    <script>document.write('<script src="./app/common/directive/loading.js?v=' + Math.floor(Math.random() * 1000) + '"\><\/script>');</script>
+    <script>document.write('<script src="./app/common/filter/reverseArrayFilter.js?v=' + Math.floor(Math.random() * 1000) + '"\><\/script>');</script>
+    <script>document.write('<script src="./app/common/function/commonfunctions.js?v=' + Math.floor(Math.random() * 1000) + '"\><\/script>');</script>
+    <script>document.write('<script src="./app/common/service/tokenValidatorService.js?v=' + Math.floor(Math.random() * 1000) + '"\><\/script>');</script>
+    <script>document.write('<script src="./app/common/service/getSymptomsService.js?v=' + Math.floor(Math.random() * 1000) + '"\><\/script>');</script>
+    <script>document.write('<script src="./app/common/filter/isTenDigitNumberFilter.js?v=' + Math.floor(Math.random() * 1000) + '"\><\/script>');</script>
+    <script>document.write('<script src="./app/common/filter/isValidEmailFilter.js?v=' + Math.floor(Math.random() * 1000) + '"\><\/script>');</script>
+    <script>document.write('<script src="./app/common/filter/genderShortFormFilter.js?v=' + Math.floor(Math.random() * 1000) + '"\><\/script>');</script>
+    <script>document.write('<script src="./app/common/filter/findAgeFilter.js?v=' + Math.floor(Math.random() * 1000) + '"\><\/script>');</script>
+    <script>document.write('<script src="./app/common/filter/removeBlankSpaceFromStringFilter.js?v=' + Math.floor(Math.random() * 1000) + '"\><\/script>');</script>
+    <script>document.write('<script src="./app/common/service/socketService.js?v=' + Math.floor(Math.random() * 1000) + '"\><\/script>');</script>
+    <script>document.write('<script src="./app/common/filter/convertDateToSecondFilter.js?v=' + Math.floor(Math.random() * 1000) + '"\><\/script>');</script>
+    <script>document.write('<script src="./app/common/filter/convertStateToCapitalFormFilter.js?v=' + Math.floor(Math.random() * 1000) + '"\><\/script>');</script>
+    <script>document.write('<script src="./app/common/filter/convertToSixDigitMRNFilter.js?v=' + Math.floor(Math.random() * 1000) + '"\><\/script>');</script>
+    <script>document.write('<script src="./app/common/controller/pdfChartingCtrl.js?v=' + Math.floor(Math.random() * 1000) + '"\><\/script>');</script>
+    <script>document.write('<script src="./app/common/service/pdfChartingService.js?v=' + Math.floor(Math.random() * 1000) + '"\><\/script>');</script>
+    <script>document.write('<script src="./app/common/directive/chattemplate.js?v=' + Math.floor(Math.random() * 1000) + '"\><\/script>');</script>
+    <script>document.write('<script src="./app/common/directive/onlinedoctortemplate.js?v=' + Math.floor(Math.random() * 1000) + '"\><\/script>');</script>
+    <script>document.write('<script src="./app/common/controller/ChatCtrl.js?v=' + Math.floor(Math.random() * 1000) + '"\><\/script>');</script>
+    <script>document.write('<script src="./app/common/controller/onlineDoctorCtrl.js?v=' + Math.floor(Math.random() * 1000) + '"\><\/script>');</script>
+    <script>document.write('<script src="./app/common/filter/setTimerOnlineDoctorFilter.js?v=' + Math.floor(Math.random() * 1000) + '"\><\/script>');</script>
+
+    
+    <script type="text/javascript">
+        window.onbeforeunload = function(e) {
+            if (e.target.URL.indexOf('appLink') > -1) {
+               return e.preventDefault();
+           } else
+            return 'Are you sure you want to leave this page?';
+        };
+    </script>
+    <!-- <div id="myModal" class="modal unsupportedbrowser">
+	 	<div class="modal-dialog">
+	    	<div class="modal-content">
+	      		<div class="modal-header">
+	        		<h4 class="modal-title">Unsupported Browser</h4>
+	      		</div>
+	      		<div class="modal-body">
+	        		<p>Unfortunately the browser you are using is currently not supported. We only support latest Google Chrome browser at this time. If you have Google Chrome already installed, please open the portal using chrome otherwise please install chrome by clicking on the icon below.</p>
+	        		<a href="https://www.google.com/chrome/">
+	          			<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Google_Chrome_icon_%282011%29.svg/2000px-Google_Chrome_icon_%282011%29.svg.png">  
+	        		</a>
+	      		</div>
+	      		<div class="modal-footer">
+	        		<button type="button" class="btn btn-default" onclick="closeModal()">Close this window</button>
+	      		</div>
+	    	</div>
+	  	</div>
+	</div> -->
+<!-- <script type="text/javascript">
+var key = new RegExp('Chrome','g');
+var str = navigator.userAgent;
+if(!key.test(str)){
+  var modal = document.getElementById('myModal');
+  modal.style.display = "block";
+}
+function closeModal(){
+  window.open('', '_self', '').close();
+  modal.style.display = "none"; 
+}
+</script>
+ -->
+
+<!-- <style type="text/css">
+  .unsupportedbrowser{
+    font-family: 'Lato-Regular';
+    margin-top:0%; 
+  }
+  .unsupportedbrowser .modal-header{
+    background: #25406B;  
+  }
+  .unsupportedbrowser .modal-header span{
+    color:#fff;
+  }
+  .unsupportedbrowser .modal-title{
+    color:#fff;
+
+  }
+  .unsupportedbrowser .modal-body p{
+    padding:10px;
+  }
+  .unsupportedbrowser .modal-body img{
+    margin: 0 auto;
+    width:10%;
+    display: block;
+  }
+  .unsupportedbrowser .modal-footer button{
+    background: #25406B;
+    color:#fff;
+  }
+  
+</style> -->
+    
     <!-- endinject -->
 </body>
 </html>

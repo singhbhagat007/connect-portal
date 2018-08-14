@@ -7,10 +7,10 @@
     			<p ng-show="!!(userMeetingDetails.id)"> 
  					Welcome back   
  					<strong style="text-transform:capitalize; ">{{userMeetingDetails.first_name}} {{userMeetingDetails.last_name}}.</strong>
- 					Please verify your information so Dr. <strong>{{docNameFromAlias}}  </strong> can recognize you. 
+ 					Please verify your information so  <strong>{{docNameFromAlias}}  </strong> can recognize you. 
  				</p>
  				<p ng-show="!(userMeetingDetails.id)"> 
- 					Please enter the following information so Dr. <strong>{{docNameFromAlias}}  </strong> can recognize you. 
+ 					Please enter the following information so  <strong>{{docNameFromAlias}}  </strong> can recognize you. 
  				</p>
  				<div class="login-page"> 
   			<div class="form">
@@ -112,6 +112,27 @@
 			    			</div>	
 			    		</div>
 			    	</div>
+			    	<div class="row">
+			    		<div class="col-md-6">
+			    			<div class="form-group">
+			    				<label>Password</label>
+				    			<input class="form-control" ng-keydown="passChecker(userMeetingDetails.password)" 
+				    				   ng-keyup="passChecker(userMeetingDetails.password)"  
+				    				   ng-keypress="passChecker(userMeetingDetails.password)" 
+				    				   type="password" placeholder=" Enter Password" ng-model="userMeetingDetails.password">
+			    			</div>
+						</div>	
+			    		<div class="col-md-6">
+			    			<div class="form-group">
+			    				<label>Confirm Password
+			    					<span ng-if=" confirm_password.length > 0 &&  userMeetingDetails.password == confirm_password"> &#10004; </span>
+			    				</label>
+				    			<input type="password" name="" class="form-control" placeholder="Confirm Password" 
+				    		    	ng-disabled="!passChecker(userMeetingDetails.password)"  required ng-model="confirm_password">	
+				    		    
+			    			</div>	
+			    		</div>
+			    	</div>	
 			    	<div class="row terms-user">
 			    		<div class="col-md-12">
 			    			<p> 
@@ -123,8 +144,8 @@
 			    		</div>
 			    	</div>
 			    	<div class="center-custom-buttons">
-			    		<button class="cc_button btn-primary" ui-sref="room">Previous</button>	
-			    		<button class="cc_button btn-primary" ng-click="userMedicalHistory()"  ng-disabled="!userMeetingDetails.email || !isTermsChecked">
+			    		<button class="cc_button btn-primary" ui-sref="verify">Previous</button>	
+			    		<button class="cc_button btn-primary"  ng-class="!isTermsChecked ? 'cursorDisabled' : 'cursorPointer'"  ng-click="userMedicalHistory()"  ng-disabled="!userMeetingDetails.email || !isTermsChecked">
 			    			Next
 			    		</button>
 			    		<!--userDetail.$invalid || userDetail.$pristine || userDetail.$dirty || !userDetail.$touch"-->

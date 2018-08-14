@@ -1,13 +1,18 @@
 /* media for ipad screen */
 @media only screen and (max-width: 768px) {
 	#contentBlock{
-		height:75%;
+		min-height:75%;
 	}
+
+    .onLineDocPanel{
+        width:40% !important;
+        z-index:2;
+    }
 }
 
 /* media for iphone screen */
 @media only screen and (max-width: 414px) {
 	#contentBlock{
-		height:70%;
+		min-height:70%;
 	}
 }

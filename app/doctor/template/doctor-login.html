@@ -1,7 +1,7 @@
 <loading></loading>
-<figure class="login-page-logo">
-  <img src="https://billing.akosmd.com/image/akos-logo-footer.png">
-</figure>
+<!-- <figure class="login-page-logo">
+  <img src="./assets/images/logo_white.png">
+</figure> -->
 <!-- <div class="login-page">
   <div class="form">
     <form class="register-form" method="POST" ng-submit="loginForm()" name="login">
@@ -18,13 +18,11 @@
           <div class="panel-heading">
             <strong> Sign in to continue</strong>
           </div>
-          <div class="panel-body">
-            <form  method="POST" ng-submit="loginForm()" name="login">
+          <div class="panel-body login-panel-body">
+            <form  method="POST" ng-submit="loginForm(loginData)" name="login">
               <fieldset>
                 <div class="row">
-                  <div class="center-block">
-                    <img class="profile-img"
-                      src="https://lh5.googleusercontent.com/-b0-k99FZlyE/AAAAAAAAAAI/AAAAAAAAAAA/eu7opA4byxI/photo.jpg?sz=120" alt="">
+                  <div class="center-block invalid-creds-login" id="showInvalidMsg">
                   </div>
                 </div>
                 <div class="row">
@@ -63,7 +61,7 @@
   </div>
 <style type="text/css">
 body {
-  background: #337ab7; /* fallback for old browsers */
+  background: #fff ; /* fallback for old browsers #337ab7 #25406B*/
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;      
 }

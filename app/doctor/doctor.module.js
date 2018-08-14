@@ -6,11 +6,8 @@
       'angularMoment',
       'ngSanitize'
       ])
-    .constant('config',{
-      serverBaseUrl : 'https://seeyourdoc.akosmd.com:3001',
-      opentokAPIKey : 45732912
-      })
     .config(routeConfig);
+      
     routeConfig.$inject = ['$stateProvider','$urlRouterProvider','$locationProvider'];
     
     function routeConfig($stateProvider,$urlRouterProvider,$locationProvider){
@@ -24,7 +21,38 @@
           templateUrl:templateUrlBase+'doctor.html',
           controller:'DoctorCtrl',
           controllerAs:'vm',
-          title:'Doctor'
+          title:'Dashboard'
+        })
+
+      .state('wcNurse', {
+          url: '/wcNurse/:token',
+          templateUrl:templateUrlBase+'doctor.html',
+          controller:'DoctorCtrl',
+          controllerAs:'vm',
+          title:'Dashboard'
+        })
+
+      .state('callLog', { 
+          url: '/patient/callLog',
+          views:{
+            '@':{
+              templateUrl:templateUrlBase+'doctor.callLog.html',
+              controller:'DoctorCtrl',
+              controllerAs:'vm',
+              title:'Call Log'      
+            }  
+          }
+        })
+      .state('charting', { 
+          url: '/patient/charting/:id',
+          views:{
+            '@':{
+              templateUrl:templateUrlBase+'doctor.charting.html',
+              controller:'DoctorCtrl',
+              controllerAs:'vm',
+              title:'Charting'      
+            }  
+          }
         })
       .state('doctor.call', { 
           url: '/livecall',
@@ -33,7 +61,7 @@
               templateUrl:templateUrlBase+'doctor.call.html',
               controller:'DoctorCtrl',
               controllerAs:'vm',
-              title:'Doctor Call'      
+              title:'Doctor Live Call'      
             }  
           }
         })
@@ -64,7 +92,7 @@
         templateUrl:templateUrlBase+'doctor-login.html',
         controller:'DoctorCtrl',
         controllerAs:'vm',
-        title:'Doctor Login Page'
+        title:'Login'
 
         })
     }

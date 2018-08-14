@@ -1,0 +1,64 @@
+<loading></loading>
+ 
+<div class="row" ng-show="inactiveAlias == 1">
+    <div class="col-md-12 text-center">
+        <div class="alert alert-info">
+            <p>
+                Sorry, but the requested room no longer exists. Please check your URL. It may have been renamed. Please contact your provider for the correct videoconferencing Room URL.
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="row" >
+        
+    </div>
+    <div class=""> 
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+              <div class="panel panel-info">
+                <div class="panel-heading">Insurance Details</div>
+                  <div class="panel-body">
+                  <div class="col-md-6">
+                      <label for="searchInsurance">Type to search:</label>
+                      <input type="text" class="form-control" ng-model="insureKey" id="insureKey" name="" ng-keyup="checkInsuranceData()"><!-- <span ng-if="nsuranceData.length>0" class="norecordMsg">{{insuranceMsg}}</span> -->
+                      <ul class="ulclass">
+                        <li ng-repeat="x in insuranceData" ng-click="selectInsurance(x)">{{x.name}}</li>
+                      </ul>
+                      <div class="selectedInsurance" ng-if="userInsuranceData.selectedInsurance"><span class="crossSelectedIns" ng-click="removeSelectedIns()">&times;</span><strong>Selected Insurance:</strong>
+                         {{userInsuranceData.selectedInsurance}}                        
+                      </div>
+
+                  </div>
+                  <div class="col-md-6">
+                  <label for="name">Name:</label>
+                      <input type="text" class="form-control" name="" ng-model="userInsuranceData.insuredName">
+                      <label for="memberId">Member Id:</label>
+                      <input type="text" class="form-control" name="" ng-model="userInsuranceData.memberId">
+                      <label for="groupId">Group Id:</label>
+                      <input type="text" class="form-control" name="" ng-model="userInsuranceData.groupId">
+                      <label for="groupId">Trading Partner:</label>
+                      <input type="text" class="form-control"  id="tradingPid" name="">
+                  </div>
+                </div>
+                <div class="panel-footer">
+                    <div class="insuranceNext">
+                        <button class="btn btn-primary btn-md" ng-click="insureToSym()">Back</button>
+                        <button class="btn btn-primary btn-md" ng-click="insuranceDetailsSave('save')">Save</button>
+                        <button class="btn btn-primary btn-md" ng-click="insuranceDetailsSave('next')">Next</button>
+                    </div>
+                </div>
+              </div>
+            
+        
+        </div>
+        <div class="col-md-2"></div>
+</div>
+<style type="text/css">
+  .ulclass {  list-style-type: none;    background: aliceblue;
+    padding: 2px;
+    padding-left: 6px;    position: absolute;
+    width: 91%; }
+</style>
+
+

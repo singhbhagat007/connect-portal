@@ -1,0 +1,297 @@
+<loading></loading>
+<div class="row" ng-hide="isCallScreenHidden == 0" id="isCallScreenHidden">
+    <div class="panel panel-info">
+        <div class="panel-heading text-center">Tell Us About Yourself </div> 
+        <div class="panel-body">
+            <div class="col-md-offset-2 col-md-8 text-center padding-3 ">
+                <h5>Are you a provider ? 
+                    <label class="switch">
+                        <input type="checkbox"  ng-model="isThirdPartyProviderScope">
+                        <span class="slider round"></span>
+                    </label>
+                </h5>
+                <p>Please enter the details below to join the video conferencing room.
+            </div>
+			<div class="col-md-offset-2 col-md-8 text-left nurse_room">
+				<div class="form"> <!-- inline-nurse-form -->
+				    <form class="form" method="POST" ng-submit="inviteRoomForm(inviteRoom1)" name="inviteRoom">
+				        <div class="row">
+                            <div class="col-md-3" ng-class="isThirdPartyProviderScope ? 'col-md-offset-2' : 'col-md-offset-3'">
+                                <div class="form-group">
+                                    <label>First Name:</label>
+                                	<input type="text" name="" placeholder="First Name" class="form-control" ng-model="inviteRoom1.firstname">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group">
+                                    <label>Last Name:</label>
+                                    <input type="text" name="" placeholder="Last Name" class="form-control" ng-model="inviteRoom1.lastname">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="form-group" ng-show="isThirdPartyProviderScope">
+                                    <label>Phone No:</label>
+                                    <input type="text" class="form-control" 
+                                            name="phone" mask="(999) 999-9999" clean="true" ng-model="inviteRoom1.mobile" 
+                                            onkeypress="return isNumberKey(event)" placeholder=" Phone No."
+                                            >
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 text-center">
+                                <button  type="submit" class="btn btn-primary"  ng-disabled="!inviteRoom1.lastname || !inviteRoom1.firstname ||  (isThirdPartyProviderScope && !inviteRoom1.mobile)">
+                                    Check In
+                                </button>
+                            </div>
+                        </div>        
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+ 
+<div class="row room-call" ng-hide="isCallScreenHidden == 1" id="isCallScreenHidden2">
+    <div class="col-md-12">
+        <div id="videos">
+            <p ng-if="isDocPublishing == false">
+                Hello There! Thanks for joining me on my personal consultation room. Please make sure you allow the portal to access your camera and microphone when prompted.
+            </p>
+            <div id="layout"></div>
+            <!-- <div id="subscriber"></div>
+            <div id="publisher"></div> -->
+            <ul class="doc-call-options">
+                <li ng-click="disconnectSession('thirdParty')">
+                    <span>
+                        <i class="fa fa-phone"></i>        
+                    </span>    
+                </li>
+                <li ng-click="disableDocCallVideo()" id="addPsuedoContent">
+                    <span>
+                        <i class="fa fa-video-camera" ></i>
+                    </span>    
+                </li>
+                <li ng-click="disableDocCallAudio()" id="addPsuedoContent1">
+                    <span>
+                        <i class="fa fa-microphone" ></i>
+                    </span>    
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    
+
+
+
+</div>
+
+<script type="text/ng-template" id="CallEndThirdPartyPopUp.html">
+    <div class="modal-header bootstrap-modal-header">
+        <h3 class="modal-title" id="modal-title">Do you want to end the call?</h3>
+    </div>
+    <div class="modal-body bootstrap-modal-body" id="modal-body">
+        
+    </div>
+    <div class="modal-footer bootstrap-modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="callEndThirdParty()">OK</button>
+        <button class="btn btn-primary" type="button" ng-click="cancel()">Cancel</button>
+    </div>
+</script>
+
+<script type="text/ng-template" id="callDisconnectedDocModal.html">
+    <div class="modal-header bootstrap-modal-header">
+        <h3 class="modal-title" id="modal-title">Call Disconnected By Doctor.</h3>
+    </div>
+    <div class="modal-body bootstrap-modal-body" id="modal-body">
+    </div>
+    <div class="modal-footer bootstrap-modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="gotoRoom(3)">OK</button>
+    </div>
+</script>
+
+<div class="modal fade sendpatient-email-pop-class" id="bootstrapModalNetworkCheck" role="dialog">
+<div class="modal-dialog">
+
+  <!-- Modal content-->
+  <div class="modal-content">
+    <div class="modal-header bootstrap-modal-header">
+      <h4 class="modal-title text-center" style="color:#fff;">Network Check</h4>
+    </div>
+    <div class="modal-body bootstrap-modal-body">
+      <p>Sorry, No Video Device Found.</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default" data-dismiss="modal" style="color:#fff;">Ok</button>
+    </div>
+  </div>
+  
+</div>
+</div>
+
+
+<div class="modal fade sendpatient-email-pop-class" id="bootstrapModalNetworkCheckFail" role="dialog">
+<div class="modal-dialog">
+
+  <!-- Modal content-->
+  <div class="modal-content">
+    <div class="modal-header bootstrap-modal-header">
+      <h4 class="modal-title text-center" style="color:#fff;">Weak Signal</h4>
+    </div>
+    <div class="modal-body bootstrap-modal-body">
+      <p>Unfortunately, your current signal strength will neither support a video nor an audio call.  Please try again from a different area with stronger signal.</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default" data-dismiss="modal" style="color:#fff;">Ok</button>
+    </div>
+  </div>
+  
+</div>
+</div>
+
+
+<style type="text/css">
+.OT_root{
+    z-index:-1;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 49px;
+  height: 22px;
+  margin-bottom:-4px !important;
+    
+}
+
+.switch input {display:none;}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 17px;
+  width: 17px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+
+
+ul.doc-call-options{
+    position: absolute;
+    bottom: 0;
+    left:50%;
+}
+
+#layout {
+                /*position: absolute;*/
+                top: 120px;
+                left: 0;
+                right: 0;
+                bottom: 0;
+               /* background-color: #DDD;*/
+                
+            }
+
+            #layout > div {
+                background-color: #000;
+                display: inline-block;
+                border: 1px solid #fff;
+
+                transition-property: all;
+                transition-duration: 0.5s;
+            }
+
+
+ .OTSubscriberClass{
+    position:absolute;
+    transition:all 1s ease;
+}
+    #videos {
+        position: fixed;
+        width: 100%;
+        height: 75%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    #subscriber {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 10;
+    }
+    #publisher {
+        position: absolute;
+        width: 360px;
+        height: 240px;
+        bottom: 0px;
+        left: 3px;
+        z-index: 100;
+        border: 1px solid white;
+        border-radius: 3px;
+    }
+    .modal-sm {
+        float:none;    
+        margin-top:10%;
+    }
+    .bootstrap-modal-body p {
+        font-size: 14px;
+        padding: 10px;
+        text-align: center;
+    }
+    .bootstrap-modal-header {
+        background: #25406B;
+        padding: 8px;
+    }
+    .bootstrap-modal-header h3.modal-title {
+        color: #fff;
+        font-size: 16px;
+        text-align: center;
+    }
+    .bootstrap-modal-footer {
+        padding: 5px;
+    }
+</style>
+
+

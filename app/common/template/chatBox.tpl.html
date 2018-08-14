@@ -1,0 +1,75 @@
+<div class="chatBox" ng-controller="ChatCtrl">
+	<div class="chatHead" ng-click="(sender == 'patient') ? minimizeChatBox() : '' ">
+		<h4>{{name}} 
+		    <i  ng-if="sender =='patient'" style="float:right" ng-class="isChatminimize ? 'fa fa-chevron-up' : 'fa fa-chevron-down'"> </i>
+		    <span ng-if="sender =='patient'" class="activeORDisableBoxClass" ng-class="isDocActive ? 'onlineDocClass' : 'offlineDocClass'"></span>
+			<span ng-show="sender == 'doctor'" ng-click="chatOff(datatemplateid)" id="chatclosebutton"> &times; </span>
+			
+		</h4> 
+
+	</div>
+	<div class="chatBody" id="chatBody_{{id}}{{senderid}}">
+		<h2 class="background" ng-if="!isDocActive && sender =='patient'">
+			<span>The Doctor is offline</span>
+		</h2>
+	</div>
+	<div class="chatFooter">
+		<form role="form" class="form" ng-submit=sendChat(chatMsg)>
+			<div class="input-group">
+			  <input type="text" class="form-control" placeholder="Enter Message" ng-model="chatMsg" id="chatMsg" autocomplete="off">
+			  <div class="input-group-append">
+			    <button class="btn btn-primary btn-outline-secondary" type="submit" ng-disabled="!isDocActive && sender =='patient'">
+			    	Send <i class="fa fa-paper-plane"></i>
+			    </button>
+			  </div>
+			</div>
+		</form>
+	</div>
+</div>
+
+<style type="text/css">
+	h2.background {
+    position: relative;
+    z-index: 1;
+    font-size:15px;
+    text-align: center; 
+}
+
+span.activeORDisableBoxClass{
+	width: 7px;
+    height: 7px;
+    position: absolute !important;
+    margin-left: 10px;
+    cursor:none !important;
+    right:inherit !important;
+    margin-top: 5px;
+    border-radius: 100px;
+    z-index: 99999;
+}
+span.onlineDocClass{
+	background: #33a033;
+}
+
+span.offlineDocClass{
+	background: #dcdcdc;
+}
+
+h2.background:before {
+    border-top: 2px solid #dfdfdf;
+    content: "";
+    margin: 0 auto;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 95%;
+    z-index: -1;
+}
+
+
+h2.background span {
+    background: #f5f5f5;
+    padding: 0 15px;
+}
+</style>

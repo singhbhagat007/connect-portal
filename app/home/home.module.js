@@ -3,9 +3,7 @@
     angular.module('AkosPCP.home', [
       'ui.router'
       ])
-      .constant('config',{
-      serverBaseUrl : 'https://akosmd.com:3001'
-      })
+
     .config(routeConfig);
     routeConfig.$inject = ['$stateProvider'];
     

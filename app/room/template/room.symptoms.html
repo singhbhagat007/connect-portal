@@ -18,8 +18,8 @@
     			<div class="form-group custom-form-group">
     				<input type="text" name="" class="form-control" ng-model="otherSymptom" placeholder="Other">
     				<button class="btn btn-primary" ng-click="">Add</button>
-    			</div>
-
+					</div>
+					
 			</div>
 		</div>
 	</div>
@@ -27,9 +27,37 @@
 
 <div class="row fixed-button-bottom">
 	<div class="col-md-12 text-center">
-		<button class="cc_button btn-primary"  ui-sref="room.medicalHistory">Previous</button>
-		<button class="cc_button btn-primary" ng-click="userCheckIn(docIdFromAlias)">Check In</button>
-		<!--userDetail.$invalid || userDetail.$pristine || userDetail.$dirty || !userDetail.$touch"-->
+		<button class="cc_button btn-primary"  ui-sref="room.medicalHistory">Previous-{{nextOrCheckoutAction}}</button>
+		<button class="cc_button btn-primary"   ng-click="userCheckIn(docIdFromAlias,docGroupIdFromAlias)" ng-show="currentUrlAlias!='cityhealth'">Next<!-- {{nextOrCheckoutAction}} --></button>
+
+ 	<button class="cc_button btn-primary"   ui-sref="insurancedetails" ng-show="currentUrlAlias=='cityhealth'">Next<!-- {{nextOrCheckoutAction}} --></button>	<!--userDetail.$invalid || userDetail.$pristine || userDetail.$dirty || !userDetail.$touch"-->
 		<button class="cc_button cc_btn-active" ui-sref="room">Cancel</button>	 
 	</div>
 </div>
+
+
+<div class="modal fade sendpatient-email-pop-class" id="bootstrapModalNetworkCheck" role="dialog">
+<div class="modal-dialog">
+
+  <!-- Modal content-->
+  <div class="modal-content">
+    <div class="modal-header bootstrap-modal-header">
+      <h4 class="modal-title text-center" style="color:#fff;">Network Check</h4>
+    </div>
+    <div class="modal-body bootstrap-modal-body">
+      <p>Sorry, No Video Device Found.</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default" data-dismiss="modal" style="color:#fff;">Ok</button>
+    </div>
+  </div>
+  
+</div>
+</div>
+
+
+<style>
+   .OT_root{
+       display:none !important;
+   }
+</style>

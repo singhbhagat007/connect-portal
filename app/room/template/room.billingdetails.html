@@ -1,0 +1,130 @@
+<!-- <loading></loading>
+ 
+<div class="row" ng-show="inactiveAlias == 1">
+    <div class="col-md-12 text-center">
+        <div class="alert alert-info">
+            <p>
+                Sorry, but the requested room no longer exists. Please check your URL. It may have been renamed. Please contact your provider for the correct videoconferencing Room URL.
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="row" >
+        
+    </div>
+    <div class=""> 
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <form role="form" ng-submit="savePaymentDetails()">
+              <div class="panel panel-info">
+                <div class="panel-heading">Add Credit Card Account</div>
+                  <div class="panel-body">
+                  <div class="col-md-6">
+                      <label for="friendlyName">Friendly Name:</label>
+                      <input type="text" class="form-control" ng-model="paymentData.friendlyName" id="friendlyName" name="" required="">
+                      <label for="friendlyName">Name on Card:</label>
+                      <input type="text" class="form-control" ng-model="friendlyName" id="paymentData.nameOnCard" name="" required="">
+                      <label for="friendlyName">Expiration Date:</label>
+                          <div class="input-group" style="display: block;">
+                          <select type="text" class="form-control" ng-model="paymentData.expiryMonth" style="width: 50%;" required="">
+                              <option>01</option>
+                              <option>02</option>
+                              <option>03</option>
+                              <option>04</option>
+                              <option>05</option>
+                              <option>06</option>
+                              <option>07</option>
+                              <option>08</option>
+                              <option>09</option>
+                              <option>10</option>
+                              <option>11</option>
+                              <option>12</option>
+                          </select>
+                          <select type="text" class="form-control" ng-model="paymentData.expiryYear" style="width: 50%;" required="">
+                              <option>2017</option>
+                              <option>2018</option>
+                              <option>2019</option>
+                              <option>2020</option>
+                              <option>2021</option>
+                          </select>
+                          </div>
+                      <label for="friendlyName">Zip:</label>
+                      <input type="text" class="form-control" ng-model="paymentData.zip" id="friendlyName" name="" required="">
+                  </div>
+                  <div class="col-md-6">
+                      <label for="name">Card Type:</label><span><img src="https://akosmd.com/test/billing/image/payment.png"></span>
+                      <select  class="form-control" name="CreditCard" ng-model="paymentData.cardType" required>
+                     <option>Visa</option>
+                     <option>MasterCard</option>
+                     <option>Discover</option>
+                     <option>American Express</option>      
+                    </select>
+                      
+                      <label for="name">Card Number:</label>
+                      <input type="text" class="form-control" name="" ng-model="paymentData.cardNumber" required="">
+                      <label for="name">CVV:</label>
+                      <input type="text" class="form-control" name="" ng-model="paymentData.cvv" required="">
+                      
+                  </div>
+                </div>
+                <div class="panel-footer">
+                    <div class="insuranceNext">
+                        <button class="btn btn-primary btn-md">Cancel</button>
+                        <button class="btn btn-primary btn-md">Save</button>
+                    </div>
+                </div>
+              </div>
+            </form>
+        
+        </div>
+        <div class="col-md-2"></div>
+</div>
+<style type="text/css">
+  ul {  list-style-type: none;    background: aliceblue;
+    padding: 2px;
+    padding-left: 6px;    position: absolute;
+    width: 91%; }
+</style>
+
+
+ -->
+ <md-content class="md-padding">
+
+    <md-whiteframe class="" layout="column" layout-align="center center" ng-class="{error: isError, success: isPaid}">
+ <div class="col-md-3"></div>
+      <span><p ng-bind="message"></p></span>
+<div class="col-md-6">
+      <div class="dropin-container" ng-show="showDropinContainer">
+
+        <form name="payment" ng-submit="getToken()">
+          <md-input-container>
+            <label>Amount $ (XX.XX)</label>
+            <input type="text" id="amountToPay" ng-model="amount"/>
+          </md-input-container>
+
+          <!-- Add Dropin here -->
+          <div id="checkout"></div>
+
+          <md-button class="md-raised md-primary" type="submit">Pay Now</md-button>
+        </form>
+      </div>
+      </div>
+<div class="col-md-3"></div>
+    </md-whiteframe>
+
+  </md-content>
+  <style type="text/css">
+  	md-content {   height: 100%; }
+md-item-content { cursor: pointer; }
+md-content { height: 100%; }
+md-whiteframe { padding: 5px 20px; }
+.dropin-container { width: 100%; }
+form { width: 100%; padding: 0 10px 35px 10px; }
+.md-button { margin: 30px 0 0 0; width: 100%; padding: 15px; }
+md-input-container { width: 100%; }
+md-progress-linear { padding: 10px; }
+.error { background: #e03b3b; color: #fff; }
+.success { background: #2db441; color: #fff; }
+#amountToPay { pointer-events: none; }
+  </style>

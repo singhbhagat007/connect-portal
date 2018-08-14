@@ -1,0 +1,133 @@
+<loading></loading>
+ <div class="row margin-left-col-5 doc_dash_header">
+    <div class="col-md-5">
+        <div class="panel panel-info">
+            <div class="panel-heading">Welcome, {{docData.name}}</div>
+            <div class="panel-body">
+                <p>To start a video consult, simply share your personal meeting url with the patient:</p>
+                <div ng-hide="isToggled == 1">
+                    <div class="input-group header-input-group">
+                        <input type="text" id="foo" value="{{clientURL}}/#!/room/{{docData.room}}" onkeypress="return false;" 
+                            class="form-control">
+                        <button class="btn btn-primary" ngclipboard data-clipboard-target="#foo" onclick="openToast()">
+                            <i class="fa fa-files-o"></i> COPY
+                        </button>
+                        <button class="btn btn-primary" ng-click="sendMeetingUrlPatient()">
+                            <i class="fa fa-envelope-o"></i> EMAIL
+                        </button>
+                        <button class="btn btn-primary" ng-click="SMSMeetingUrlPatient()">
+                            <i class="fa fa-comment-o"></i> SMS
+                        </button>
+                    </div>        
+                </div>        
+
+                <div class="" ng-show="isToggled == 1">
+                    <div class="input-group">
+                        <span class="input-group-addon">{{clientURL}}/#!/room/</span>
+                        <input type="text" class="form-control" ng-model="docData.room">
+                        <!--<span class="input-group-addon">.com</span>-->
+                    </div>    
+                </div>
+                <div class="" ng-hide="isToggled == 1">
+                    <!-- <button class="btn btn-primary custom-btn-1" ng-click="editDocRoomAlias()">Change Meeting Link</button> -->
+                </div>
+                <div class="" ng-show="isToggled == 1" style="margin-top:10px;">
+                    <button class="btn btn-primary" ng-click="saveDocRoomAlias(docData.room,docData.id)">Save</button>
+                    <button class="btn" ng-click="canceltDocRoomAlias()">Cancel</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-info doc_dash_waiting_room_div"> 
+            <div class="panel-heading">Waiting Room</div>
+            <div class="panel-body">
+                <p ng-if="!userWaitingList.length">
+                    Currently there are no patients in the waiting room.
+                </p>
+                <div class="doc_user_waiting_box" ng-repeat="x in userWaitingList track by $index" >
+                    <ul>
+                        <li>
+                            <img src="./assets/images/muser.png"><br>
+                            <span style="margin-left:-3px;">
+                                <span ng-if="x.gender">{{x.gender | genderShortFormFilter}}, </span> 
+                                <span> {{x.dateofbirth | findAgeFilter}} yrs </span>
+                            </span>
+                        </li>
+                        <li>
+                            {{x.first_name}} {{x.last_name}}<br>
+                            <span ng-if="x.city && x.state">
+                               <i class="fa fa-map-marker"></i> {{x.city}}, {{x.state}} 
+                            </span>
+                            <span>
+                                <i class="italic-class">
+                                    <i style="text-transform:uppercase;">C</i>hecked in {{x.checked_in | convertDateToSecondFilter}}  ago
+                                </i> 
+                            </span>
+                        </li>
+                        <li id="{{x.patient_id}}">
+                            <i  ng-click="docCall(x.patient_id)" class="fa fa-video-camera fa-2x"></i>
+                            <i ng-click="openChat(x)" class="fa fa-comments fa-2x"></i>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- <div  data-ng-include="'./app/common/template/chatBox.tpl.html'"></div> -->
+
+<div class="row chatTemplate" id="chatRoom" >
+</div>
+
+
+<script type="text/ng-template" id="sendEmailToPatientPopup.html">
+    <div class="modal-header bootstrap-modal-header">
+        <h3 class="modal-title" id="modal-title">Email Room Link</h3>
+    </div>
+    <div class="modal-body bootstrap-modal-body" id="modal-body">
+        <div class="input-group header-input-group">
+        <input type="email" class="form-control" ng-model="sendPatientLinkEmail" placeholder="Enter Email">
+        <button class="btn btn-primary" ng-click="sendMeetingUrlPatient(sendPatientLinkEmail)" ng-disabled="!sendPatientLinkEmail">
+            <i class="fa fa-envelope-o"></i> EMAIL
+        </button>
+        </div>        
+    </div>
+    <div class="modal-footer bootstrap-modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="cancel()">Cancel</button>
+    </div>
+</script>
+
+
+<script type="text/ng-template" id="sendSMSToPatientPopup.html">
+    <div class="modal-header bootstrap-modal-header">
+        <h3 class="modal-title" id="modal-title">SMS Room Link</h3>
+    </div>
+    <div class="modal-body bootstrap-modal-body" id="modal-body">
+        <div class="input-group header-input-group">
+        <input type="text" class="form-control" 
+        name="phone" mask="(999) 999-9999" clean="true" ng-model="sendPatientLinkSMS" 
+        onkeypress="return isNumberKey(event)" placeholder="Enter Phone No."
+        >
+        <button class="btn btn-primary" ng-click="sendSMSMeetingUrlPatient(sendPatientLinkSMS)" ng-disabled="!sendPatientLinkSMS">
+            <i class="fa fa-comment-o"></i> SMS
+        </button>
+    </div>        
+    </div>
+    <div class="modal-footer bootstrap-modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="cancel()">Cancel</button>
+    </div>
+</script>
+
+<style>
+   .OT_root{
+       display:none !important;
+   }
+</style>
+<script>
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip(); 
+        
+    })
+    
+</script>

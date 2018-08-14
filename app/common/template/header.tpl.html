@@ -6,12 +6,14 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>                        
       </button>
-      <a class="navbar-brand logo-dynamic-anchor" href="#" ng-if="isLoggedIn || isPatient">
+      <a class="navbar-brand logo-dynamic-anchor" href="#"><!--ng-if="isLoggedIn || isPatient || (title == 'AppLink')"-->
         <figure class="login-page-logo">
-          <img src="https://billing.akosmd.com/image/akos-logo-footer.png">
+          <img src="./assets/images/logo_white.png">
         </figure> 
       </a>
-      <a  ng-if="isLoggedIn" ui-sref="doctor" class="custom-navbar-link">Dashboard</a>
+      <a  ng-if="isLoggedIn"  ui-sref="doctor"  class="custom-navbar-link" id="header-navbar-dash">Dashboard</a>
+      <a  ng-if="isLoggedIn"  ui-sref="callLog" class="custom-navbar-link" id="header-navbar-calllog">Call Logs</a>
+     <a href="javascript:void(0);" ng-if="isLoggedIn" ng-click="advinowConnect()" class="custom-navbar-link">Advinow</a>
     </div>
     <div class="collapse navbar-collapse" id="myNavbar">
       <!-- <ul class="nav navbar-nav">
@@ -28,7 +30,7 @@
         <li><a href="#">Page 3</a></li>
       </ul> -->
       <ul class="nav navbar-nav navbar-right" ng-if="isLoggedIn == true">
-      	<li><a href="javascript:void(0);">Welcome, Dr. {{docData.name}}  </a></li>
+      	<li><a href="javascript:void(0);">Welcome, {{docData.name}}  </a></li>
         <li><a href="javascript:void(0);" ng-click="logoutDoctor()"><span class="fa fa-power-off"></span> Logout</a></li>
       </ul>
     </div>

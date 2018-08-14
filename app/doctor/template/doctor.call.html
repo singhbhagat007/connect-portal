@@ -2,15 +2,142 @@
 <div class="row doc-call">
     <div class="col-md-6">
         <div id="videos">
-            <div id="subscriber"></div>
-            <div id="publisher"></div>
-            <span id="" ng-click="disconnectSession()">
-              <i class="fa fa-phone"></i>
-        </span>
+            <!-- <div id="subscriber"></div>
+            <div id="publisher"></div> -->
+            <div id="layout"></div>
+            <ul class="doc-call-options" id="extraCallOptions">
+                <li ng-click="disconnectSession()">
+                    <span data-toggle="tooltip" title="End call">
+                        <i class="fa fa-phone"></i>        
+                    </span>    
+                </li>
+                <li ng-click="disableDocCallVideo()" id="addPsuedoContent">
+                    <span data-toggle="tooltip" title="Switch off your Camera / Switch On your Camera">
+                        <i class="fa fa-video-camera" ></i>
+                    </span>    
+                </li>
+                <li ng-click="disableDocCallAudio()" id="addPsuedoContent1">
+                    <span data-toggle="tooltip" title="Mute / Unmute
+">
+                        <i class="fa fa-microphone" ></i>
+                    </span>    
+                </li>
+                <li ng-click="inviteRoomURL()">
+                    <span data-toggle="tooltip" title="Invite user to video conference">
+                        <i class="fa fa-user-plus" ></i>
+                    </span>    
+                </li>
+                <li ng-click="stopRecording()">
+                <span data-toggle="tooltip" title="Start / Stop recording">
+                       <i class="fa fa-pause" id="recordingControl"></i>  
+                </span>
+                </li>
+                <li data-toggle="modal" data-target="#myModal">
+                <span data-toggle="tooltip" title="Add user by Phone Call">
+                       <i class="fa fa-phone"></i>  
+                </span>
+                </li>
+
+            </ul>
+            <!-- <span id="" ng-click="disconnectSession()">
+                <i class="fa fa-phone"></i>
+            </span>
+            <span id="" ng-click="" class="doc-call-video-toggle">  
+                <i class="fa fa-video-camera"></i>
+            </span> -->
         </div>
     </div>
-    <div class="col-md-6 doc-call-progress-note">
-        <h3>Progress note</h3>
+   <!-- ab test modal for call dial -->
+   <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog" style="width: 30%;top:15%;">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <span class="close-phone-dialer" data-dismiss="modal"><i class="fa fa-times" aria-hidden="true"></i></span>
+          <h4 class="modal-title">Add user by Phone Call</h4>
+        </div>
+        <div class="modal-body">
+          <p><input type="text" name="phoneNumber" ng-model="phoneNumber" id="numberToDial" class="form-control" name="" placeholder="Enter phone number"></p>
+        </div>
+        <div class="modal-footer">
+        <button type="button" class="btn btn-primary" ng-click="makeCall()" data-dismiss="modal" ng-disabled="phoneNumber.length<10 || phoneNumber==undefined" style="color: white;">Call</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+   <!-- ============================= -->
+   
+
+    <div class="col-md-6" ng-if="isWCStaff == true">
+        <div class="col-md-12 doc-call-medical-data">
+            <div class="wc-nurse-livecall">
+                <p>
+                    <span>Name: {{userCallData.first_name}} {{userCallData.last_name}}</span>,
+                    <span>Age: {{userCallData.dateofbirth | findAgeFilter}} yrs</span>,
+                    <span>Gender: {{userCallData.gender}}</span>,
+                    <span>State: {{userCallData.state}}</span>
+                </p>
+            </div>
+            <uib-accordion close-others="oneAtATime">
+                <div uib-accordion-group   class="panel-default doc-call-medication-history-class" heading="Add Notes">
+                    <textarea class="form-control" rows="5" ng-model="progressArray.nurseNotes"></textarea>
+                    <button class="btn btn-primary" style="margin-top:10px;" 
+                    ng-click="saveCallRecord(progressArray,'','',userCallData,0)">
+                        Save
+                    </button>    
+                </div>
+            </uib-accordion>
+        </div>    
+    </div>
+
+    <div class="col-md-6" ng-if="isWCStaff == false">
+        <div class="col-md-12 doc-call-medical-data">
+            <uib-accordion close-others="oneAtATime">
+                <div uib-accordion-group   class="panel-default doc-call-medication-history-class" heading="Demographic Details">
+                    <p>Name: {{userCallData.first_name}} {{userCallData.last_name}}</p> 
+                    <p>Age: {{userCallData.dateofbirth | findAgeFilter}} yrs</p> 
+                    <p>Gender: {{userCallData.gender}}</p> 
+                    <p>State: {{userCallData.state}}</p> 
+                </div>
+            </uib-accordion>
+            <uib-accordion close-others="oneAtATime">
+                <div uib-accordion-group   class="panel-default doc-call-medication-history-class" heading="Medical History">
+                    <p><strong>Medication:</strong>
+                        <span ng-repeat="x in userCallData.pcp_medication track by $index">
+                            {{x}} 
+                            <span ng-if="!$last">,</span> 
+                        </span>
+                    </p> 
+                    <p><strong>Allergies:</strong>
+                        <span ng-repeat="x in userCallData.pcp_allergy track by $index">
+                            {{x}} 
+                            <span ng-if="!$last">,</span> 
+                        </span>
+                    </p> 
+                    <p><strong>Medical Condition:</strong>
+                        <span ng-repeat="x in userCallData.pcp_medical_condition track by $index">
+                            {{x}} 
+                            <span ng-if="!$last">,</span> 
+                        </span>
+                    </p> 
+                </div>
+            </uib-accordion>
+            <uib-accordion close-others="oneAtATime">
+                <div uib-accordion-group   class="panel-default doc-call-medication-history-class" heading="Symptoms">
+                    <p><strong>Symptoms:</strong>
+                        <span ng-repeat="x in userCallData.pcp_symptom track by $index">
+                            {{x}} 
+                            <span ng-if="!$last">,</span> 
+                        </span>
+                    </p> 
+                </div>
+            </uib-accordion>
+        </div>
+
+        <div class="col-md-12 doc-call-progress-note">
+            <h3>Progress note</h3>
         <a href="javascript:void(0);" ng-click="openProgressModal(1,progressArray.chiefComplaints)">
             <u>Chief Complaint</u>
         </a>
@@ -140,7 +267,7 @@
             </ul>
         </div>
 
-        <div class="row">
+        <div class="row" ng-if="addeddiagnosisArray.length > 0">
             <div class="col-md-12">
                 <table class="table table-responsive table-striped">
                     <thead>
@@ -213,9 +340,11 @@
 
         <div class="row">
             <div class="col-md-12 text-center lock-doc-progress-btn">
-                <button class="btn btn-primary" ng-click="lockEncounter()">Lock the Encounter</button>
-                <button class="btn btn-primary" ng-click="downloadPDF(progressArray,addeddiagnosisArray,CPTArray)">Download PDF</button>
+                <button class="btn btn-primary" ng-click="saveCallRecord(progressArray,addeddiagnosisArray,CPTArray,userCallData,0)" id="lockBTN0">Save</button>
+                <button class="btn btn-primary" ng-click="lockEncounter(progressArray,addeddiagnosisArray,CPTArray,userCallData,1)" id="lockBTN1">Lock the Encounter</button>
+                <!-- <button class="btn btn-primary" ng-click="downloadPDF(progressArray,addeddiagnosisArray,CPTArray,userCallData)" id="lockBTN2">Download PDF</button> -->
             </div>
+        </div>
         </div>
 
 
@@ -233,7 +362,7 @@
         </p>
     </div>
     <div class="modal-footer bootstrap-modal-footer">
-        <button class="btn btn-primary" type="button" ng-click="cancel()">Lock</button>
+        <button class="btn btn-primary" type="button" ng-click="lockPpoupEncounter()">Lock</button>
         <button class="btn btn-primary" type="button" ng-click="cancel()">Cancel</button>
     </div>
 </script>
@@ -262,8 +391,8 @@
         <h3 class="modal-title" id="modal-title">Select CPT Billing</h3>
     </div>
     <div class="modal-body bootstrap-modal-body" id="modal-body">
-        <p ng-repeat="x in cptBilling" class="justified-text">
-          <input type="checkbox" ng-model="cptCode" ng-change="selectedCPTCode(cptCode,x.code)"> {{x.description}}
+        <p ng-repeat="x in cptBilling track by $index" class="justified-text">
+          <input type="checkbox" ng-model="cptCode" ng-change="selectedCPTCode(cptCode,x.code)"> {{x.code}} - {{x.description}}
 
         </p>
     </div>
@@ -282,7 +411,7 @@
         
     </div>
     <div class="modal-footer bootstrap-modal-footer">
-        <button class="btn btn-primary" type="button" ng-click="callDisconnect()">Ok</button>
+        <button class="btn btn-primary" type="button" ng-click="callDisconnect(2)">Ok</button>
     </div>
 </script>
 
@@ -295,8 +424,8 @@
         
     </div>
     <div class="modal-footer bootstrap-modal-footer">
-        <button class="btn btn-primary" type="button" ng-click="callDisconnect()">Yes</button>
-        <button class="btn btn-primary" type="button" ng-click="cancel()">Cancel</button>
+        <button class="btn btn-primary" type="button" ng-click="callDisconnect(1)">Yes</button>
+        <button class="btn btn-primary" type="button" ng-click="cancel()">No</button>
     </div>
 </script>
 
@@ -313,11 +442,204 @@
     </div>
 </script>
 
+<script type="text/ng-template" id="inviteThirdPersonCallDoc.html">
+    <div class="modal-header bootstrap-modal-header invitePopBG invitePopupHeader">
+        <span ng-click="cancel()">&times;</span>
+        <h3 class="modal-title invitePopupHeading" id="modal-title ">Invite Participants</h3>
+    </div>
+    <div class="modal-body bootstrap-modal-body padding-left-right-0" id="modal-body">
+        <div class="invitePopupBody">
+            <div class="input-group header-input-group">
+                <input type="text" id="foo" value="{{meetingRoomURLResolve}}" onkeypress="return false;" 
+                    class="form-control">
+                <button class="btn btn-primary inviteCopyBtn" ngclipboard data-clipboard-target="#foo" onclick="openToast()">
+                    <i class="fa fa-files-o"></i> COPY
+                </button>
+            </div>            
+        </div>
+        <div class="inviteModelBodyChild">
 
+        	<ul class="nav nav-pills custom-invite-pills">
+			    <li class="active"><a  data-toggle="pill" data-target="#email">EMAIL</a></li>
+			    <li><a data-toggle="pill" data-target="#sms">SMS</a></li>
+			</ul>
+			<div class="tab-content text-center">
+			    <div id="email" class="tab-pane fade in active">
+			     	<p>Note:</p>
+	            	<p>Mail this link to your Participants</p>
+		            <div class="input-group header-input-group">
+		                <input type="email" class="form-control" ng-model="inviteFriendEmail" placeholder="Enter your participant's email id...">
+		                <button class="btn btn-primary inviteCopyBtn" ng-disabled="!inviteFriendEmail" 
+		                        ng-click="inviteOtherFriendMeeting(inviteFriendEmail,meetingRoomURLResolve)">
+		                    <i class="fa fa-envelope-o"></i> EMAIL
+		                </button>
+		            </div>
+			    </div>
+			    <div id="sms" class="tab-pane fade">
+			      <p>Note:</p>
+	            	<p>Text this link to your Participants</p>
+		            <div class="input-group header-input-group">
+		            	<input type="text" class="form-control" 
+			    				name="phone" mask="(999) 999-9999" clean="true" ng-model="inviteFriendPhone" 
+			    				onkeypress="return isNumberKey(event)" placeholder="Enter your participant's number..."
+			    				>
+		                <button class="btn btn-primary inviteCopyBtn" ng-disabled="!inviteFriendPhone" 
+		                        ng-click="inviteOtherFriendMeetingSMS(inviteFriendPhone,meetingRoomURLResolve)">
+		                    <i class="fa fa-comment-o"></i> SEND
+		                </button>
+		            </div>
+			    </div>
+			  </div>
+			</div>
+	</div>
+
+    <!-- <div class="modal-footer bootstrap-modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="cancel()">Copy</button>
+        <button class="btn btn-primary" type="button" ng-click="cancel()">Cancel</button>
+    </div> -->
+</script>
+
+<!-- ab addNewCallPop (030718) -->
+<script type="text/ng-template" id="addNewCallPop.html">
+    <div class="modal-header bootstrap-modal-header">
+        <h3 class="modal-title" id="modal-title">Add New Call</h3>
+    </div>
+    <div class="modal-body bootstrap-modal-body" id="modal-body">
+        <input type="text" ng-model="numToDial" class="form-control" name="">
+    </div>
+    <div class="modal-footer bootstrap-modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="makeCall(numToDial)">Call</button>
+        <button class="btn btn-primary" type="button" ng-click="cancel()">close</button>
+    </div>
+</script>
 
 
 
 <style type="text/css">
+ul.doc-call-options{
+    position: absolute;
+    bottom: 15px;
+    left:38%;
+}
+
+#layout {
+                /*position: absolute;*/
+                top: 120px;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                /*background-color: #fff;*/
+                
+            }
+
+            #layout > div {
+                background-color: #000;
+                display: inline-block;
+                border: 1px solid #fff;
+
+                transition-property: all;
+                transition-duration: 0.5s;
+            }
+
+.OTSubscriberClass{
+    position:absolute;
+    transition:all 1s ease;
+}
+
+.inviteModelBodyChild ul.custom-invite-pills{
+	text-align: center;
+	margin-left: 30%;
+}
+.inviteModelBodyChild ul.custom-invite-pills li{
+	width: 120px;
+	background: #dcdcdc;
+	cursor:pointer;
+}
+.inviteModelBodyChild ul.custom-invite-pills li a{
+	padding: 7px 15px;
+}
+
+.inviteModelBodyChild{
+    padding:20px;
+}
+.invitePopBG{
+    background:transparent !important;  
+    border-bottom:none.;
+}
+.invitePopBG h3{
+    color: #333 !important;
+}
+
+
+.inviteModelBodyChild p{
+    padding:0px !important;
+}
+.inviteModelBodyChild p:first-child{
+    font-weight:600; 
+}
+.inviteModelBodyChild .header-input-group{
+    display: inline-flex;
+    width: 60%;
+    margin-top:7px;
+
+}
+
+.padding-left-right-0{
+    padding-left:0px;
+    padding-right:0px;
+}
+
+.invitePopupHeader span{
+    float:right;
+    font-size:30px;
+    color:#333;
+    margin-right:5px;  
+}
+
+.invitePopupHeader h3.invitePopupHeading{
+    font-size: 23px !important;
+    padding: 12px;
+}
+
+
+
+.invitePopupBody{
+    padding-left:0px;
+    padding-right:0px;
+}
+.invitePopupBody .header-input-group{
+    padding: 20px;
+    background: #FAFBFC;
+    width: 100%;
+    border-top: 1px solid #dcdcdc;
+    border-bottom: 1px solid #dcdcdc;
+}
+
+.invitePopupBody .header-input-group input{
+    box-shadow: none;
+    margin-bottom: 15px;
+    border: none;
+    background: transparent;
+    text-align: center;
+    color: #333;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.invitePopupBody button.inviteCopyBtn{
+    margin: 0 auto;
+    display: block;
+}
+
+
+
+
+.invite-people-pop-class{
+    float: none;
+    margin-top:4%;
+
+}
+
 table tbody tr.diagnosisClass span{
   position: relative;
   z-index: 10;
@@ -361,7 +683,7 @@ table tbody tr.diagnosisClass span{
         text-align: center;
     }
     .bootstrap-modal-header {
-        background: #337ab7;
+        background: #25406B;
         padding: 8px;
     }
     .bootstrap-modal-header h3.modal-title {
@@ -391,13 +713,13 @@ table tbody tr.diagnosisClass span{
         position: absolute;
         width: 360px;
         height: 240px;
-        bottom: 10px;
-        left: 10px;
+        bottom: 0px;
+        left: 3px;
         z-index: 100;
-        border: 3px solid white;
+        border: 1px solid white;
         border-radius: 3px;
     }
-    .doc-call span {
+/*    .doc-call span {
         z-index: 999;
         position: absolute;
         bottom: 0;
@@ -417,5 +739,11 @@ table tbody tr.diagnosisClass span{
         text-align: center;
         font-size: 17px;
         cursor: pointer;
-    }
+    }*/
 </style>
+<!-- <script>
+    $(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();  
+    $('input[name="phoneNumber"]').mask('(999) 999-9999'); 
+});
+</script> -->
