@@ -24,7 +24,7 @@
     //   $httpProvider.interceptors.push('preventTemplateCache');
     // })
     .factory('preventTemplateCache',function(){
-       var threeDigitRandom = Math.floor(Math.random() * 999);//temp generating num
+      var threeDigitRandom = Math.floor(Math.random() * 999);
       return {
         'request': function(config) {
           if (config.url.indexOf('template') !== -1) {
@@ -148,7 +148,6 @@
       
       
     });
-
     // $rootScope.$on('$stateChangeStart',function(event,toState,toParams,fromState){
     //   $log.log('routechangesttart');
     //   $window.scrollTo(0, 0);
