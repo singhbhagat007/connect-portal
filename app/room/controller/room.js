@@ -207,7 +207,7 @@
             $scope.inactiveAlias = 0;
             $scope.joinNurseRoomForm = function(x){
                 
-
+                 
                 $scope.checkParam = {};
                 $scope.checkParam.phone = x.phone;
                 $scope.checkParam.first_name = x.first_name;
@@ -513,12 +513,14 @@
                         return false;
                     }
                 })
+                 
                 //$state.go('room.call',{id:$state.params.id});
             }
         
         //(07/21/2018)for dynamic
             $scope.dynamicverifyotpredirect = function () {
-                
+               // checkNetworkCallback(function (result) {
+               // if (result.acode == 1) {
                 if (JSON.parse(localStorage.getItem('connect_provider_settings')).type == "WC_NURSE") {
                     $log.log(1234);
                     
@@ -705,6 +707,63 @@
                         $state.go('room.user', { 'id': roomServices.getDocAlias() });
                     }
                 }
+                // }else if (result.acode == 0 || result.acode == 2) {
+                        // debugger
+                        // var modalInstance = $uibModal.open({
+                            // template: '<div class="modal-header bootstrap-modal-header">\
+                                          // <h3 ng-if="'+ result.acode + '==2" class= "modal-title" id="modal-title"> Network Check </h3>\
+                                            // <h3 ng-if="'+ result.acode + '==0" class="modal-title" id="modal-title">Weak Signal </h3>\
+                                            // </div>\
+                                            // <div class="modal-body bootstrap-modal-body" id="modal-body">\
+                                            // <p ng-if="'+ result.acode + '==0">Unfortunately, your current signal strength will neither support a video nor an audio call.  Please try again from a different area with stronger signal.</p>\
+                                            // <p ng-if="'+ result.acode + '==2">Sorry, No Video Device Found.</p>\
+                                            // </div>\
+                                            // <div class="modal-footer bootstrap-modal-footer">\
+                                                // <button class="btn btn-primary" type="button" ng-click="cancel()">OK </button>\
+                                            // </div>\
+                                            // ',
+                            // controller: ModalInstanceCtrl,
+                            // scope: $scope,
+                            // size: 'sm',
+                            // windowClass: 'sendpatient-email-pop-class',
+                            // resolve: {
+                                // modalProgressValue: function () {
+                                    // return "";
+                                // },
+                                // CPTBilling: function () {
+                                    // return "";
+                                // },
+                                // sessionResolve: function () {
+                                    // return '';
+                                // },
+                                // meetingRoomURLResolve: function () {
+                                    // return "";
+                                // },
+                                // emailMeetingLinkUrlResolve: function () {
+                                    // return '';
+                                // },
+                                // lockEncounterData: function () {
+                                    // return "";
+                                // },
+                                // disconnectData: function () {
+                                    // return "";
+                                // }
+                            // }
+
+                        // });
+                        // modalInstance.result.then(function (selectedItem) {
+                            // $scope.selected = selectedItem;
+                        // }, function () {
+                            // $log.info('Modal dismissed at: ' + new Date());
+                        // });
+
+                    // }
+                    // else {
+                        // return false;
+                    // }
+                // });
+
+
             }
             
 
@@ -724,19 +783,19 @@
                     if(result.data.status_code == 200){
                         $scope.loading = false;
                         $scope.dataParam = {};    
-		                $scope.dataParam.alias = $state.params.id;
-		                $scope.userData = {};
-		                $scope.userData.id = $state.params.patientId;
-		                $scope.userData.first_name = $state.params.first_name;
-		                $scope.userData.last_name = $state.params.last_name;
-		                localStorage.setItem('userMeetingDetails',JSON.stringify($scope.userData));
-		                roomServices.getDocFromAlias($scope.dataParam)
-		                .then(function(result){
-		                    if(result.data.status_code == 200){
-		                        if(result.data.result.length == 0){
-		                            $scope.loading= false;
-		                            $scope.inactiveAlias = 1;
-		                        }else{
+                        $scope.dataParam.alias = $state.params.id;
+                        $scope.userData = {};
+                        $scope.userData.id = $state.params.patientId;
+                        $scope.userData.first_name = $state.params.first_name;
+                        $scope.userData.last_name = $state.params.last_name;
+                        localStorage.setItem('userMeetingDetails',JSON.stringify($scope.userData));
+                        roomServices.getDocFromAlias($scope.dataParam)
+                        .then(function(result){
+                            if(result.data.status_code == 200){
+                                if(result.data.result.length == 0){
+                                    $scope.loading= false;
+                                    $scope.inactiveAlias = 1;
+                                }else{
                                     /*added on 020818*/
                                 try {
                                 if (result.data.result[0].group_id) {
@@ -748,41 +807,41 @@
 
                                 } catch (err) { 
                                 }
-		                            $scope.docNameFromAlias = result.data.result[0].name;
-		                            $scope.docIdFromAlias = result.data.result[0].id;
-		                            $scope.docGroupIdFromAlias = result.data.result[0].group_id;
-		                            $scope.param = {};
-		                            $scope.param.docId = $scope.docIdFromAlias;
-		                            $scope.param.userId = $state.params.patientId;
-		                            //$scope.param.group_id = $scope.docGroupIdFromAlias;
-		                            $scope.param.groupId =  $scope.docGroupIdFromAlias;
-		                            $scope.param.symptom = "";
-		                            $scope.param.allergy = "";
-		                            $scope.param.medication = "";
-		                            $scope.param.medical_condition = "";
+                                    $scope.docNameFromAlias = result.data.result[0].name;
+                                    $scope.docIdFromAlias = result.data.result[0].id;
+                                    $scope.docGroupIdFromAlias = result.data.result[0].group_id;
+                                    $scope.param = {};
+                                    $scope.param.docId = $scope.docIdFromAlias;
+                                    $scope.param.userId = $state.params.patientId;
+                                    //$scope.param.group_id = $scope.docGroupIdFromAlias;
+                                    $scope.param.groupId =  $scope.docGroupIdFromAlias;
+                                    $scope.param.symptom = "";
+                                    $scope.param.allergy = "";
+                                    $scope.param.medication = "";
+                                    $scope.param.medical_condition = "";
                                     /*added on 270718*/
                                     $scope.param.date_of_injury = "";
                                    $scope.param.state_of_injury = "";
                                    $scope.param.employer_name = "";
                                     /*---------------*/
-		                            roomServices.addUserToWaiting($scope.param)
-		                            .then(function(result){
-		                                if(result.data.status_code == 200){ 
-		                                    socketService.emit('userjoin',{waitingId:$state.params.patientId},function(data){
-		                                        $log.log("user added");
-		                                        $log.log(data);
-		                                    });
-		                                    $scope.loading = false;
-		                                    $log.log(result);
-		                                    $state.go('room.call',{id:$state.params.id});
-		                                }else{
-		                                    $scope.loading = false;
-		                                    alert("error");
-		                                }
-		                            })   
-		                        }
-		                    }
-		                }) 
+                                    roomServices.addUserToWaiting($scope.param)
+                                    .then(function(result){
+                                        if(result.data.status_code == 200){ 
+                                            socketService.emit('userjoin',{waitingId:$state.params.patientId},function(data){
+                                                $log.log("user added");
+                                                $log.log(data);
+                                            });
+                                            $scope.loading = false;
+                                            $log.log(result);
+                                            $state.go('room.call',{id:$state.params.id});
+                                        }else{
+                                            $scope.loading = false;
+                                            alert("error");
+                                        }
+                                    })   
+                                }
+                            }
+                        }) 
                         return true;    
                     }else{
                         $scope.loading = false;
@@ -815,9 +874,12 @@
                 .then(function(result){
                     
                     if(result.data.status_code == 200){
-
                         $scope.loading = false;
+                       // checkNetworkCallback(function (result) {
+                       // if (result.acode == 1) {
+                        
                         if(roomServices.getDocAlias() != undefined){
+                            
 
                             if(JSON.parse(localStorage.getItem('connect_provider_settings')).type == "WC_NURSE"){
                                 $log.log(1234);
@@ -909,26 +971,26 @@
 
 
 
-								                       	//pop to show recording info
-								                    	//alert("hiiiiiiii");
+                                                        //pop to show recording info
+                                                        //alert("hiiiiiiii");
 
-								                    	var modalInstance = $uibModal.open({
-								                    		size:'sm',
-								                            template:'\
-								                                <div class="modal-header bootstrap-modal-header">\
-								                                <h3 class="modal-title" id="modal-title">Info </h3>\
-								                                </div>\
-								                                <div class="modal-body bootstrap-modal-body" id="modal-body">\
-								                                <p>'+ 'This call will be recorded for quality and training purposes.' +' </p>\
-								                                </div>\
-								                                <div class="modal-footer bootstrap-modal-footer">\
-								                                    <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>\
-								                                </div>\
-								                                ',
-								                            //templateUrl: "callDisconnectedDocModal.html",
-								                        controller: function ($scope, $uibModalInstance) {
-													        $scope.ok = function () {
-													          $uibModalInstance.close();
+                                                        var modalInstance = $uibModal.open({
+                                                            size:'sm',
+                                                            template:'\
+                                                                <div class="modal-header bootstrap-modal-header">\
+                                                                <h3 class="modal-title" id="modal-title">Info </h3>\
+                                                                </div>\
+                                                                <div class="modal-body bootstrap-modal-body" id="modal-body">\
+                                                                <p>'+ 'This call will be recorded for quality and training purposes.' +' </p>\
+                                                                </div>\
+                                                                <div class="modal-footer bootstrap-modal-footer">\
+                                                                    <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>\
+                                                                </div>\
+                                                                ',
+                                                            //templateUrl: "callDisconnectedDocModal.html",
+                                                        controller: function ($scope, $uibModalInstance) {
+                                                            $scope.ok = function () {
+                                                              $uibModalInstance.close();
                                                               //add this for connect url (07/23/2018)
 var ua = navigator.userAgent.toLowerCase();
                                                                 var isAndroid = ua.indexOf("android") > -1;
@@ -969,21 +1031,21 @@ var ua = navigator.userAgent.toLowerCase();
                                                                 }
                                                                 else                                              
                                                                     $state.go('room.call', { id: roomServices.getDocAlias() });
-													          /*$state.go('room.call',{id:roomServices.getDocAlias()});*/
-													        };
-													      
-													        $scope.cancel = function () {
-													          $uibModalInstance.dismiss('cancel');
-													        };
-													      }
-								                        });
-								                        modalInstance.result.then(function (selectedItem) {
-								                            $scope.selected = selectedItem;
-								                            }, function () {
-								                            $log.info('Modal dismissed at: ' + new Date());
-								                        });
+                                                              /*$state.go('room.call',{id:roomServices.getDocAlias()});*/
+                                                            };
+                                                          
+                                                            $scope.cancel = function () {
+                                                              $uibModalInstance.dismiss('cancel');
+                                                            };
+                                                          }
+                                                        });
+                                                        modalInstance.result.then(function (selectedItem) {
+                                                            $scope.selected = selectedItem;
+                                                            }, function () {
+                                                            $log.info('Modal dismissed at: ' + new Date());
+                                                        });
 
-								                    	//end-pop to show recording info
+                                                        //end-pop to show recording info
 
 
                                                         //$state.go('room.call',{id:roomServices.getDocAlias()});
@@ -1008,6 +1070,61 @@ var ua = navigator.userAgent.toLowerCase();
                                 }
                             }
                         }
+                         // }else if (result.acode == 0 || result.acode == 2) {
+                        // debugger
+                        // var modalInstance = $uibModal.open({
+                            // template: '<div class="modal-header bootstrap-modal-header">\
+                                          // <h3 ng-if="'+ result.acode + '==2" class= "modal-title" id="modal-title"> Network Check </h3>\
+                                            // <h3 ng-if="'+ result.acode + '==0" class="modal-title" id="modal-title">Weak Signal </h3>\
+                                            // </div>\
+                                            // <div class="modal-body bootstrap-modal-body" id="modal-body">\
+                                            // <p ng-if="'+ result.acode + '==0">Unfortunately, your current signal strength will neither support a video nor an audio call.  Please try again from a different area with stronger signal.</p>\
+                                            // <p ng-if="'+ result.acode + '==2">Sorry, No Video Device Found.</p>\
+                                            // </div>\
+                                            // <div class="modal-footer bootstrap-modal-footer">\
+                                                // <button class="btn btn-primary" type="button" ng-click="cancel()">OK </button>\
+                                            // </div>\
+                                            // ',
+                            // controller: ModalInstanceCtrl,
+                            // scope: $scope,
+                            // size: 'sm',
+                            // windowClass: 'sendpatient-email-pop-class',
+                            // resolve: {
+                                // modalProgressValue: function () {
+                                    // return "";
+                                // },
+                                // CPTBilling: function () {
+                                    // return "";
+                                // },
+                                // sessionResolve: function () {
+                                    // return '';
+                                // },
+                                // meetingRoomURLResolve: function () {
+                                    // return "";
+                                // },
+                                // emailMeetingLinkUrlResolve: function () {
+                                    // return '';
+                                // },
+                                // lockEncounterData: function () {
+                                    // return "";
+                                // },
+                                // disconnectData: function () {
+                                    // return "";
+                                // }
+                            // }
+
+                        // });
+                        // modalInstance.result.then(function (selectedItem) {
+                            // $scope.selected = selectedItem;
+                        // }, function () {
+                            // $log.info('Modal dismissed at: ' + new Date());
+                        // });
+
+                    // }
+                    // else {
+                        // return false;
+                    // }
+                // });
                     }else{
                         $scope.loading = false;
                         var modalInstance = $uibModal.open({
@@ -1144,14 +1261,13 @@ var ua = navigator.userAgent.toLowerCase();
             $scope.inviteRoomForm = function(x){
                 $scope.xvalues = x;
                 $log.log($scope.xvalues);
-                //checkNetworkCallback(function(result){
-                    //console.log(result);
-                    //if(result.acode == 1){
-                        
-                        
-                        $log.log($scope.xvalues);
-                        //$scope.loading = true;
-                        $scope.thirdPartyPublisher = $scope.xvalues;
+                $log.log($scope.xvalues);
+                      $scope.thirdPartyPublisher = $scope.xvalues;    
+                    roomServices.checkConnectCallBycallId({
+                    phone: $scope.xvalues.mobile, call_id: $scope.call_id
+                      })
+                    .then(function (result) {
+                        if (result.data.status_code == 200) {
                         $rootScope.isCallScreenHidden = 0;
                         if($scope.xvalues.mobile){
                             roomServices.verifyThirdPartyDoc($scope.xvalues.mobile)
@@ -1376,23 +1492,45 @@ var ua = navigator.userAgent.toLowerCase();
                             }
                         });
                         
-                   // }
-                    /*else if(result.acode == 0){
-                        
-                        $rootScope.isCallScreenHidden = 1;
-                        $("#bootstrapModalNetworkCheckFail").modal();
-                        
-                        
-                    }else{
-                        
-                        $rootScope.isCallScreenHidden = 1;
-                        //return false;
-                    }
-                    
-                })*/
+                   
                 if(!x.mobile) $rootScope.isCallScreenHidden = 0;
+                }
+                else if (result.data.status_code == 404 || result.data.status_code == 402) {
+                            $rootScope.isCallScreenHidden = 0;
+                            var modalInstance = $uibModal.open({
+                                template: '\
+                                <div class="modal-header bootstrap-modal-header">\
+                                <h3 class="modal-title" id="modal-title">Message </h3>\
+                                </div>\
+                                <div class="modal-body bootstrap-modal-body" id="modal-body">\
+                                <p>'+ result.data.status_message +' </p>\
+                                </div>\
+                                <div class="modal-footer bootstrap-modal-footer">\
+                                    <button class="btn btn-primary" type="button" ng-click="cancelmodel()">OK</button>\
+                                </div>\
+                                ',
+                                controller: ModalInstanceCtrl,
+                                scope: $scope,
+                                size: 'sm',
+                                resolve: {
+                                    sessionResolve: function () {
+                                        return '';
+                                    }
+                                }
+                            });
+                            modalInstance.result.then(function (selectedItem) {
+                                $scope.selected = selectedItem;
+                               
+                            }, function () {
+                                $log.info('Modal dismissed at: ' + new Date());
+                            });
+
+                        } else {
+                            alert("error");
+                        }
+                        });
                 
-            }    
+            }        
         }
 
         if($state.current.name == 'room'){
@@ -1888,8 +2026,8 @@ var ua = navigator.userAgent.toLowerCase();
             $('#chatRoom').append(compiledeHTML);
             
             $scope.liveCallOpentokServiceCall  = function(x){
-            	
-            	$scope.param = {};
+                
+                $scope.param = {};
                 $scope.param.id = x;    
                 roomServices.getOpentokRoomKeys($scope.param)
                 .then(function(result){

@@ -1191,8 +1191,10 @@ div.wc-nurse-livecall p{
 .OT_Network_Class_div img {
     margin: 0 auto;
     position:absolute;
-    top:30%;
-    z-indeX:9999;
+    top:25%;
+    z-index:9999;
+    width: 60px;
+    margin-left: -40px;
 }
 
 .OT_Network_Class_div p{

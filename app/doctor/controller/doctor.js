@@ -3,8 +3,8 @@
     angular
         .module('AkosPCP.doctor')
         .controller('DoctorCtrl', DoctorCtrl);
-    DoctorCtrl.$inject = ['$scope','$http','$rootScope','$location','$window','$log','doctorServices','tokenValidatorService','$cookieStore','$state','$uibModal','moment','config','socketService','$filter','pdfChartingService','$compile','$interval','appConfig'];
-    function DoctorCtrl($scope,$http,$rootScope,$location,$window,$log,doctorServices,tokenValidatorService,$cookieStore,$state,$uibModal,moment,config,socketService,$filter,pdfChartingService,$compile,$interval,appConfig,sessionResolve) {
+    DoctorCtrl.$inject = ['$scope','$http','$rootScope','$location','$window','$log','doctorServices','tokenValidatorService','$cookieStore','$state','$uibModal','moment','config','socketService','$filter','pdfChartingService','$compile','$interval','appConfig','Upload'];
+    function DoctorCtrl($scope,$http,$rootScope,$location,$window,$log,doctorServices,tokenValidatorService,$cookieStore,$state,$uibModal,moment,config,socketService,$filter,pdfChartingService,$compile,$interval,appConfig,Upload,sessionResolve) {
 
         // $scope.testScope = "test";
         // $rootScope.$emit('event',$scope.testScope);
@@ -61,6 +61,7 @@
                     $scope.loading = false;
                     localStorage.setItem('doc_token',result.data.result.token);
                     localStorage.setItem('pcpDocData',JSON.stringify(result.data.result));
+                    var docid = result.data.result.id;
                     $rootScope.docData = JSON.parse(localStorage.getItem('pcpDocData'));//$cookieStore.get('pcpDocData')
                     tokenValidatorService.setDocAuthToken(result.data.result.token); 
                     if($rootScope.docData.group_id == 0){
@@ -87,7 +88,9 @@
                             }
                         });
                     }
-                    
+                    socketService.emit('doctorGoneOnline', { docId: docid }, function (data) {
+                        $log.log(data);
+                    });
                     //$location.path('/doctor'); 
                     $state.go('doctor');
                 }else{
@@ -101,6 +104,82 @@
                 
                 });
         }
+        $scope.file_changed = function (element) {
+           
+            $scope.$apply(function (scope) {
+                var photofile = element.files[0];
+               
+                $scope.upload(photofile);
+
+               
+            })
+        }
+        $scope.upload = function (file) {
+            $scope.loading = true;
+            Upload.upload({
+                url: config.serverBaseUrl + '/api/pcp/uploadfileonbucket',// + 'api/photo',
+                data: { file: file }
+
+            }).then(function (resp) {
+				  $scope.loading = false;
+               
+                    var modalInstance = $uibModal.open({
+                        template: '<div class="modal-header bootstrap-modal-header">\
+                                                    <h3 class="modal-title" id="modal-title">Upload Location </h3>\
+                                                    </div>\
+                                                    <div class="modal-body bootstrap-modal-body" id="modal-body">\
+                                                    <p>'+ resp.data.status_message+'</p>\
+                                                    </div>\
+                                                    <div class="modal-footer bootstrap-modal-footer">\
+                                                        <button class="btn btn-primary" type="button" ng-click="cancel()">OK</button>\
+                                                    </div>\
+                                                    ',
+                        controller: ModalInstanceCtrl,
+                        scope: $scope,
+                        size: 'sm',
+                        windowClass: 'sendpatient-email-pop-class',
+                        resolve: {
+                            modalProgressValue: function () {
+                                return "";
+                            },
+                            CPTBilling: function () {
+                                return "";
+                            },
+                            sessionResolve: function () {
+                                return '';
+                            },
+                            meetingRoomURLResolve: function () {
+                                return "";
+                            },
+                            emailMeetingLinkUrlResolve: function () {
+                                return '';
+                            },
+                            lockEncounterData: function () {
+                                return "";
+                            },
+                            disconnectData: function () {
+                                return "";
+                            }
+                        }
+
+                    });
+                    modalInstance.result.then(function (selectedItem) {
+                        $scope.selected = selectedItem;
+                    }, function () {
+                        $log.info('Modal dismissed at: ' + new Date());
+                    });
+                
+            }, function (resp) { //catch error
+	            $scope.loading = false;
+               // console.log('Error status: ' + resp.error);
+                alert('Something went wrong. Please try again' );
+            }, function (evt) {
+               // console.log(evt);
+                // var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+                // console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
+                // vm.progress = 'progress: ' + progressPercentage + '% '; // capture upload progress
+            });
+        };
         $scope.getProviderSettingScope = function(x){
             doctorServices.getProviderSetting(x)
             .then(function(result){
@@ -132,69 +211,8 @@
             $('#contentBlock').append(compiledHTML);
             
         }
-        
-        
-        /* index controller start */
-        // if(JSON.parse(localStorage.getItem('connect_provider_settings')) != undefined && JSON.parse(localStorage.getItem('connect_provider_settings')).type == "WC_NURSE"){
-        //     $scope.onlineDoctorAvailable = 1;
-        //     var waitingname = 12;
-        //     var onlineDoctorId =   document.createElement('div');
-        //     alert(1);
-	       // onlineDoctorId.classList.add('onlineDoctorClass');
-	       // document.querySelector('#contentBlock').appendChild(onlineDoctorId);
-	       // $log.log(onlineDoctorId);
-	       // onlineDoctorId.innerHTML = "<button>this is funny </button>";
-	       // onlineDoctorId.onclick = function(){
-	       //     alert(1);
-	       // }
-        //     var compiledeHTML = $compile("<onlinedoctortemplate   name = \"'"+waitingname+"'\"  ></chattemplate>")($scope); //<div chattemplate></div>
-	        
-        // }else{
-        //     $scope.onlineDoctorAvailable = 0;
-        //}
-        
-        
-        
-        /* index controller end */
-        
-        /* doctor dashboard controller */
-        if(localStorage.getItem('doc_token') && $state.current.name == 'doctor'){
-            $rootScope.chatOn = 0;
-            $rootScope.title = "Dashboard"; 
-            $scope.docData = JSON.parse(localStorage.getItem('pcpDocData'));
-            $scope.getClass = function (data) {
-                $("li#" + data + " i").css('pointer-events', 'none');
-                $("li#" + data).css('cursor', 'not-allowed');
-                $("li#" + data).attr("title", "Already on another Call");
-            }
-            // setInterval(function(){
-            //     $scope.getWaitingUserList();
-            // }, 30000);
-            //msg x
-            //userid y
-            //docid z
-            $scope.chatRoom = [];
-            socketService.on('chatSend', function(data){
-                console.log(data);
-                if($('chattemplate').attr('id') != data.senderid){
-                    $scope.param ={};
-                    var firstName = data.sendername.split(' ').slice(0, -1).join(' ');
-                    var lastName = data.sendername.split(' ').slice(-1).join(' ');
-                    $scope.param.patient_id = data.senderid;
-                    $scope.param.first_name = firstName;
-                    $scope.param.last_name = lastName;
-                    $scope.param.msg = data.text;
-                    $scope.param.pcp_doctor_id = data.id;
-                    $scope.openChat($scope.param); 
-                }else{
-                    
-                }    
-            });
-            $scope.isDeviceNotAvailable = 1;
-            
-            
-
-            var checkNetworkCallback = function(role,callbackNetworkCheck){
+        /*added on 230818*/
+        var checkNetworkCallback = function(role,callbackNetworkCheck){
 
                 doctorServices.sessiontokenapikey()
                 .then(function(result){
@@ -310,6 +328,171 @@
                 })
                 
             }
+
+            $scope.checkNetwork = function () {
+            debugger
+            checkNetworkCallback('pcpDoctor', function (result) {
+                debugger
+                if (result.acode == 1) {
+                    var modalInstance = $uibModal.open({
+                        template: '<div class="modal-header bootstrap-modal-header">\
+                                            <h3 class="modal-title" id="modal-title">Pre-CallTest</h3>\
+                                            </div>\
+                                            <div class="modal-body bootstrap-modal-body" id="modal-body">\
+                                            <p>Great! You have everything in place and you are all set to go.</p>\
+                                            </div>\
+                                            <div class="modal-footer bootstrap-modal-footer">\
+                                                <button class="btn btn-primary" type="button" ng-click="cancel()">OK</button>\
+                                            </div>\
+                                            ',
+                        controller: ModalInstanceCtrl,
+                        scope: $scope,
+                        size: 'sm',
+                        windowClass: 'sendpatient-email-pop-class',
+                        resolve: {
+                            modalProgressValue: function () {
+                                return "";
+                            },
+                            CPTBilling: function () {
+                                return "";
+                            },
+                            sessionResolve: function () {
+                                return '';
+                            },
+                            meetingRoomURLResolve: function () {
+                                return "";
+                            },
+                            emailMeetingLinkUrlResolve: function () {
+                                return '';
+                            },
+                            lockEncounterData: function () {
+                                return "";
+                            },
+                            disconnectData: function () {
+                                return "";
+                            }
+                        }
+
+                    });
+                    modalInstance.result.then(function (selectedItem) {
+                        $scope.selected = selectedItem;
+                    }, function () {
+                        $log.info('Modal dismissed at: ' + new Date());
+                    });
+                } else if (result.acode == 0) {
+                    var modalInstance = $uibModal.open({
+                        template: '<div class="modal-header bootstrap-modal-header">\
+                                            <h3 class="modal-title" id="modal-title">Weak Signal </h3>\
+                                            </div>\
+                                            <div class="modal-body bootstrap-modal-body" id="modal-body">\
+                                            <p>Unfortunately, your current signal strength will neither support a video nor an audio call.  Please try again from a different area with stronger signal.</p>\
+                                            </div>\
+                                            <div class="modal-footer bootstrap-modal-footer">\
+                                                <button class="btn btn-primary" type="button" ng-click="cancel()">OK</button>\
+                                            </div>\
+                                            ',
+                        controller: ModalInstanceCtrl,
+                        scope: $scope,
+                        size: 'sm',
+                        windowClass: 'sendpatient-email-pop-class',
+                        resolve: {
+                            modalProgressValue: function () {
+                                return "";
+                            },
+                            CPTBilling: function () {
+                                return "";
+                            },
+                            sessionResolve: function () {
+                                return '';
+                            },
+                            meetingRoomURLResolve: function () {
+                                return "";
+                            },
+                            emailMeetingLinkUrlResolve: function () {
+                                return '';
+                            },
+                            lockEncounterData: function () {
+                                return "";
+                            },
+                            disconnectData: function () {
+                                return "";
+                            }
+                        }
+
+                    });
+                    modalInstance.result.then(function (selectedItem) {
+                        $scope.selected = selectedItem;
+                    }, function () {
+                        $log.info('Modal dismissed at: ' + new Date());
+                    });
+
+                } else {
+                    return false;
+                }
+            })
+
+        }
+        /*--------------*/
+        
+        /* index controller start */
+        // if(JSON.parse(localStorage.getItem('connect_provider_settings')) != undefined && JSON.parse(localStorage.getItem('connect_provider_settings')).type == "WC_NURSE"){
+        //     $scope.onlineDoctorAvailable = 1;
+        //     var waitingname = 12;
+        //     var onlineDoctorId =   document.createElement('div');
+        //     alert(1);
+	       // onlineDoctorId.classList.add('onlineDoctorClass');
+	       // document.querySelector('#contentBlock').appendChild(onlineDoctorId);
+	       // $log.log(onlineDoctorId);
+	       // onlineDoctorId.innerHTML = "<button>this is funny </button>";
+	       // onlineDoctorId.onclick = function(){
+	       //     alert(1);
+	       // }
+        //     var compiledeHTML = $compile("<onlinedoctortemplate   name = \"'"+waitingname+"'\"  ></chattemplate>")($scope); //<div chattemplate></div>
+	        
+        // }else{
+        //     $scope.onlineDoctorAvailable = 0;
+        //}
+        
+        
+        
+        /* index controller end */
+        
+        /* doctor dashboard controller */
+        if(localStorage.getItem('doc_token') && $state.current.name == 'doctor'){
+            $rootScope.chatOn = 0;
+            $rootScope.title = "Dashboard"; 
+            $scope.docData = JSON.parse(localStorage.getItem('pcpDocData'));
+            $scope.getClass = function (data) {
+                $("li#" + data + " i").css('pointer-events', 'none');
+                $("li#" + data).css('cursor', 'not-allowed');
+                $("li#" + data).attr("title", "Already on another Call");
+            }
+            // setInterval(function(){
+            //     $scope.getWaitingUserList();
+            // }, 30000);
+            //msg x
+            //userid y
+            //docid z
+            $scope.chatRoom = [];
+            socketService.on('chatSend', function(data){
+                console.log(data);
+                if($('chattemplate').attr('id') != data.senderid){
+                    $scope.param ={};
+                    var firstName = data.sendername.split(' ').slice(0, -1).join(' ');
+                    var lastName = data.sendername.split(' ').slice(-1).join(' ');
+                    $scope.param.patient_id = data.senderid;
+                    $scope.param.first_name = firstName;
+                    $scope.param.last_name = lastName;
+                    $scope.param.msg = data.text;
+                    $scope.param.pcp_doctor_id = data.id;
+                    $scope.openChat($scope.param); 
+                }else{
+                    
+                }    
+            });
+            $scope.isDeviceNotAvailable = 1;
+            
+            
             
             $scope.openChat = function(x){
                 // if($('chattemplate').length > 0){
@@ -336,7 +519,7 @@
                             document.getElementsByClassName('chatBox')[0].style.right = '300px';
                             //document.getElementsByClassName('span')[0].style.right = '318px';
                             // $('span')[0].style.right='311px'
-                            $('#chatclosebutton')[0].style.right = '311px';
+                            //$('#chatclosebutton')[0].style.right = '311px';
 
                         }
                         $('#chatRoom').append(compiledeHTML);
@@ -358,7 +541,7 @@
                 $scope.chatRoom.splice(index,1);
                 if ($scope.chatRoom.length == 1) {
                     document.getElementsByClassName('chatBox')[0].style.right = '0px';
-                    $('#chatclosebutton')[0].style.right = '11px'
+                    //$('#chatclosebutton')[0].style.right = '11px'
 
                 }
             }
@@ -377,9 +560,13 @@
             }
             $scope.getWaitingUserList();
             
-            $interval(function() {
-                $scope.getWaitingUserList();
-            }, 3000);
+            var stop = $interval(function() {
+               $scope.getWaitingUserList();
+           }, 3000);
+           $rootScope.$on('logout_sropinterval', function (event, data) {
+               $interval.cancel(stop);
+
+           });
 
             socketService.on('doctorAcceptedCall',function(data){
             	$("li#"+data.patientId+" i").css('pointer-events','none');
@@ -979,6 +1166,7 @@
                         /*added on 300718*/
                     $("#header-navbar-dash").css("pointer-events", 'none');
                     $("#header-navbar-calllog").css("pointer-events", 'none');
+                    $("#header-navbar-preCallTest").css("pointer-events", 'none');
                     }
                     var subscriber,publisher;
                     var OTmaxslot = 3, OTwidth, OTheight, OTrows, OT100Width = 100, OT100Height = 100, OTXaxis,OTYaxis;
@@ -1826,6 +2014,7 @@
                     // socketService.emit('doctorGoneOffline',{docOfflineSocketData:docOfflineSocketData},function(data){
                     //     $log.log("doctor logout");    
                     // });
+                    var docId = JSON.parse(localStorage.getItem('pcpDocData')).id;
                     localStorage.removeItem('pcpDocData');//$cookieStore.remove('pcpDocData');
                     localStorage.removeItem('doc_token');
                     localStorage.removeItem('connect_provider_settings');
@@ -1840,7 +2029,10 @@
                     socketService.on('doctorGoneOffline', function(data){
                         $log.log(data);
                     });
-                    
+                   socketService.emit('doctorGoneOffline', { docId: docId }, function(data){
+                        $log.log(data);
+                    }); 
+                   $rootScope.$emit('logout_sropinterval', new Date());
                 }else{
                     $scope.loading = false;
                     alert("error");
@@ -1983,6 +2175,7 @@ var ModalInstanceCtrl = function ($scope,$rootScope, $uibModalInstance,modalProg
         /*added on 300718*/
         $("#header-navbar-dash").css("pointer-events", 'auto');
        $("#header-navbar-calllog").css("pointer-events", 'auto');
+       $("#header-navbar-preCallTest").css("pointer-events", 'auto');
         doctorServices.saveCallEndedAt(new Date());
 
         //sessionResolve.session.disconnect();

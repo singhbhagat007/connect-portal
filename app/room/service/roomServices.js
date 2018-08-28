@@ -419,7 +419,16 @@
                    .catch(function (message) {
                        return message;
                    })
-           }
+           },
+           checkConnectCallBycallId: function (param) {//added on 230818
+                return $http.post(config.serverBaseUrl + '/api/pcp/checkConnectCallBycallId', param)
+                    .then(function (data) {
+                        return data;
+                    })
+                    .catch(function (message) {
+                        return message;
+                    })
+            }
 
 		}
 	}

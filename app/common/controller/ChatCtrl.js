@@ -10,7 +10,20 @@
 	            socketService.removeAllListeners();
 	            //console.log('destroy triggered!');
 	        });
-            
+        /*added on 230818*/
+        socketService.on('doctorGoneOffline', function (data) {
+                $log.log(data);
+                if ($scope.id && $scope.id == data.docId) {
+                    $scope.isDocActive = false;
+                }
+            });
+            socketService.on('doctorGoneOnline', function (data) {
+                $log.log(data);
+                if ($scope.id && $scope.id == data.docId) {
+                    $scope.isDocActive = true;
+                }
+            });
+           /*--------------------*/ 
             if(roomServices.getDocActiveStateFromAlias() != undefined){
                 $scope.isDocActive = roomServices.getDocActiveStateFromAlias();
             }    

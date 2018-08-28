@@ -4,7 +4,8 @@
       'ui.router',
       'ui.bootstrap',
       'angularMoment',
-      'ngSanitize'
+      'ngSanitize',
+        'ngFileUpload'
       ])
     .config(routeConfig);
       
@@ -95,5 +96,25 @@
         title:'Login'
 
         })
+        .state('upload_location', {
+                url: '/uploadlocation',
+                templateUrl: templateUrlBase + 'upload_location.html',
+                controller: 'DoctorCtrl',
+                controllerAs: 'vm',
+                title: 'upload_location'
+
+            })
+        .state('preCallTest', {//added on 230818
+                //add for precalltest
+                url: '/preCallTest',
+                views: {
+                    '@': {
+                        templateUrl: templateUrlBase + 'preCallTest.html',
+                        controller: 'DoctorCtrl',
+                        controllerAs: 'vm',
+                        title: 'preCallTest'
+                    }
+                }
+            })
     }
 })();
