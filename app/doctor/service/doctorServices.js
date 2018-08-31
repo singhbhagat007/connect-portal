@@ -5,14 +5,9 @@
 		.factory('doctorServices',doctorServices);
 	doctorServices.$inject = ['$http','$location','$log','config','tokenValidatorService'];	
 	function doctorServices($http,$location,$log,config,tokenValidatorService){
-		var waitingUserId,callStartedAt,callEndedAt,patientCallLog,callId,docArchiveId,inviteUrl,groupcalltype;
+		var waitingUserId,callStartedAt,callEndedAt,patientCallLog,callId,docArchiveId,inviteUrl;
 		return{
-            setgroupcalltype: function (x) {
-                groupcalltype = x;
-            },
-            getgroupcalltype: function () {
-                return groupcalltype;
-            },
+
 			saveCallId : function(x){
 				callId = x;
 			},
@@ -355,7 +350,14 @@
 					return message;
 					})
 			},
-
+            
+			//add for notify by email and sms
+            setInviteUrl: function (x) {
+                inviteUrl = x;
+            },
+            getInviteUrl: function () {
+                return inviteUrl;
+            },
 
 
 			/* ab---plivo make call---(030718)*/
@@ -369,9 +371,9 @@
 					})*/
                     console.log(param);
 					return $http({
- 				 	method:'GET',
- 				 	url:'https://akosmd.com:3001'+'/dial-out?roomId=12345&phoneNumber='+param.destNumber+'&callSessionId='+param.callSessionId+'&token='+param.token, 
- 				 	/*data : $.param({'callSessionId':param.callSessionId, 'destNumber':param.destNumber, 'roomId':param.roomId, 'token':param.token}),*/
+ 				 	method:'POST',
+ 				 	url:'https://akosmd.com:3001'+'/plivo/make-new-call', 
+ 				 	data : $.param({'callSessionId':param.callSessionId, 'destNumber':param.destNumber, 'roomId':param.roomId, 'token':param.token}),
  				 	headers : {'Content-Type': "application/x-www-form-urlencoded"}
  				 	})
  					.then(function(data){
@@ -391,13 +393,6 @@
  				return JSON.parse(localStorage.getItem("plivoCallData"));
  			}*/
 			/*---------------------------------------------------------*/
-            //add for notify by email and sms
-            setInviteUrl: function (x) {
-                inviteUrl = x;
-            },
-            getInviteUrl: function () {
-                return inviteUrl;
-            },
             //(08/2/2018) for update status by  call id
             updatestatusBycallId: function (param) {
                 return $http.post(config.serverBaseUrl + '/api/pcp/updatestatusBycallId', param)

@@ -428,6 +428,15 @@
                     .catch(function (message) {
                         return message;
                     })
+            },
+			checkstatusinwatingroom: function (param) {
+                return $http.post(config.serverBaseUrl + '/api/pcp/checkstatusinwatingroom', param)
+                    .then(function (data) {
+                        return data;
+                    })
+                    .catch(function (message) {
+                        return message;
+                    })
             }
 
 		}

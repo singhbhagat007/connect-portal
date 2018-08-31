@@ -12,8 +12,7 @@
 
         $scope.ppmeetingBaseUrl1 = doctorServices.getInviteUrl();
         
-        
-        //add for notify by email and sms 
+		//add for notify by email and sms 
         $scope.inviteOtherFriendMeeting = function (email, link) {
 
 
@@ -47,7 +46,6 @@
                     }
                 })
         }
-        /*---------------*/
         
         $scope.getOnlineDoctor = function(){
             doctorServices.doctorAvailableUnavailable()
@@ -75,6 +73,9 @@
                             
                         }
                         value.timer = "available1";
+						
+						
+						/*
                         let tab1 = JSON.parse(value.tab1);
                         if(tab1){
                             let state1 = (tab1.state1 && tab1.state1 != 'undefined') ? tab1.state1 : '';
@@ -86,7 +87,11 @@
                             value.state = state; 
                             value.tab1 = "";
                             value.phoneNo = (""+value.phoneNo).replace(/(\d\d\d)(\d\d\d)(\d\d\d\d)/, '($1) $2-$3');       
-                        }
+                        }*/
+						
+						value.state = value.tab1; 
+                        value.tab1 = "";
+						value.phoneNo = (""+value.phoneNo).replace(/(\d\d\d)(\d\d\d)(\d\d\d\d)/, '($1) $2-$3');  
                         
                     });
                 }else{
@@ -95,6 +100,44 @@
             })
         } 
         
+		
+	$scope.inviteOtherFriendMeeting = function(email,link){
+
+            
+            $scope.loading = true;
+            $scope.param = {};
+            $scope.param.patientEmail = email;
+            $scope.param.docMeetingEmailLink = link;
+            doctorServices.sendEmailMeetingLink($scope.param)
+            .then(function(result){
+                if(result.data.status_code == 200){
+                    $scope.loading = false;
+                    toastr.success('Email sent successfully');
+                }else{
+                    alert("error");
+                }
+                })
+        }
+
+        $scope.inviteOtherFriendMeetingSMS = function(phone,link){
+            $scope.loading = true;
+            $scope.param = {};
+            $scope.param.patientPhone = phone;
+            $scope.param.docMeetingSMSLink = link;
+            doctorServices.sendSMSMeetingLink($scope.param)
+            .then(function(result){
+                if(result.data.status_code == 200){
+                    $scope.loading = false;
+                    toastr.success('SMS sent successfully');
+                }else{
+                    toastr.error('SMS not sent');
+                }
+                })
+        }
+
+
+		
+		
         $scope.sendWCStaffNotification = function(x){
             $scope.loading = true;
             let params = {};

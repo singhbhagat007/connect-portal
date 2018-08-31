@@ -16,8 +16,8 @@
         'AkosPCP.appLink'
     ])
     .constant('config',{
-      serverBaseUrl : 'https://akosmd.com:3001',
-      socketBaseUrl : 'https://akosmd.com:3001',
+      serverBaseUrl : 'https://connect-api.akosmd.com',
+      socketBaseUrl : 'https://connect-api.akosmd.com',
       opentokAPIKey : 45732912
       })
     // .config(function($httpProvider) {

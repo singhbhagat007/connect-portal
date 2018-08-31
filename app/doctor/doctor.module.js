@@ -5,7 +5,7 @@
       'ui.bootstrap',
       'angularMoment',
       'ngSanitize',
-        'ngFileUpload'
+      'ngFileUpload'
       ])
     .config(routeConfig);
       

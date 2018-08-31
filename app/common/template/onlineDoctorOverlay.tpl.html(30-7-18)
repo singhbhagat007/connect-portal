@@ -1,0 +1,42 @@
+<loading></loading>
+<div id="onLineDocPanel" class="onLineDocPanel" ng-controller = "onlineDoctorCtrl">
+    <span onclick="removeOnLineDocPanel()" class="closeOnLineDocPanel">&times;</span>
+    <div class="form-group">
+        <input type="text" placeholder="Search by state" ng-model="onlineDocState" >
+    </div>
+    <div class="content">
+        <div ng-repeat="x in onlineDoctor | filter : onlineDocState track by $index" ng-if="x.status == 1" class="dynamicDOM" ng-class="x.is_available  ? 'opacityHigh' : 'opacityLow'" >   <!--ng-attr-title="{{(x.timer == 'available') ? 'Available' : 'Busy'}}"-->
+            <ul>
+                <li>
+                    <img  ng-src="{{x.imageUrl ? x.imageUrl : './assets/images/muser.png'}}">  
+                </li>
+                <li>
+                    <div class="off-online-div" ng-class= "(x.is_available == 1) ? 'availableClass' : 'disableClass'"   > </div>
+                </li>    
+                <li>
+                    <p>
+                        <span ng-if="x.gender == 'male'">Dr. {{x.name}}</span>
+                        <span ng-if="x.gender == 'female'">Ms. {{x.name}}</span>
+                    </p>
+                    <br>
+                    <p>{{x.phoneNo}} </p><br>
+                    <p>{{x.email}} </p> <br>
+                    <p ng-if="x.timer && (x.timer != 'available') && (!x.is_available)">{{x.timer }} mins left</p>
+                    <p ng-if="(x.timer == 'available') && !x.is_available">Anytime Available Now</p>
+                </li>
+                <li>
+                    <button  ng-disabled="x.is_available != 1" ng-class="(x.is_available != 1) ? 'disableButtonClass' : ''"  ng-click="sendWCStaffNotification(x.id)">Notify</button>
+                </li>
+            </ul>    
+            
+        </div>
+    </div>
+    
+</div>
+
+
+
+
+
+<link rel="stylesheet" href="./assets/css/jQueryMobile.css"/>
+<script src="./assets/js/jQueryMobile.js"></script>

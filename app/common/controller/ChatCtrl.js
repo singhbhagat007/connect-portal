@@ -10,8 +10,8 @@
 	            socketService.removeAllListeners();
 	            //console.log('destroy triggered!');
 	        });
-        /*added on 230818*/
-        socketService.on('doctorGoneOffline', function (data) {
+            /*added on 230818*/
+            socketService.on('doctorGoneOffline', function (data) {
                 $log.log(data);
                 if ($scope.id && $scope.id == data.docId) {
                     $scope.isDocActive = false;

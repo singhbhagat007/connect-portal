@@ -51,8 +51,7 @@ body{font:normal 14px 'Titillium Web', sans-serif; margin: 0!important;}
 #contentBlock{
   /*overflow-x: hidden;
   overflow-y: scroll;
-  height:80%;
-  */
+  height:80%;*/
   min-height:80% !important;
 }
 
@@ -128,7 +127,7 @@ footer{
 	background:#777777;
 	position:fixed;
 	width:100%; */
-  padding:10px;
+	padding:10px;
     color:#fff;
     bottom:0px !important;
     background:#777777;
@@ -1191,10 +1190,8 @@ div.wc-nurse-livecall p{
 .OT_Network_Class_div img {
     margin: 0 auto;
     position:absolute;
-    top:25%;
-    z-index:9999;
-    width: 60px;
-    margin-left: -40px;
+    top:30%;
+    z-indeX:9999;
 }
 
 .OT_Network_Class_div p{
@@ -1271,9 +1268,10 @@ div.doc_dash_waiting_room_div div.doc_user_waiting_box ul li:nth-child(3) span i
         font-size: 10px;
         color: #333;
     }
+	
 .bodyindex {
    overflow-x: hidden !important;
    overflow-y: scroll !important;
    position: unset;
    height: inherit;
-}    
+}	
