@@ -16,8 +16,8 @@
         'AkosPCP.appLink'
     ])
     .constant('config',{
-      serverBaseUrl : 'https://connect-api.akosmd.com',
-      socketBaseUrl : 'https://connect-api.akosmd.com',
+      serverBaseUrl : 'https://sandbox.connect-api.akosmd.com',
+      socketBaseUrl : 'https://sandbox.connect-api.akosmd.com',
       opentokAPIKey : 45732912
       })
     // .config(function($httpProvider) {

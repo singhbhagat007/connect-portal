@@ -864,81 +864,104 @@
             
         }
 
-
         if($state.current.name == 'AkosLive'){
             $scope.loading = true;
             if($state.params.id != undefined || $state.params.id != ''){
                 $scope.clientUrlParam = {};
                 $scope.clientUrlParam.id = $state.params.patientId;
-                $scope.clientUrlParam.first_name = $state.params.first_name;
-                $scope.clientUrlParam.last_name = $state.params.last_name;
+              //  $scope.clientUrlParam.first_name = $state.params.first_name;
+                $scope.clientUrlParam.transactionId = $state.params.transactionId;
+                //$scope.clientUrlParam.last_name = $state.params.last_name;
                 roomServices.checkClientUrl($scope.clientUrlParam)
                 .then(function(result){
                     if(result.data.status_code == 200){
                         $scope.loading = false;
                         $scope.dataParam = {};    
-		                $scope.dataParam.alias = $state.params.id;
-		                $scope.userData = {};
-		                $scope.userData.id = $state.params.patientId;
-		                $scope.userData.first_name = $state.params.first_name;
-		                $scope.userData.last_name = $state.params.last_name;
-		                localStorage.setItem('userMeetingDetails',JSON.stringify($scope.userData));
-		                roomServices.getDocFromAlias($scope.dataParam)
-		                .then(function(result){
-		                    if(result.data.status_code == 200){
-		                        if(result.data.result.length == 0){
-		                            $scope.loading= false;
-		                            $scope.inactiveAlias = 1;
-		                        }else{
-									try {
-									if (result.data.result[0].group_id) {
+                        $scope.dataParam.alias = $state.params.id;
+                        $scope.userData = {};
+                        $scope.userData.id = $state.params.patientId;
+                    $scope.userData.first_name = result.data.result.first_name;
+                        $scope.userData.last_name = result.data.result.last_name;
+                        localStorage.setItem('userMeetingDetails',JSON.stringify($scope.userData));
+                        roomServices.getDocFromAlias($scope.dataParam)
+                        .then(function(result){
+                            if(result.data.status_code == 200){
+                                if(result.data.result.length == 0){
+                                    $scope.loading= false;
+                                    $scope.inactiveAlias = 1;
+                                }else{
+                                    $scope.docNameFromAlias = result.data.result[0].name;
+                                    $scope.docIdFromAlias = result.data.result[0].id;
+                                    $scope.docGroupIdFromAlias = result.data.result[0].group_id;
+                                    $scope.param = {};
+                                    $scope.param.docId = $scope.docIdFromAlias;
+                                    $scope.param.userId = $state.params.patientId;
+                                    //$scope.param.group_id = $scope.docGroupIdFromAlias;
+                                    $scope.param.groupId =  $scope.docGroupIdFromAlias;
+                                    $scope.param.symptom = "";
+                                    $scope.param.allergy = "";
+                                    $scope.param.medication = "";
+                                    $scope.param.medical_condition = "";
 
-									roomServices.setgroupcalltype(result.data.result[0].group_id);
-									} else {
-									roomServices.setgroupcalltype(result.data.result[0].group_id);
-									}
+                                    $scope.param.state_of_injury = '';
+                                    $scope.param.date_of_injury = '';
+                                    $scope.param.employer_name = '';
 
-									} catch (err) { 
-									}
-		                            $scope.docNameFromAlias = result.data.result[0].name;
-		                            $scope.docIdFromAlias = result.data.result[0].id;
-		                            $scope.docGroupIdFromAlias = result.data.result[0].group_id;
-		                            $scope.param = {};
-		                            $scope.param.docId = $scope.docIdFromAlias;
-		                            $scope.param.userId = $state.params.patientId;
-		                            //$scope.param.group_id = $scope.docGroupIdFromAlias;
-		                            $scope.param.groupId =  $scope.docGroupIdFromAlias;
-		                            $scope.param.symptom = "";
-		                            $scope.param.allergy = "";
-		                            $scope.param.medication = "";
-		                            $scope.param.medical_condition = "";
-                                    /*added on 270718*/
-                                    $scope.param.date_of_injury = "";
-                                   $scope.param.state_of_injury = "";
-                                   $scope.param.employer_name = "";
-                                    /*---------------*/
-		                            roomServices.addUserToWaiting($scope.param)
-		                            .then(function(result){
-		                                if(result.data.status_code == 200){ 
-		                                    socketService.emit('userjoin',{waitingId:$state.params.patientId},function(data){
-		                                        $log.log("user added");
-		                                        $log.log(data);
-		                                    });
-		                                    $scope.loading = false;
-		                                    $log.log(result);
-		                                    $state.go('room.call',{id:$state.params.id});
-		                                }else{
-		                                    $scope.loading = false;
-		                                    alert("error");
-		                                }
-		                            })   
-		                        }
-		                    }
-		                }) 
+
+                                    roomServices.addUserToWaiting($scope.param)
+                                    .then(function(result){
+                                        if(result.data.status_code == 200){ 
+                                            socketService.emit('userjoin',{waitingId:$state.params.patientId},function(data){
+                                                $log.log("user added");
+                                                $log.log(data);
+                                            });
+                                            $scope.loading = false;
+                                            $log.log(result);
+                                            $state.go('room.call',{id:$state.params.id});
+                                        }else{
+                                            $scope.loading = false;
+                                            alert("error");
+                                        }
+                                    })   
+                                }
+                            }
+                        }) 
                         return true;    
                     }else{
                         $scope.loading = false;
                         $scope.invalidClientURL = 1;
+
+                        var modalInstance = $uibModal.open({
+                            template: '\
+                                <div class="modal-header bootstrap-modal-header">\
+                                <h3 class="modal-title" id="modal-title"> Unable to check in </h3>\
+                                </div>\
+                                <div class="modal-body bootstrap-modal-body" id="modal-body">\
+                                <p>'+ result.data.status_message + ' </p>\
+                                </div>\
+                                <div class="modal-footer bootstrap-modal-footer">\
+                                    <button class="btn btn-primary" type="button" ng-click="cancel()">OK</button>\
+                                </div>\
+                                ',
+                            //templateUrl: "callDisconnectedDocModal.html",
+                            controller: ModalInstanceCtrl,
+                            scope: $scope,
+                            size: 'sm',
+                            resolve: {
+                                sessionResolve: function () {
+                                    return '';
+                                }
+                            }
+                        });
+                        modalInstance.result.then(function (selectedItem) {
+                            $scope.selected = selectedItem;
+                        }, function () {
+
+
+
+                            $log.info('Modal dismissed at: ' + new Date());
+                        });
+                        
                         return false; 
                     }
                 })
