@@ -1406,7 +1406,8 @@
         
         
 
-        if($state.current.name == 'inviteRoom'){
+        if ($state.current.name == 'inviteRoom') {
+            debugger
             $rootScope.title = "Tell Us About Yourself";
             $rootScope.isCallScreenHidden = 1;
             // $log.log($state.params);
@@ -1414,13 +1415,34 @@
             $scope.inviteParam.invite_id = $state.params.inviteId;
             roomServices.getSessionFromInviteId($scope.inviteParam)
             .then(function(result){
-                if(result.data.status_code == 200){
-                    $scope.inviteSession = result.data.result[0].session_id;
-                    $scope.inviteToken = result.data.result[0].token;
+                if (result.data.status_code == 200) {
+                    if (result.data.result.length > 0) {
+                        $scope.inviteSession = result.data.result[0].session_id;
+                        $scope.inviteToken = result.data.result[0].token;
 
-                    //new add for get call id by inviteId
-                    $scope.call_id = result.data.result[0].call_id;
+                        //new add for get call id by inviteId
+                        $scope.call_id = result.data.result[0].call_id;
 
+                        roomServices.checkConnectCallBycallId({
+                            phone: null, call_id: $scope.call_id
+                        })
+                            .then(function (result) {
+                                if (result.data.status_code == 200) {
+
+                                }
+                                else if (result.data.status_code == 404 || result.data.status_code == 402) {
+                                    $rootScope.isCallScreenHidden = 2;
+                                }
+                                else {
+                                    // alert("error");
+                                }
+                            });
+                    } else {
+                        $rootScope.isCallScreenHidden = 2;
+                    }
+
+                } else {
+                    $rootScope.isCallScreenHidden = 2;
                 }
             })
             
@@ -2914,6 +2936,7 @@ var ModalInstanceCtrl = function ($scope,$rootScope,$uibModalInstance,$log,$stat
         $uibModalInstance.dismiss('cancel');    
     }
     $scope.cancelmodel = function () {
+        debugger
         $rootScope.isCallScreenHidden = 1;
         $uibModalInstance.dismiss('cancel');
     }
