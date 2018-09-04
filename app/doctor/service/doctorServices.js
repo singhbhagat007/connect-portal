@@ -342,7 +342,7 @@
 			/* pankaj */
 
 			connectAdvinowSaml : function(param){
-				return $http.post('https://sandbox.connect-api.akosmd.com'+'/advinow/SAML/sso_login',{id:1})
+				return $http.post('https://sandbox.connect-api.akosmd.com'+'/advinow/SAML/sso_login',param)
 				.then(function(data){
 					return data;
 					})

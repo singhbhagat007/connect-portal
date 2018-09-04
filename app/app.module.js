@@ -15,11 +15,15 @@
         'AkosPCP.room',
         'AkosPCP.appLink'
     ])
-    .constant('config',{
-      serverBaseUrl : 'https://connect-api.akosmd.com',
-      socketBaseUrl : 'https://connect-api.akosmd.com',
-      opentokAPIKey : 45732912
-      })
+    //.constant('config',{
+    //  //serverBaseUrl : 'https://sandbox.connect-api.akosmd.com',
+    //  //socketBaseUrl : 'https://sandbox.connect-api.akosmd.com',
+    //  //opentokAPIKey : 45732912
+    //    //serverBaseUrl : 'https://akosmd.com:3001',
+    //    socketBaseUrl: 'https://akosmd.com:3001',
+    //    serverBaseUrl: 'http://localhost:3001',
+    //    opentokAPIKey: 45732912
+    //  })
     // .config(function($httpProvider) {
     //   $httpProvider.interceptors.push('preventTemplateCache');
     // })

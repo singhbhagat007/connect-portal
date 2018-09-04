@@ -788,25 +788,26 @@
             }
             /*------------------------------------*/
   
- $scope.docCall = function(x,callid){
+ //$scope.docCall = function(x,callid){
                
-                        doctorServices.saveCallStartedAt(new Date());
-                        doctorServices.saveWaitingUserId(x);
-                        $state.go('doctor.call');
-                        doctorServices.updatestatusBycallId({ call_id: callid, status: "In progress" })
-                            .then(function (result) {
-                                $log.log(result);
-                                if (result.data.status_code == 200) {
-                                }
-                            })
-                        socketService.emit('doctorAcceptedCall',{patientId:x},function(data){
-                            $log.log("doctor accepted the call");    
-                        });
+ //                       doctorServices.saveCallStartedAt(new Date());
+ //                       doctorServices.saveWaitingUserId(x);
+ //                       $state.go('doctor.call');
+ //                       doctorServices.updatestatusBycallId({ call_id: callid, status: "In progress" })
+ //                           .then(function (result) {
+ //                               $log.log(result);
+ //                               if (result.data.status_code == 200) {
+ //                               }
+ //                           })
+ //                       socketService.emit('doctorAcceptedCall',{patientId:x},function(data){
+ //                           $log.log("doctor accepted the call");    
+ //                       });
                    
         
-            }          
-/*
-            $scope.docCall = function(x,callid){
+ //           }          
+
+            $scope.docCall = function (x, callid) {
+                if (appConfig.network_check_provider) {
                 checkNetworkCallback('pcpDoctor',function(result){
                     if(result.acode == 1){
                         doctorServices.saveCallStartedAt(new Date());
@@ -874,8 +875,28 @@
                         return false;
                     }
                 })
+                } else {
+                    doctorServices.saveCallStartedAt(new Date());
+                    doctorServices.saveWaitingUserId(x);
+                    $state.go('doctor.call');
+                    debugger
+                    doctorServices.updatestatusBycallId({ call_id: callid, status: "In progress" })
+                        .then(function (result) {
+                            $log.log(result);
+                            debugger
+                            if (result.data.status_code == 200) {
+                                debugger
+                            }
+                        })
+                    var docdata = JSON.parse(localStorage.getItem('pcpDocData'))
+                    socketService.emit('doctorAcceptedCall', {
+                        patientId: x, acceptby: docdata.name
+                    }, function (data) {
+                        $log.log("doctor accepted the call");
+                    });
+                }
             }
-            */
+            
         }
         /* doctor dashboard controller end*/ 
 
@@ -2102,7 +2123,9 @@
         }/* doctor logout controller end*/  
 
         /*pankaj-- doctor connent to advonow through saml*/
-
+        $scope.encodeData = function(s){
+            return encodeURIComponent(s).replace(/\-/g, "%2D").replace(/\_/g, "%5F").replace(/\./g, "%2E").replace(/\!/g, "%21").replace(/\~/g, "%7E").replace(/\*/g, "%2A").replace(/\'/g, "%27").replace(/\(/g, "%28").replace(/\)/g, "%29");
+	}
         $rootScope.advinowConnect = function(){
            
             $scope.param ={};
@@ -2112,8 +2135,8 @@
                 $log.log(result);
                 if(result.data.status_code == 200){
 
-                    alert('https://tools.advinow.net/DoctorApp/SAML?pilot&token='+result.data.token);
-                    window.open('https://tools.advinow.net/DoctorApp/SAML?pilot&token='+result.data.token, '_blank');
+                    //alert('https://tools.advinow.net/DoctorApp/SAML?pilot&token='+result.data.token);
+                    window.open('https://tools.advinow.net/DoctorApp/SAML?pilot&token='+$scope.encodeData(result.data.token), '_blank');
                     
                 }else{
                     $scope.loading = false;

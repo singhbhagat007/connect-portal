@@ -40,7 +40,7 @@
         })
 
       .state('AkosLive', {
-          url: '/room/:id?patientId?first_name?last_name',
+          url: '/room/:id?patientId?transactionId',
           templateUrl:templateUrlBase+'room.client.html',
           controller:'RoomCtrl',
           controllerAs:'vm',
