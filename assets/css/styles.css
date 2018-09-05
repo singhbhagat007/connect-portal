@@ -1274,4 +1274,35 @@ div.doc_dash_waiting_room_div div.doc_user_waiting_box ul li:nth-child(3) span i
    overflow-y: scroll !important;
    position: unset;
    height: inherit;
-}	
+}
+.unsupportedbrowser {
+    font-family: 'Lato-Regular';
+    margin-top: 0%;
+}
+
+    .unsupportedbrowser .modal-header {
+        background: #25406B;
+    }
+
+        .unsupportedbrowser .modal-header span {
+            color: #fff;
+        }
+
+    .unsupportedbrowser .modal-title {
+        color: #fff;
+    }
+
+    .unsupportedbrowser .modal-body p {
+        padding: 10px;
+    }
+
+    .unsupportedbrowser .modal-body img {
+        margin: 0 auto;
+        width: 10%;
+        display: block;
+    }
+
+    .unsupportedbrowser .modal-footer button {
+        background: #25406B;
+        color: #fff;
+    }

@@ -5,7 +5,10 @@
         .controller('DoctorCtrl', DoctorCtrl);
     DoctorCtrl.$inject = ['$scope','$http','$rootScope','$location','$window','$log','doctorServices','tokenValidatorService','$cookieStore','$state','$uibModal','moment','config','socketService','$filter','pdfChartingService','$compile','$interval','appConfig'];
     function DoctorCtrl($scope,$http,$rootScope,$location,$window,$log,doctorServices,tokenValidatorService,$cookieStore,$state,$uibModal,moment,config,socketService,$filter,pdfChartingService,$compile,$interval,appConfig,sessionResolve) {
-
+      
+        if ($rootScope.wrongbrowser) {
+            $state.go('login'); 
+        }
         // $scope.testScope = "test";
         // $rootScope.$emit('event',$scope.testScope);
         // $scope.$on('event', function(events,args){
@@ -48,7 +51,11 @@
         
         
         
-        $scope.loginForm = function(x){
+        $scope.loginForm = function (x) {
+            
+            if ($rootScope.wrongbrowser) {
+                return;
+            }
             $scope.loading = true;
             $scope.loginData = x;
             /*added 250718*/
@@ -879,13 +886,13 @@
                     doctorServices.saveCallStartedAt(new Date());
                     doctorServices.saveWaitingUserId(x);
                     $state.go('doctor.call');
-                    debugger
+               
                     doctorServices.updatestatusBycallId({ call_id: callid, status: "In progress" })
                         .then(function (result) {
                             $log.log(result);
-                            debugger
+                       
                             if (result.data.status_code == 200) {
-                                debugger
+                               
                             }
                         })
                     var docdata = JSON.parse(localStorage.getItem('pcpDocData'))

@@ -6,7 +6,9 @@
     RoomCtrl.$inject = ['$scope','$http','$rootScope','$location','$window','$log','tokenValidatorService','$cookieStore','$state','$uibModal','moment','$stateParams','roomServices','getSymptomsService','$filter','config','socketService','$compile','$timeout','appConfig'];
     function RoomCtrl($scope,$http,$rootScope,$location,$window,$log,tokenValidatorService,$cookieStore,$state,$uibModal,moment,$stateParams,roomServices,getSymptomsService,$filter,config,socketService,$compile,$timeout,appConfig) {
 
-        
+        if ($rootScope.wrongbrowser) {
+            return;
+        }
 
         $log.log($location.search().id);
         $rootScope.isPatient = true;
@@ -205,7 +207,9 @@
             
             $scope.inactiveAlias = 0;
             $scope.joinNurseRoomForm = function(x){
-                
+                if ($rootScope.wrongbrowser) {
+                    return;
+                }
 
                 $scope.checkParam = {};
                 $scope.checkParam.phone = x.phone;
@@ -1407,7 +1411,7 @@
         
 
         if ($state.current.name == 'inviteRoom') {
-            debugger
+           
             $rootScope.title = "Tell Us About Yourself";
             $rootScope.isCallScreenHidden = 1;
             // $log.log($state.params);
@@ -1818,6 +1822,9 @@
 
             $scope.enterRoomForm = function(useremailphone){
                 /*-------ab---determining the alias--------*/
+                if ($rootScope.wrongbrowser) {
+                    return;
+                }
              console.log($location.path());
             if($location.path().indexOf('cityhealth')!=-1){
                 $cookieStore.put('aliasname','cityhealth');
@@ -2555,14 +2562,7 @@
         if($scope.userInsuranceData.insuredName!=undefined && $scope.userInsuranceData.memberId!=undefined && $scope.userInsuranceData.groupId!=undefined && $scope.tradingPartnerId!=''){
            
         /*check eligibility starts*/
-        $http({
-            method:'POST',
-            url:config.serverBaseUrl+'/pokitdok/eligibility',
-            data:$.param({ 'patientId':$scope.patientId, 'dateOfBirth':$scope.dateOfBirth, 'fullName':$scope.userInsuranceData.insuredName, 'memberId':$scope.userInsuranceData.memberId, 'tradingPartnerId':$scope.tradingPartnerId }),
-            headers : {'Content-Type': "application/x-www-form-urlencoded"}
-        }).then(function(response){
-            console.log(response);
-            $rootScope.amountToPay = response.data.copayAmount;
+     
 
             /*-------------*/
             $http({
@@ -2571,10 +2571,18 @@
                 data:$.param({'patient_id':$scope.patientId,'patient_name':$scope.userInsuranceData.insuredName,'member_id':$scope.userInsuranceData.memberId,'group_number':$scope.userInsuranceData.groupId}),
                 headers : {'Content-Type': "application/x-www-form-urlencoded"}
             }).then(function(response){
-                if(response.data.status_code==201){
-                    if(para=='save'){
-                    var modalInstance = $uibModal.open({
-                            template:'\
+                if (response.data.status_code == 201) {
+                    $http({
+                        method: 'POST',
+                        url: config.serverBaseUrl + '/pokitdok/eligibility',
+                        data: $.param({ 'patientId': $scope.patientId, 'dateOfBirth': $scope.dateOfBirth, 'fullName': $scope.userInsuranceData.insuredName, 'memberId': $scope.userInsuranceData.memberId, 'tradingPartnerId': $scope.tradingPartnerId }),
+                        headers: { 'Content-Type': "application/x-www-form-urlencoded" }
+                    }).then(function (response) {
+                        console.log(response);
+                        $rootScope.amountToPay = response.data.copayAmount;
+                        if (para == 'save') {
+                            var modalInstance = $uibModal.open({
+                                template: '\
                                 <div class="modal-header bootstrap-modal-header">\
                                 <h3 class="modal-title" id="modal-title">Message </h3>\
                                 </div>\
@@ -2585,26 +2593,27 @@
                                     <button class="btn btn-primary" type="button" ng-click="cancel()">OK</button>\
                                 </div>\
                                 ',
-                            controller: ModalInstanceCtrl,
-                            scope: $scope,
-                            size:'sm',
-                            resolve: {
-                                sessionResolve :  function(){
-                                    return '';
-                                } 
-                            }
-                        });
-                       }
-                       else{
-                        if($rootScope.amountToPay!='' && $rootScope.amountToPay!=undefined){
-                           $state.go('billingdetails');    
-                        }else{ alert('Billing amount not found');  }
-                        
-                       }
+                                controller: ModalInstanceCtrl,
+                                scope: $scope,
+                                size: 'sm',
+                                resolve: {
+                                    sessionResolve: function () {
+                                        return '';
+                                    }
+                                }
+                            });
+                        }
+                        else {
+                            if ($rootScope.amountToPay != '' && $rootScope.amountToPay != undefined) {
+                                $state.go('billingdetails');
+                            } else { alert('Billing amount not found'); }
+
+                        }
+                    })
                 }
 
             })
-        })
+       
         /*check eligibility ends*/
 
             
@@ -2679,6 +2688,11 @@
 
     };
       $scope.commonProceedToChecking = function () {
+          var patientid = roomServices.getUserPatientData().patientId;
+          roomServices.checkstatusinwatingroom({ patient_id: patientid })
+              .then(function (resultstatus) {
+                  //add for generate callid by patientid 
+                  if (resultstatus.data.status_code == 200) {
           var docid = $scope.docIdFromAlias;
           var groupid = $scope.docGroupIdFromAlias;
           $log.log($scope.symptoms);
@@ -2735,7 +2749,7 @@
                                               $scope.loading = false;
                                               alert("error");
                                               /*---ab---user id not found*/
-                                              if ($cookieStore.get('aliasname') == cityhealth) {
+                                              if ($cookieStore.get('aliasname') == 'cityhealth') {
                                                   $state.go('insurancedetails');
                                               }/*------------------------*/
                                           }
@@ -2755,9 +2769,9 @@
 
 
                               } else {
-                                  alert("error");
+                                 // alert("error");
                                   /*---ab---user id not found*/
-                                  if ($cookieStore.get('aliasname') == cityhealth) {
+                                  if ($cookieStore.get('aliasname') == 'cityhealth') {
                                       $state.go('insurancedetails');
                                   }/*------------------------*/
                               }
@@ -2765,6 +2779,39 @@
                   } else {
                       alert("error");
                   }
+              })
+                  } else {
+
+
+                      var modalInstance = $uibModal.open({
+                          template: '\
+                                       <div class="modal-header bootstrap-modal-header">\
+                                       <h3 class="modal-title" id="modal-title"> Incorrect User Details </h3>\
+                                       </div>\
+                                       <div class="modal-body bootstrap-modal-body" id="modal-body">\
+                                       <p>'+ resultstatus.data.status_message + '</p>\
+                                       </div>\
+                                       <div class="modal-footer bootstrap-modal-footer">\
+                                           <button class="btn btn-primary" type="button" ng-click="cancel()">OK</button>\
+                                       </div>\
+                                       ',
+                          //templateUrl: "callDisconnectedDocModal.html",
+                          controller: ModalInstanceCtrl,
+                          scope: $scope,
+                          size: 'sm',
+                          resolve: {
+                              sessionResolve: function () {
+                                  return '';
+                              }
+                          }
+                      });
+                      modalInstance.result.then(function (selectedItem) {
+                          $scope.selected = selectedItem;
+                      }, function () {
+                          $log.info('Modal dismissed at: ' + new Date());
+                      });
+                  }
+
               })
       }
     $scope.withInsProceedToCheckin = function(){
@@ -2936,7 +2983,7 @@ var ModalInstanceCtrl = function ($scope,$rootScope,$uibModalInstance,$log,$stat
         $uibModalInstance.dismiss('cancel');    
     }
     $scope.cancelmodel = function () {
-        debugger
+       
         $rootScope.isCallScreenHidden = 1;
         $uibModalInstance.dismiss('cancel');
     }

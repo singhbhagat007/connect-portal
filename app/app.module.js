@@ -38,8 +38,80 @@
         }
       }
     })
-    .run(['$rootScope','$window','$location','$log','$cookieStore','$state','config','roomServices','$compile',function($rootScope,$window,$location,$log,$cookieStore,$state,config,roomServices,$compile){
-      var clientURL = $location.absUrl().split("/#!")[0];
+        .run(['$rootScope', '$window', '$location', '$log', '$cookieStore', '$state', 'config', 'roomServices', '$compile', '$uibModal', function ($rootScope, $window, $location, $log, $cookieStore, $state, config, roomServices, $compile, $uibModal){
+            $rootScope.wrongbrowser = false;
+            var browser = function () {
+
+            var userAgent = navigator.userAgent;
+
+            var browsers = {
+                chrome: /chrome/g, mozilla: /Mozilla/g
+            };
+
+            for (var key in browsers) {
+                if (browsers[key].test(userAgent)) {
+                    return true;
+                }
+            };
+
+            return false;
+        }
+
+
+        if (!browser()) {
+            var modalInstance = $uibModal.open({
+                template: '\
+                                    <div class="modal-header bootstrap-modal-header unsupportedbrowser">\
+                                    <h4 class="modal-title" id="modal-title">Unsupported Browser</h4>\
+                                    </div>\
+                                    <div class="modal-body " id="modal-body">\
+                                   <p style="padding:10px;">Unfortunately the browser you are using is currently not supported. We only support latest Google Chrome browser at this time. If you have Google Chrome already installed, please open the portal using chrome otherwise please install chrome by clicking on the icon below.</p>\
+                                    <a href="https://www.google.com/chrome/">\
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Google_Chrome_icon_%282011%29.svg/2000px-Google_Chrome_icon_%282011%29.svg.png" style="margin: 0 auto;width:20%;display:block;">\
+                                    </a>\
+                                    </div>\
+                                    <div class="modal-footer bootstrap-modal-footer">\
+                                        <button class="btn btn-primary" type="button" ng-click="cancel()">Close this window</button>\
+                                    </div>\
+                                    ',
+                controller: ModalInstanceCtrl,
+                scope: $rootScope,
+                size: 'sm',
+                windowClass: 'disconnect-pop1-class',
+                resolve: {
+                    modalProgressValue: function () {
+                        return "";
+                    },
+                    CPTBilling: function () {
+                        return "";
+                    },
+                    sessionResolve: function () {
+                        return "";
+                    },
+                    meetingRoomURLResolve: function () {
+                        return "";
+                    },
+                    emailMeetingLinkUrlResolve: function () {
+                        return "";
+                    },
+                    lockEncounterData: function () {
+                        return "";
+                    },
+                    disconnectData: function () {
+                        return "";
+                    }
+                }
+
+            });
+            modalInstance.result.then(function (selectedItem) {
+                $scope.selected = selectedItem;
+            }, function () {
+                $log.info('Modal dismissed at: ' + new Date());
+            });
+            }
+           
+            
+        var clientURL = $location.absUrl().split("/#!")[0];
 
       var ua = navigator.userAgent.toLowerCase();
       var isAndroid = ua.indexOf("android") > -1; //&& ua.indexOf("mobile");
@@ -199,4 +271,15 @@
 
 
         }]);
+
+    var ModalInstanceCtrl = function ($scope, $rootScope, $uibModalInstance, modalProgressValue, CPTBilling, $uibModal, socketService, $log, $state, sessionResolve, doctorServices, meetingRoomURLResolve, emailMeetingLinkUrlResolve, lockEncounterData, pdfChartingService, disconnectData, $window) {
+        $scope.cancel = function () {
+           
+            $uibModalInstance.dismiss('cancel');
+           // $window.close();
+           // window.top.close()
+            $rootScope.wrongbrowser = true;
+
+        };
+    }
 })();
