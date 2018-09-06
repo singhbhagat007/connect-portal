@@ -3,8 +3,8 @@
     angular
         .module('AkosPCP')
         .controller('onlineDoctorCtrl',onlineDoctorCtrl);
-    onlineDoctorCtrl.$inject = ['$scope','$http','$rootScope','$location','$window','$log','doctorServices','tokenValidatorService','$cookieStore','$state','$uibModal','moment','config','socketService','$filter','pdfChartingService','$compile','roomServices','$interval'];
-    function onlineDoctorCtrl($scope,$http,$rootScope,$location,$window,$log,doctorServices,tokenValidatorService,$cookieStore,$state,$uibModal,moment,config,socketService,$filter,pdfChartingService,$compile,roomServices,$interval){
+    onlineDoctorCtrl.$inject = ['$scope','$http','$rootScope','$location','$window','$log','doctorServices','tokenValidatorService','$cookieStore','$state','$uibModal','moment','config','socketService','$filter','pdfChartingService','$compile','roomServices','$interval','appConfig'];
+    function onlineDoctorCtrl($scope,$http,$rootScope,$location,$window,$log,doctorServices,tokenValidatorService,$cookieStore,$state,$uibModal,moment,config,socketService,$filter,pdfChartingService,$compile,roomServices,$interval,appConfig){
         
         /*added on 310718*/
         //add for notify by email and sms
@@ -149,10 +149,10 @@
                     var modalInstance = $uibModal.open({
                         template:'\
                             <div class="modal-header bootstrap-modal-header">\
-                            <h3 class="modal-title" id="modal-title">Doctor Notification</h3>\
+                            <h3 class="modal-title" id="modal-title">'+ appConfig.messages['notifyMessage'].title+'</h3>\
                             </div>\
                             <div class="modal-body bootstrap-modal-body" id="modal-body">\
-                            <p class="text-center">Doctor Notification Sent Successfully.</p>\
+                            <p class="text-center">'+ appConfig.messages['notifyMessage'].message+'</p>\
                             </div>\
                             <div class="modal-footer bootstrap-modal-footer">\
                                 <button class="btn btn-primary" type="button" ng-click="cancel()">OK</button>\
@@ -175,10 +175,10 @@
                     var modalInstance = $uibModal.open({
                         template:'\
                             <div class="modal-header bootstrap-modal-header">\
-                            <h3 class="modal-title" id="modal-title">Doctor Notification</h3>\
+                            <h3 class="modal-title" id="modal-title">'+ appConfig.messages['notifyMessage_unsuccess'].title +'</h3>\
                             </div>\
                             <div class="modal-body bootstrap-modal-body" id="modal-body">\
-                            <p class="text-center">Sorry, Doctor Notification Not Sent.</p>\
+                            <p class="text-center">'+ appConfig.messages['notifyMessage_unsuccess'].message +'</p>\
                             </div>\
                             <div class="modal-footer bootstrap-modal-footer">\
                                 <button class="btn btn-primary" type="button" ng-click="cancel()">OK</button>\
