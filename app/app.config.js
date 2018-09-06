@@ -1,7 +1,10 @@
 angular.module('AkosPCP').constant('appConfig', {
 
     employerId: '',
-    network_check_provider: true
+    network_check_provider: true,
+	messages: {
+        callDisconnected: { title: "Call disconnected by provider", message: "The call has been ended by your provider. Thank you for using Akos Connect video consultation." },
+    }
     
 }); 
 angular.module('AkosPCP').constant('config', {

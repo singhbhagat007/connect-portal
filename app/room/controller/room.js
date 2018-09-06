@@ -5,7 +5,7 @@
         .controller('RoomCtrl', RoomCtrl); 
     RoomCtrl.$inject = ['$scope','$http','$rootScope','$location','$window','$log','tokenValidatorService','$cookieStore','$state','$uibModal','moment','$stateParams','roomServices','getSymptomsService','$filter','config','socketService','$compile','$timeout','appConfig'];
     function RoomCtrl($scope,$http,$rootScope,$location,$window,$log,tokenValidatorService,$cookieStore,$state,$uibModal,moment,$stateParams,roomServices,getSymptomsService,$filter,config,socketService,$compile,$timeout,appConfig) {
-
+			$scope.appConfig = appConfig;
         if ($rootScope.wrongbrowser) {
             return;
         }
@@ -49,7 +49,7 @@
                     if(result.data.status_code == 200){
                         $scope.OT_network_session = result.data.result.session;
                         $scope.OT_network_token = result.data.result.token;
-                        var el = document.createElement("div");el.classList.add('OT_Network_Class_div');let el_img = document.createElement("img");let el_p = document.createElement("p");el_p.innerHTML = "Checking Your Network...please wait!";el_img.src = "./otnetwork/assets/spinner.gif";
+                        var el = document.createElement("div");el.classList.add('OT_Network_Class_div');let el_img = document.createElement("img");let el_p = document.createElement("p");el_p.innerHTML = "Checking Your Network...please wait!";el_img.src = "./assets/images/spinner.gif";
                         var el_span =  document.createElement("span");el_span.innerHTML = "&times";el_span.onclick = function(){el.parentNode.removeChild(el);session.disconnect();}
                         el.appendChild(el_span);el.appendChild(el_img);el.appendChild(el_p);document.body.appendChild(el);
                         var session = OT.initSession(config.opentokAPIKey,$scope.OT_network_session);

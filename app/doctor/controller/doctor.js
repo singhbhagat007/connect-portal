@@ -156,7 +156,7 @@
                         $rootScope.toPlivoSessId = $scope.OT_network_session;
                         $rootScope.toPlivoToken = $scope.OT_network_token;
                         /*----------------------------------------*/
-                        var el = document.createElement("div");el.classList.add('OT_Network_Class_div');let el_img = document.createElement("img");let el_p = document.createElement("p");el_p.innerHTML = "Checking Your Network...please wait!";el_img.src = "./otnetwork/assets/spinner.gif";
+                        var el = document.createElement("div");el.classList.add('OT_Network_Class_div');let el_img = document.createElement("img");let el_p = document.createElement("p");el_p.innerHTML = "Checking Your Network...please wait!";el_img.src = "./assets/images/spinner.gif";
                         var el_span =  document.createElement("span");
                         el_span.innerHTML = "&times"; el_span.onclick = function(){ el.parentNode.removeChild(el); session.disconnect(); }
                         el.appendChild(el_span);el.appendChild(el_img);el.appendChild(el_p);document.body.appendChild(el);
@@ -1130,10 +1130,10 @@
             .then(function(result){
                 if(result.data.status_code == 200){
                     $scope.userCallData = result.data.result[0];
-                    $scope.userCallData.pcp_medication = JSON.parse($scope.userCallData.pcp_medication);
-                    $scope.userCallData.pcp_allergy = JSON.parse($scope.userCallData.pcp_allergy);
-                    $scope.userCallData.pcp_medical_condition = JSON.parse($scope.userCallData.pcp_medical_condition);
-                    $scope.userCallData.pcp_symptom = JSON.parse($scope.userCallData.pcp_symptom);    
+                    $scope.userCallData.pcp_medication = $scope.userCallData.pcp_medication==''?'':JSON.parse($scope.userCallData.pcp_medication);
+                    $scope.userCallData.pcp_allergy = $scope.userCallData.pcp_allergy==''?'':JSON.parse($scope.userCallData.pcp_allergy);
+                    $scope.userCallData.pcp_medical_condition = $scope.userCallData.pcp_medical_condition==''?'':JSON.parse($scope.userCallData.pcp_medical_condition);
+                    $scope.userCallData.pcp_symptom = $scope.userCallData.pcp_symptom==''?'':JSON.parse($scope.userCallData.pcp_symptom);     
                     if($scope.userCallData.pcp_symptom.length == 0){
                        $scope.userCallData.pcp_symptom = ["No Symptom"]; 
                     }
