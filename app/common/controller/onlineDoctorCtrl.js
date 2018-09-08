@@ -3,8 +3,8 @@
     angular
         .module('AkosPCP')
         .controller('onlineDoctorCtrl',onlineDoctorCtrl);
-    onlineDoctorCtrl.$inject = ['$scope','$http','$rootScope','$location','$window','$log','doctorServices','tokenValidatorService','$cookieStore','$state','$uibModal','moment','config','socketService','$filter','pdfChartingService','$compile','roomServices','$interval','appConfig'];
-    function onlineDoctorCtrl($scope,$http,$rootScope,$location,$window,$log,doctorServices,tokenValidatorService,$cookieStore,$state,$uibModal,moment,config,socketService,$filter,pdfChartingService,$compile,roomServices,$interval,appConfig){
+    onlineDoctorCtrl.$inject = ['$scope', '$http', '$rootScope', '$location', '$window', '$log', 'doctorServices', 'tokenValidatorService', '$cookieStore', '$state', '$uibModal', 'moment', 'config', 'socketService', '$filter', 'pdfChartingService', '$compile', 'roomServices', '$interval','appConfig'];
+    function onlineDoctorCtrl($scope, $http, $rootScope, $location, $window, $log, doctorServices, tokenValidatorService, $cookieStore, $state, $uibModal, moment, config, socketService, $filter, pdfChartingService, $compile, roomServices, $interval, appConfig){
         
         /*added on 310718*/
         //add for notify by email and sms
@@ -52,6 +52,7 @@
             .then(function(result){
                 if(result.data.status_code == 200){
                     $scope.onlineDoctor = result.data.result;
+
                     //$scope.usEncodedNumber = (""+$scope.verifyData.value).replace(/(\d\d\d)(\d\d\d)(\d\d\d\d)/, '($1) $2-$3');
                     angular.forEach($scope.onlineDoctor, function(value, key) {
                         let stime = moment(value.last_call_picked_at).format('HH:mm:ss');
@@ -205,6 +206,17 @@
         $interval(function() {
             $scope.getOnlineDoctor();
         }, 1000);
+
+        $scope.searchstate = function () {
+       
+            if ($scope.onlineDocState1.length > 2) {
+                $scope.onlineDocState = $scope.onlineDocState1;
+            }
+            if ($scope.onlineDocState.length > $scope.onlineDocState1.length) {
+                $scope.onlineDocState = $scope.onlineDocState1;
+            }
+           // ng - model="onlineDocState"
+        }
         
     }
     

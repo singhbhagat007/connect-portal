@@ -2,7 +2,7 @@
 <div id="onLineDocPanel" class="onLineDocPanel" ng-controller = "onlineDoctorCtrl">
     <span onclick="removeOnLineDocPanel()" class="closeOnLineDocPanel">&times;</span>
     <div class="form-group">
-        <input type="text" placeholder="Search by state" ng-model="onlineDocState" >
+        <input type="text" placeholder="Search by full state name" ng-change="searchstate()"  ng-model="onlineDocState1" >
     </div>
     <div class="content">
         <div ng-repeat="x in onlineDoctor | filter : onlineDocState track by $index" ng-if="x.status == 1" class="dynamicDOM" ng-class="x.is_available  ? 'opacityHigh' : 'opacityLow'" >   <!--ng-attr-title="{{(x.timer == 'available') ? 'Available' : 'Busy'}}"-->
@@ -24,6 +24,11 @@
                     <p>{{x.email}} </p> <br>
                     <p ng-if="x.timer && (x.timer != 'available') && (!x.is_available)">{{x.timer }} mins left</p>
                     <p ng-if="(x.timer == 'available') && !x.is_available">Anytime Available Now</p>
+                    <a class="tooltip">
+                        States licensed into..
+                        <span class="tooltiptext">Arizona, California, Washington, Alabama, Indiana, New York, New Jersey, Georgia, Alaska, Hawaai, Illinoi, Texas</span>
+                    </a>
+                    <!--<a   data-toggle="tooltip" data-placement="top" title="Arizona, California, Washington, Alabama, Indiana, New York, New Jersey, Georgia, Alaska, Hawaai, Illinoi, Texas">States licensed into..</a>-->
                 </li>
                 <li style="display: none;">
 
@@ -41,6 +46,7 @@
 
 
                 </li>
+                
             </ul>    
              <div style="margin-bottom: 8px;padding-left: 3px;">
                  
@@ -80,7 +86,7 @@
             color: #fff;
             text-decoration: none;
         }
-
+   
     .dropdown {
         position: relative;
         display: inline-block;
@@ -116,4 +122,32 @@
     .dropdown:hover .dropbtn {
         background-color: #3e8e41;
     }
+    .tooltip {
+        /*position: relative;*/
+        display: inline-block;
+        opacity: 1 !important;
+        position: relative;
+        /*border-bottom: 1px dotted black;*/
+    }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 150px;
+            background-color: black;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px 0;
+            font-size: 12px !important;
+            /* Position the tooltip */
+            position: absolute;
+            z-index: 1;
+            bottom: 100%;
+            left: 50%;
+            margin-left: -60px;
+        }
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}
 </style>
