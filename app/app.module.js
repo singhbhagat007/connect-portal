@@ -59,16 +59,25 @@
 
 
         if (!browser()) {
-            var modalInstance = $uibModal.open({
+             var modalInstance = $uibModal.open({
                 template: '\
                                     <div class="modal-header bootstrap-modal-header unsupportedbrowser">\
                                     <h4 class="modal-title" id="modal-title">Unsupported Browser</h4>\
                                     </div>\
                                     <div class="modal-body " id="modal-body">\
                                    <p style="padding:10px;">Unfortunately the browser you are using is currently not supported. We only support latest Google Chrome browser at this time. If you have Google Chrome already installed, please open the portal using chrome otherwise please install chrome by clicking on the icon below.</p>\
+                                     <div class="row" >\
+                                    <div class="col-md-6" style="text-align:center" >\
                                     <a href="https://www.google.com/chrome/">\
-                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Google_Chrome_icon_%282011%29.svg/2000px-Google_Chrome_icon_%282011%29.svg.png" style="margin: 0 auto;width:20%;display:block;">\
+                                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Google_Chrome_icon_%282011%29.svg/2000px-Google_Chrome_icon_%282011%29.svg.png" style="margin: 0 auto;width:30%;display:block;">\
                                     </a>\
+                                     </div>\
+                                    <div class="col-md-6" style="text-align:center" >\
+                                    <a href="https://www.mozilla.org/en-US/firefox/new/">\
+                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZJ8dde0jCe8MUqVEO9BGHaA_JbXMpMs8hfcx0gsBOR8px0hfF9g" style="margin: 0 auto;width:30%;display:block;">\
+                                    </a>\
+                                    </div>\
+                                    </div>\
                                     </div>\
                                     <div class="modal-footer bootstrap-modal-footer">\
                                         <button class="btn btn-primary" type="button" ng-click="cancel()">Close this window</button>\
