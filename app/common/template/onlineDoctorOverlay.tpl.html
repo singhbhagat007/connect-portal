@@ -26,7 +26,7 @@
                     <p ng-if="(x.timer == 'available') && !x.is_available">Anytime Available Now</p>
                     <a class="tooltip">
                         States licensed into..
-                        <span class="tooltiptext">Arizona, California, Washington, Alabama, Indiana, New York, New Jersey, Georgia, Alaska, Hawaai, Illinoi, Texas</span>
+                        <span class="tooltiptext" ng-if="x.state">{{x.state}}</span>
                     </a>
                     <!--<a   data-toggle="tooltip" data-placement="top" title="Arizona, California, Washington, Alabama, Indiana, New York, New Jersey, Georgia, Alaska, Hawaai, Illinoi, Texas">States licensed into..</a>-->
                 </li>
