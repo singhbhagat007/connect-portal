@@ -176,7 +176,100 @@
             return 'Are you sure you want to leave this page?';
         };
     </script>
-    
+     <div id="myModal" class="modal unsupportedbrowser">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header" ">
+                    <h4 class="modal-title">Unsupported Browser</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Unfortunately the browser you are using is currently not supported. We only support latest Google Chrome browser at this time. If you have Google Chrome already installed, please open the portal using chrome otherwise please install chrome by clicking on the icon below.</p>
+                    <div >
+                        <div class="row">
+                            <div class="col-md-3"></div>
+                            <div class="col-md-3"style="text-align: center;">
+                                <a href="https://www.google.com/chrome/">
+                                    <img src="https://cdn-images-1.medium.com/max/1600/1*DbFJ4hyeg5c9GKAze6hGow.jpeg" height="88px" style="width:100% !important">
+                                </a>
+                            </div>
+
+                            <div class="col-md-3" style="text-align: center;">
+                                <a href="https://www.mozilla.org/en-US/firefox/new/">
+                                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZJ8dde0jCe8MUqVEO9BGHaA_JbXMpMs8hfcx0gsBOR8px0hfF9g" height="68px" style="width:90% !important" >
+                                </a>
+                            </div>
+
+                        </div>
+                </div>
+                <div class="modal-footer" >
+                    <button type="button" class="btn btn-default" ng-click="cancel45()">Close this window</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        //var key = new RegExp('Chrome', 'g');
+        //var str = navigator.userAgent;
+        //if (!key.test(str)) {
+        //    var modal = document.getElementById('myModal');
+        //    modal.style.display = "block";
+        //}
+        var browser = function () {
+            debugger
+            var userAgent = navigator.userAgent;
+            debugger
+            var browsers = {
+                chrome: /achrome/g, mozilla: /Firefox/g
+            };
+
+            for (var key in browsers) {
+                if (browsers[key].test(userAgent)) {
+                    return true;
+                }
+            };
+
+            return false;
+        }
+
+
+        if (!browser()) {
+            var modal = document.getElementById('myModal');
+            modal.style.display = "block";
+        }
+        function closeModal() {
+            window.open('', '_self', '').close();
+            modal.style.display = "none";
+        }
+    </script>
+    <script  type="text/css">
+
+        .unsupportedbrowser{
+            font - family: 'Lato-Regular';
+            margin - top: 0 %;
+        }
+ .unsupportedbrowser.modal - header{
+            background: #25406B;
+        }
+ .unsupportedbrowser.modal - header span{
+            color: #fff;
+        }
+ .unsupportedbrowser.modal - title{
+            color: #fff;
+
+        }
+ .unsupportedbrowser.modal - body p{
+            padding: 10px;
+        }
+ .unsupportedbrowser.modal - body img{
+            margin: 0 auto;
+            <!--width: 100 % ! important;-->
+            display: block;
+        }
+ .unsupportedbrowser.modal - footer button{
+            background: #25406B;
+            color: #fff;
+        }
+    </script>
    
     <!-- endinject -->
 
