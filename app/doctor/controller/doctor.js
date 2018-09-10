@@ -5,7 +5,10 @@
         .controller('DoctorCtrl', DoctorCtrl);
     DoctorCtrl.$inject = ['$scope','$http','$rootScope','$location','$window','$log','doctorServices','tokenValidatorService','$cookieStore','$state','$uibModal','moment','config','socketService','$filter','pdfChartingService','$compile','$interval','appConfig'];
     function DoctorCtrl($scope,$http,$rootScope,$location,$window,$log,doctorServices,tokenValidatorService,$cookieStore,$state,$uibModal,moment,config,socketService,$filter,pdfChartingService,$compile,$interval,appConfig,sessionResolve) {
-
+      
+        if ($rootScope.wrongbrowser) {
+            $state.go('login'); 
+        }
         // $scope.testScope = "test";
         // $rootScope.$emit('event',$scope.testScope);
         // $scope.$on('event', function(events,args){
@@ -48,7 +51,11 @@
         
         
         
-        $scope.loginForm = function(x){
+        $scope.loginForm = function (x) {
+            
+            if ($rootScope.wrongbrowser) {
+                return;
+            }
             $scope.loading = true;
             $scope.loginData = x;
             /*added 250718*/
@@ -149,7 +156,7 @@
                         $rootScope.toPlivoSessId = $scope.OT_network_session;
                         $rootScope.toPlivoToken = $scope.OT_network_token;
                         /*----------------------------------------*/
-                        var el = document.createElement("div");el.classList.add('OT_Network_Class_div');let el_img = document.createElement("img");let el_p = document.createElement("p");el_p.innerHTML = "Checking Your Network...please wait!";el_img.src = "./otnetwork/assets/spinner.gif";
+                        var el = document.createElement("div");el.classList.add('OT_Network_Class_div');let el_img = document.createElement("img");let el_p = document.createElement("p");el_p.innerHTML = "Checking Your Network...please wait!";el_img.src = "./assets/images/spinner.gif";
                         var el_span =  document.createElement("span");
                         el_span.innerHTML = "&times"; el_span.onclick = function(){ el.parentNode.removeChild(el); session.disconnect(); }
                         el.appendChild(el_span);el.appendChild(el_img);el.appendChild(el_p);document.body.appendChild(el);
@@ -788,25 +795,26 @@
             }
             /*------------------------------------*/
   
- $scope.docCall = function(x,callid){
+ //$scope.docCall = function(x,callid){
                
-                        doctorServices.saveCallStartedAt(new Date());
-                        doctorServices.saveWaitingUserId(x);
-                        $state.go('doctor.call');
-                        doctorServices.updatestatusBycallId({ call_id: callid, status: "In progress" })
-                            .then(function (result) {
-                                $log.log(result);
-                                if (result.data.status_code == 200) {
-                                }
-                            })
-                        socketService.emit('doctorAcceptedCall',{patientId:x},function(data){
-                            $log.log("doctor accepted the call");    
-                        });
+ //                       doctorServices.saveCallStartedAt(new Date());
+ //                       doctorServices.saveWaitingUserId(x);
+ //                       $state.go('doctor.call');
+ //                       doctorServices.updatestatusBycallId({ call_id: callid, status: "In progress" })
+ //                           .then(function (result) {
+ //                               $log.log(result);
+ //                               if (result.data.status_code == 200) {
+ //                               }
+ //                           })
+ //                       socketService.emit('doctorAcceptedCall',{patientId:x},function(data){
+ //                           $log.log("doctor accepted the call");    
+ //                       });
                    
         
-            }          
-/*
-            $scope.docCall = function(x,callid){
+ //           }          
+
+            $scope.docCall = function (x, callid) {
+                if (appConfig.network_check_provider) {
                 checkNetworkCallback('pcpDoctor',function(result){
                     if(result.acode == 1){
                         doctorServices.saveCallStartedAt(new Date());
@@ -874,8 +882,28 @@
                         return false;
                     }
                 })
+                } else {
+                    doctorServices.saveCallStartedAt(new Date());
+                    doctorServices.saveWaitingUserId(x);
+                    $state.go('doctor.call');
+               
+                    doctorServices.updatestatusBycallId({ call_id: callid, status: "In progress" })
+                        .then(function (result) {
+                            $log.log(result);
+                       
+                            if (result.data.status_code == 200) {
+                               
+                            }
+                        })
+                    var docdata = JSON.parse(localStorage.getItem('pcpDocData'))
+                    socketService.emit('doctorAcceptedCall', {
+                        patientId: x, acceptby: docdata.name
+                    }, function (data) {
+                        $log.log("doctor accepted the call");
+                    });
+                }
             }
-            */
+            
         }
         /* doctor dashboard controller end*/ 
 
@@ -1102,10 +1130,10 @@
             .then(function(result){
                 if(result.data.status_code == 200){
                     $scope.userCallData = result.data.result[0];
-                    $scope.userCallData.pcp_medication = JSON.parse($scope.userCallData.pcp_medication);
-                    $scope.userCallData.pcp_allergy = JSON.parse($scope.userCallData.pcp_allergy);
-                    $scope.userCallData.pcp_medical_condition = JSON.parse($scope.userCallData.pcp_medical_condition);
-                    $scope.userCallData.pcp_symptom = JSON.parse($scope.userCallData.pcp_symptom);    
+                    $scope.userCallData.pcp_medication = $scope.userCallData.pcp_medication==''?'':JSON.parse($scope.userCallData.pcp_medication);
+                    $scope.userCallData.pcp_allergy = $scope.userCallData.pcp_allergy==''?'':JSON.parse($scope.userCallData.pcp_allergy);
+                    $scope.userCallData.pcp_medical_condition = $scope.userCallData.pcp_medical_condition==''?'':JSON.parse($scope.userCallData.pcp_medical_condition);
+                    $scope.userCallData.pcp_symptom = $scope.userCallData.pcp_symptom==''?'':JSON.parse($scope.userCallData.pcp_symptom);     
                     if($scope.userCallData.pcp_symptom.length == 0){
                        $scope.userCallData.pcp_symptom = ["No Symptom"]; 
                     }

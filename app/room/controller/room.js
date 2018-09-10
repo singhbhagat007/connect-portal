@@ -5,8 +5,10 @@
         .controller('RoomCtrl', RoomCtrl); 
     RoomCtrl.$inject = ['$scope','$http','$rootScope','$location','$window','$log','tokenValidatorService','$cookieStore','$state','$uibModal','moment','$stateParams','roomServices','getSymptomsService','$filter','config','socketService','$compile','$timeout','appConfig'];
     function RoomCtrl($scope,$http,$rootScope,$location,$window,$log,tokenValidatorService,$cookieStore,$state,$uibModal,moment,$stateParams,roomServices,getSymptomsService,$filter,config,socketService,$compile,$timeout,appConfig) {
-
-        
+			$scope.appConfig = appConfig;
+        if ($rootScope.wrongbrowser) {
+            return;
+        }
 
         $log.log($location.search().id);
         $rootScope.isPatient = true;
@@ -47,7 +49,7 @@
                     if(result.data.status_code == 200){
                         $scope.OT_network_session = result.data.result.session;
                         $scope.OT_network_token = result.data.result.token;
-                        var el = document.createElement("div");el.classList.add('OT_Network_Class_div');let el_img = document.createElement("img");let el_p = document.createElement("p");el_p.innerHTML = "Checking Your Network...please wait!";el_img.src = "./otnetwork/assets/spinner.gif";
+                        var el = document.createElement("div");el.classList.add('OT_Network_Class_div');let el_img = document.createElement("img");let el_p = document.createElement("p");el_p.innerHTML = "Checking Your Network...please wait!";el_img.src = "./assets/images/spinner.gif";
                         var el_span =  document.createElement("span");el_span.innerHTML = "&times";el_span.onclick = function(){el.parentNode.removeChild(el);session.disconnect();}
                         el.appendChild(el_span);el.appendChild(el_img);el.appendChild(el_p);document.body.appendChild(el);
                         var session = OT.initSession(config.opentokAPIKey,$scope.OT_network_session);
@@ -98,7 +100,7 @@
                             }else{
                                 $scope.isDeviceNotAvailable = 1; // for no device
                                 el.parentNode.removeChild(el);
-                                $("#bootstrapModalNetworkCheck").modal();
+                              //  $("#bootstrapModalNetworkCheck").modal();
                                 callbackNetworkCheck({acode:2});
                             }
                         })
@@ -117,7 +119,7 @@
             $scope.dataParam = {};
             $scope.dataParam.alias = $state.params.id;
             roomServices.getDocFromAlias($scope.dataParam)
-            .then(function(result){
+                .then(function (result) {
                 if(result.data.status_code == 200){
                     if(result.data.result.length == 0){
                         $scope.loading= false;
@@ -176,7 +178,7 @@
                     
                 }else{
                     $scope.loading= false;
-                    alert("error");
+                   // alert("error");
                 }
             })
             
@@ -205,7 +207,9 @@
             
             $scope.inactiveAlias = 0;
             $scope.joinNurseRoomForm = function(x){
-                
+                if ($rootScope.wrongbrowser) {
+                    return;
+                }
 
                 $scope.checkParam = {};
                 $scope.checkParam.phone = x.phone;
@@ -576,96 +580,80 @@
                 })
                 //$state.go('room.call',{id:$state.params.id});
             }
-        
-        //(07/21/2018)for dynamic
-            $scope.dynamicverifyotpredirect = function () {
-              //checkNetworkCallback(function (result) {
-               //if (result.acode == 1) {
-                if (JSON.parse(localStorage.getItem('connect_provider_settings')).type == "WC_NURSE") {
-                    $log.log(1234);
-                    
-                    $scope.userLocalDetails = roomServices.getUserDetailsLocalstorage();
-                    $log.log($scope.userLocalDetails);
-                    $scope.userLocalDetails.employerId = appConfig.employerId;
-                    roomServices.saveUserMeetingDetails($scope.userLocalDetails)
-                        .then(function (result) {
-                            $log.log(result);
-                            if (result.data.status_code == 200) {
+            $scope.dynamicavoidsavemeeting = function (para_patient_id,para_call_id) {
+                //add this for connect url (07/23/2018)
+                roomServices.savePatientId(para_patient_id);
+                roomServices.savePatientCallIdlocalstorage(para_call_id);
+                //** add for save call start time
 
+                roomServices.checkstatusinwatingroom({ patient_id: para_patient_id })
+                    .then(function (resultstatus) {
+                        //add for generate callid by patientid 
+                        if (resultstatus.data.status_code == 200) {
+                            roomServices.generatecallidbypatientid({ patientId: para_patient_id, staffid: 500, call_started: moment().format('YYYY-MM-DD') })
+                                .then(function (result) {
+                                    $log.log(result);
+                                    if (result.data.status_code == 200) {
 
-                                //add this for connect url (07/23/2018)
-                                roomServices.savePatientId(result.data.result.patient_id);
-                                roomServices.savePatientCallIdlocalstorage($scope.call_id);
-                                //** add for save call start time
-								
-								 roomServices.checkstatusinwatingroom({ patient_id: result.data.result.patient_id})
-                                        .then(function (resultstatus) {
-                                            //add for generate callid by patientid 
-                                            if (resultstatus.data.status_code == 200) {
-                                roomServices.generatecallidbypatientid({ patientId: result.data.result.patient_id, staffid: 500, call_started: moment().format('YYYY-MM-DD') })
-                                    .then(function (result) {
-                                        $log.log(result);
-                                        if (result.data.status_code == 200) {
-                                            
-                                            $scope.call_id = result.data.result.call_id;
-                                            
-                                             $scope.IdJson = {};
-                                $scope.IdJson.email = $scope.userLocalDetails.email;
-                                if ($scope.IdJson.email == '') {
-                                    $scope.IdJson.email = $scope.userLocalDetails.phone;
-                                }
-                                roomServices.getSavedUserId($scope.IdJson)
-                                    .then(function (result) {
-                                        $log.log(result);
-                                        if (result.data.status_code == 200) {
-                                            $scope.userFetchedId = result.data.result[0].id;
-                                            $scope.param = {};
-                                            $scope.param.docId = roomServices.getDocIdFromAlias();
+                                        $scope.call_id = result.data.result.call_id;
+                                        roomServices.savePatientCallIdlocalstorage($scope.call_id);
+                                        $scope.IdJson = {};
+                                        $scope.IdJson.email = $scope.userLocalDetails.email;
+                                        if ($scope.IdJson.email == '') {
+                                            $scope.IdJson.email = $scope.userLocalDetails.phone;
+                                        }
+                                        roomServices.getSavedUserId($scope.IdJson)
+                                            .then(function (result) {
+                                                $log.log(result);
+                                                if (result.data.status_code == 200) {
+                                                    $scope.userFetchedId = result.data.result[0].id;
+                                                    $scope.param = {};
+                                                    $scope.param.docId = roomServices.getDocIdFromAlias();
 
-                                            if (JSON.parse(localStorage.getItem('userMeetingDetails')).id != undefined) {
-                                                $scope.param.userId = JSON.parse(localStorage.getItem('userMeetingDetails')).id;
-                                            } else {
-                                                $scope.param.userId = $scope.userFetchedId;
-                                                
-                                            }
+                                                    if (JSON.parse(localStorage.getItem('userMeetingDetails')).id != undefined) {
+                                                        $scope.param.userId = JSON.parse(localStorage.getItem('userMeetingDetails')).id;
+                                                    } else {
+                                                        $scope.param.userId = $scope.userFetchedId;
+
+                                                    }
                                                     $scope.newLocalStorage = JSON.parse(localStorage.getItem('userMeetingDetails'));
                                                     $scope.newLocalStorage.id = $scope.param.userId;
                                                     localStorage.setItem("userMeetingDetails", JSON.stringify($scope.newLocalStorage));
-                                            //$scope.param.group_id = $scope.docGroupIdFromAlias;
-                                            $scope.param.groupId = roomServices.getDocGroupIdFromAlias();
-                                            $scope.param.symptom = "";
-                                            $scope.param.allergy = "";
-                                            $scope.param.medication = "";
-                                            $scope.param.medical_condition = "";
-                                            ////////////////////////                    //add new for generate call_id 
-                                            //for add call_id in watingroom table(07082018)
-                                            /*added on 270718*/
-                                           $scope.param.state_of_injury = ($scope.newLocalStorage && $scope.newLocalStorage.state_of_injury) ? $scope.newLocalStorage.state_of_injury : '';
-                                           $scope.param.date_of_injury = ($scope.newLocalStorage && $scope.newLocalStorage.date_of_injury) ? $scope.newLocalStorage.date_of_injury : '';
-                                           $scope.param.employer_name = ($scope.newLocalStorage && $scope.newLocalStorage.employer_name) ? $scope.newLocalStorage.employer_name : '';
+                                                    //$scope.param.group_id = $scope.docGroupIdFromAlias;
+                                                    $scope.param.groupId = roomServices.getDocGroupIdFromAlias();
+                                                    $scope.param.symptom = "";
+                                                    $scope.param.allergy = "";
+                                                    $scope.param.medication = "";
+                                                    $scope.param.medical_condition = "";
+                                                    ////////////////////////                    //add new for generate call_id 
+                                                    //for add call_id in watingroom table(07082018)
+                                                    /*added on 270718*/
+                                                    $scope.param.state_of_injury = ($scope.newLocalStorage && $scope.newLocalStorage.state_of_injury) ? $scope.newLocalStorage.state_of_injury : '';
+                                                    $scope.param.date_of_injury = ($scope.newLocalStorage && $scope.newLocalStorage.date_of_injury) ? $scope.newLocalStorage.date_of_injury : '';
+                                                    $scope.param.employer_name = ($scope.newLocalStorage && $scope.newLocalStorage.employer_name) ? $scope.newLocalStorage.employer_name : '';
 
-                                            /*---------------*/
-                                            $scope.param.call_id = JSON.stringify(roomServices.getPatientCallIdlocalstorage());
-                                            /////////
-                                            roomServices.addUserToWaiting($scope.param)
-                                                .then(function (result) {
-                                                    if (result.data.status_code == 200) {
-                                                        
-                                                        socketService.emit('userjoin', { waitingId: $scope.userFetchedId }, function (data) {
-                                                            $log.log("user added");
-                                                            $log.log(data);
-                                                        });
-                                                        $scope.loading = false;
-                                                        $log.log(result);
+                                                    /*---------------*/
+                                                    $scope.param.call_id = JSON.stringify(roomServices.getPatientCallIdlocalstorage());
+                                                    /////////
+                                                    roomServices.addUserToWaiting($scope.param)
+                                                        .then(function (result) {
+                                                            if (result.data.status_code == 200) {
+
+                                                                socketService.emit('userjoin', { waitingId: $scope.userFetchedId }, function (data) {
+                                                                    $log.log("user added");
+                                                                    $log.log(data);
+                                                                });
+                                                                $scope.loading = false;
+                                                                $log.log(result);
 
 
 
-                                                        //pop to show recording info
-                                                        //alert("hiiiiiiii");
+                                                                //pop to show recording info
+                                                                //alert("hiiiiiiii");
 
-                                                        var modalInstance = $uibModal.open({
-                                                            size: 'sm',
-                                                            template: '\
+                                                                var modalInstance = $uibModal.open({
+                                                                    size: 'sm',
+                                                                    template: '\
                                                                 <div class="modal-header bootstrap-modal-header">\
                                                                 <h3 class="modal-title" id="modal-title">Info </h3>\
                                                                 </div>\
@@ -676,92 +664,92 @@
                                                                     <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>\
                                                                 </div>\
                                                                 ',
-                                                            //templateUrl: "callDisconnectedDocModal.html",
-                                                            controller: function ($scope, $uibModalInstance) {
-                                                                $scope.ok = function () {
-                                                                    $uibModalInstance.close();
+                                                                    //templateUrl: "callDisconnectedDocModal.html",
+                                                                    controller: function ($scope, $uibModalInstance) {
+                                                                        $scope.ok = function () {
+                                                                            $uibModalInstance.close();
 
-                                                                 var ua = navigator.userAgent.toLowerCase();
-                                                                var isAndroid = ua.indexOf("android") > -1;
-																
-																 if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(ua)) {
-                                                                    //&& ua.indexOf("mobile");
-                                                                    var connecturldedetail = roomServices.getUserConnectUrlstorage();
-                                                                    
-                                                                    if (isAndroid) {
-                                                                        $scope.appStore = "PLAY";
-                                                                        if (typeof connecturldedetail.thirdParty != 'undefined') {
-                                                                            var url = "patientapp:///" + connecturldedetail.roomId + '/' + connecturldedetail.thirdParty;
-                                                                            var docurl = "akosmd:///" + connecturldedetail.roomId + '/' + connecturldedetail.thirdParty;
-                                                                        
-                                                                        } else {
-                                                                            var url = "patientapp:///" + connecturldedetail.roomId + '/' + connecturldedetail.type + '/**' + JSON.stringify(roomServices.getPatientId());
-                                                                            var docurl = "akosmd:///" + connecturldedetail.roomId + '/' + connecturldedetail.type + '/**' + JSON.stringify(roomServices.getPatientId());
-                                                                        
-                                                                        }
-                                                                    } else {
-                                                                        $scope.appStore = "APP";
-                                                                        if (typeof connecturldedetail.thirdParty != 'undefined') {
-                                                                            var url = "testAkos:///" + connecturldedetail.roomId + '/' + connecturldedetail.thirdParty;
-                                                                            var docurl = "testAkosDoctor:///" + connecturldedetail.roomId + '/' + connecturldedetail.thirdParty;
-                                                                        
-                                                                        } else {
-                                                                            var url = "testAkos:///" + connecturldedetail.roomId + '/' + connecturldedetail.type + '/**' + JSON.stringify(roomServices.getPatientId());
-                                                                            var docurl = "testAkosDoctor:///" + connecturldedetail.roomId + '/' + connecturldedetail.type + '/**' + JSON.stringify(roomServices.getPatientId());
-                                                                         
-                                                                        }
+                                                                            var ua = navigator.userAgent.toLowerCase();
+                                                                            var isAndroid = ua.indexOf("android") > -1;
 
-                                                                        
+                                                                            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(ua)) {
+                                                                                //&& ua.indexOf("mobile");
+                                                                                var connecturldedetail = roomServices.getUserConnectUrlstorage();
+
+                                                                                if (isAndroid) {
+                                                                                    $scope.appStore = "PLAY";
+                                                                                    if (typeof connecturldedetail.thirdParty != 'undefined') {
+                                                                                        var url = "patientapp:///" + connecturldedetail.roomId + '/' + connecturldedetail.thirdParty;
+                                                                                        var docurl = "akosmd:///" + connecturldedetail.roomId + '/' + connecturldedetail.thirdParty;
+
+                                                                                    } else {
+                                                                                        var url = "patientapp:///" + connecturldedetail.roomId + '/' + connecturldedetail.type + '/**' + JSON.stringify(roomServices.getPatientId());
+                                                                                        var docurl = "akosmd:///" + connecturldedetail.roomId + '/' + connecturldedetail.type + '/**' + JSON.stringify(roomServices.getPatientId());
+
+                                                                                    }
+                                                                                } else {
+                                                                                    $scope.appStore = "APP";
+                                                                                    if (typeof connecturldedetail.thirdParty != 'undefined') {
+                                                                                        var url = "testAkos:///" + connecturldedetail.roomId + '/' + connecturldedetail.thirdParty;
+                                                                                        var docurl = "testAkosDoctor:///" + connecturldedetail.roomId + '/' + connecturldedetail.thirdParty;
+
+                                                                                    } else {
+                                                                                        var url = "testAkos:///" + connecturldedetail.roomId + '/' + connecturldedetail.type + '/**' + JSON.stringify(roomServices.getPatientId());
+                                                                                        var docurl = "testAkosDoctor:///" + connecturldedetail.roomId + '/' + connecturldedetail.type + '/**' + JSON.stringify(roomServices.getPatientId());
+
+                                                                                    }
+
+
+                                                                                }
+
+                                                                                setTimeout(function () {
+                                                                                    window.location = url;
+                                                                                }, 25);
+                                                                                window.location = docurl;
+                                                                            }
+                                                                            else {
+                                                                                $state.go('room.call', { id: roomServices.getDocAlias() });
+                                                                            }
+
+                                                                        };
+
+                                                                        $scope.cancel = function () {
+                                                                            $uibModalInstance.dismiss('cancel');
+                                                                        };
                                                                     }
+                                                                });
+                                                                modalInstance.result.then(function (selectedItem) {
+                                                                    $scope.selected = selectedItem;
+                                                                }, function () {
+                                                                    $log.info('Modal dismissed at: ' + new Date());
+                                                                });
 
-                                                                    setTimeout(function () {
-                                                                    window.location = url;
-                                                                    }, 25);
-                                                                    window.location = docurl;
-                                                                }
-                                                                else {                                             
-                                                                    $state.go('room.call', { id: roomServices.getDocAlias() });
-																}
+                                                                //end-pop to show recording info
 
-                                                                };
 
-                                                                $scope.cancel = function () {
-                                                                    $uibModalInstance.dismiss('cancel');
-                                                                };
+                                                                //$state.go('room.call',{id:roomServices.getDocAlias()});
+                                                            } else {
+                                                                $scope.loading = false;
+                                                                alert("error");
                                                             }
-                                                        });
-                                                        modalInstance.result.then(function (selectedItem) {
-                                                            $scope.selected = selectedItem;
-                                                        }, function () {
-                                                            $log.info('Modal dismissed at: ' + new Date());
-                                                        });
+                                                        })
+                                                } else {
+                                                    alert("error");
+                                                }
+                                            })
 
-                                                        //end-pop to show recording info
-
-
-                                                        //$state.go('room.call',{id:roomServices.getDocAlias()});
-                                                    } else {
-                                                        $scope.loading = false;
-                                                        alert("error");
-                                                    }
-                                                })
-                                        } else {
-                                            alert("error");
-                                        }
-                                    })
-
-                                        } else {
-                                            alert("error");
-                                        }
-                                        
-                                       
-                                    })
-                                
-								     } else {
+                                    } else {
+                                        alert("error");
+                                    }
 
 
-                                                    var modalInstance = $uibModal.open({
-                                                        template: '\
+                                })
+
+                        } else {
+
+
+                            var modalInstance = $uibModal.open({
+                                template: '\
                                        <div class="modal-header bootstrap-modal-header">\
                                        <h3 class="modal-title" id="modal-title"> Incorrect User Details </h3>\
                                        </div>\
@@ -772,31 +760,55 @@
                                            <button class="btn btn-primary" type="button" ng-click="cancel()">OK</button>\
                                        </div>\
                                        ',
-                                                        //templateUrl: "callDisconnectedDocModal.html",
-                                                        controller: ModalInstanceCtrl,
-                                                        scope: $scope,
-                                                        size: 'sm',
-                                                        resolve: {
-                                                            sessionResolve: function () {
-                                                                return '';
-                                                            }
-                                                        }
-                                                    });
-                                                    modalInstance.result.then(function (selectedItem) {
-                                                        $scope.selected = selectedItem;
-                                                    }, function () {
-                                                        $log.info('Modal dismissed at: ' + new Date());
-                                                    });
-                                                }
-                                            
-                                        })
-								
-								////////////////////////////
-                               
-                            } else {
-                                alert("error");
-                            }
-                        })
+                                //templateUrl: "callDisconnectedDocModal.html",
+                                controller: ModalInstanceCtrl,
+                                scope: $scope,
+                                size: 'sm',
+                                resolve: {
+                                    sessionResolve: function () {
+                                        return '';
+                                    }
+                                }
+                            });
+                            modalInstance.result.then(function (selectedItem) {
+                                $scope.selected = selectedItem;
+                            }, function () {
+                                $log.info('Modal dismissed at: ' + new Date());
+                            });
+                        }
+
+                    })
+
+                                    ////////////////////////////
+            }
+            $scope.afterDynamicVerifyNetworkCheck = function () {
+                if (JSON.parse(localStorage.getItem('connect_provider_settings')).type == "WC_NURSE") {
+                    $log.log(1234);
+
+                    $scope.userLocalDetails = roomServices.getUserDetailsLocalstorage();
+                    $log.log($scope.userLocalDetails);
+                    $scope.userLocalDetails.employerId = appConfig.employerId;
+                    if ($scope.userLocalDetails && $scope.userLocalDetails.id) {
+
+                        $scope.dynamicavoidsavemeeting($scope.userLocalDetails.id, $scope.call_id);
+                    } else {
+                        roomServices.saveUserMeetingDetails($scope.userLocalDetails)
+                            .then(function (result) {
+                                $log.log(result);
+                                if (result.data.status_code == 200) {
+
+
+                                    //add this for connect url (07/23/2018)
+                                   // roomServices.savePatientId(result.data.result.patient_id);
+                                    $scope.dynamicavoidsavemeeting(result.data.result.patient_id, $scope.call_id);
+
+                                    ////////////////////////////
+
+                                } else {
+                                    alert("error");
+                                }
+                            })
+                    }
                 } else {
                     if (localStorage.getItem('userMeetingDetails') != '') {
                         $state.go('room.medicalHistory', { 'id': roomServices.getDocAlias() });
@@ -804,9 +816,19 @@
                         $state.go('room.user', { 'id': roomServices.getDocAlias() });
                     }
                 }
-             /* }else if (result.acode == 0 || result.acode == 2) {
-                        var modalInstance = $uibModal.open({
-                            template: '<div class="modal-header bootstrap-modal-header">\
+            }
+
+
+        //(07/21/2018)for dynamic
+            $scope.dynamicverifyotpredirect = function () {
+                if (appConfig.network_check_provider) {
+                    checkNetworkCallback(function (result) {
+                        if (result.acode == 1) {
+                            $scope.afterDynamicVerifyNetworkCheck();
+                        }
+                        else if (result.acode == 0 || result.acode == 2) {
+                            var modalInstance = $uibModal.open({
+                                template: '<div class="modal-header bootstrap-modal-header">\
                                           <h3 ng-if="'+ result.acode + '==2" class= "modal-title" id="modal-title"> Network Check </h3>\
                                             <h3 ng-if="'+ result.acode + '==0" class="modal-title" id="modal-title">Weak Signal </h3>\
                                             </div>\
@@ -818,46 +840,49 @@
                                                 <button class="btn btn-primary" type="button" ng-click="cancel()">OK </button>\
                                             </div>\
                                             ',
-                            controller: ModalInstanceCtrl,
-                            scope: $scope,
-                            size: 'sm',
-                            windowClass: 'sendpatient-email-pop-class',
-                            resolve: {
-                                modalProgressValue: function () {
-                                    return "";
-                                },
-                                CPTBilling: function () {
-                                    return "";
-                                },
-                                sessionResolve: function () {
-                                    return '';
-                                },
-                                meetingRoomURLResolve: function () {
-                                    return "";
-                                },
-                                emailMeetingLinkUrlResolve: function () {
-                                    return '';
-                                },
-                                lockEncounterData: function () {
-                                    return "";
-                                },
-                                disconnectData: function () {
-                                    return "";
+                                controller: ModalInstanceCtrl,
+                                scope: $scope,
+                                size: 'sm',
+                                windowClass: 'sendpatient-email-pop-class',
+                                resolve: {
+                                    modalProgressValue: function () {
+                                        return "";
+                                    },
+                                    CPTBilling: function () {
+                                        return "";
+                                    },
+                                    sessionResolve: function () {
+                                        return '';
+                                    },
+                                    meetingRoomURLResolve: function () {
+                                        return "";
+                                    },
+                                    emailMeetingLinkUrlResolve: function () {
+                                        return '';
+                                    },
+                                    lockEncounterData: function () {
+                                        return "";
+                                    },
+                                    disconnectData: function () {
+                                        return "";
+                                    }
                                 }
-                            }
 
-                        });
-                        modalInstance.result.then(function (selectedItem) {
-                            $scope.selected = selectedItem;
-                        }, function () {
-                            $log.info('Modal dismissed at: ' + new Date());
-                        });
+                            });
+                            modalInstance.result.then(function (selectedItem) {
+                                $scope.selected = selectedItem;
+                            }, function () {
+                                $log.info('Modal dismissed at: ' + new Date());
+                            });
 
-                    }
-                    else {
-                        return false;
-                    }
-                });*/
+                        }
+                        else {
+                            return false;
+                        }
+                    });
+                } else {
+                    $scope.afterDynamicVerifyNetworkCheck();
+                }
             }
             
 
@@ -976,8 +1001,244 @@
             if($scope.verifyData.type == "phone"){
                 $scope.usEncodedNumber = (""+$scope.verifyData.value).replace(/(\d\d\d)(\d\d\d)(\d\d\d\d)/, '($1) $2-$3');
             }
-    
+            $scope.avoidsaveusermeting = function (para_patient_id){
+                roomServices.savePatientId(para_patient_id);
+                roomServices.checkstatusinwatingroom({ patient_id: para_patient_id })
+                    .then(function (resultstatus) {
+                        //add for generate callid by patientid 
+                        if (resultstatus.data.status_code == 200) {
+                            //add for generate callid by patientid 
+                            roomServices.generatecallidbypatientid({ patientId: para_patient_id, staffid: 500, call_started: moment().format('YYYY-MM-DD') })
+                                .then(function (result) {
+                                    $log.log(result);
+                                    if (result.data.status_code == 200) {
 
+                                        $scope.call_id = result.data.result.call_id;
+                                        roomServices.savePatientCallIdlocalstorage($scope.call_id);
+                                        $scope.IdJson = {};
+                                        $scope.IdJson.email = $scope.userLocalDetails.email;
+                                        if ($scope.IdJson.email == '') {
+                                            $scope.IdJson.email = $scope.userLocalDetails.phone;
+                                        }
+
+
+
+
+
+                                        roomServices.getSavedUserId($scope.IdJson)
+                                            .then(function (result) {
+                                                $log.log(result);
+                                                if (result.data.status_code == 200) {
+
+
+                                                    $scope.userFetchedId = result.data.result[0].id;
+                                                    $scope.param = {};
+                                                    $scope.param.docId = roomServices.getDocIdFromAlias();
+
+                                                    if (JSON.parse(localStorage.getItem('userMeetingDetails')).id != undefined) {
+                                                        $scope.param.userId = JSON.parse(localStorage.getItem('userMeetingDetails')).id;
+                                                    } else {
+                                                        $scope.param.userId = $scope.userFetchedId;
+
+                                                    }
+                                                    $scope.newLocalStorage = JSON.parse(localStorage.getItem('userMeetingDetails'));
+                                                    $scope.newLocalStorage.id = $scope.param.userId;
+                                                    localStorage.setItem("userMeetingDetails", JSON.stringify($scope.newLocalStorage));
+                                                    //$scope.param.group_id = $scope.docGroupIdFromAlias;
+                                                    $scope.param.groupId = roomServices.getDocGroupIdFromAlias();
+                                                    $scope.param.symptom = "";
+                                                    $scope.param.allergy = "";
+                                                    $scope.param.medication = "";
+                                                    $scope.param.medical_condition = "";
+
+                                                    /*added on 270718*/
+                                                    $scope.param.state_of_injury = ($scope.newLocalStorage && $scope.newLocalStorage.state_of_injury) ? $scope.newLocalStorage.state_of_injury : '';
+                                                    $scope.param.date_of_injury = ($scope.newLocalStorage && $scope.newLocalStorage.date_of_injury) ? $scope.newLocalStorage.date_of_injury : '';
+                                                    $scope.param.employer_name = ($scope.newLocalStorage && $scope.newLocalStorage.employer_name) ? $scope.newLocalStorage.employer_name : '';
+
+                                                    /*---------------*/
+                                                    //for add call_id in watingroom table
+                                                    $scope.param.call_id = JSON.stringify(roomServices.getPatientCallIdlocalstorage());
+
+
+                                                    roomServices.addUserToWaiting($scope.param)
+                                                        .then(function (result) {
+                                                            if (result.data.status_code == 200) {
+
+                                                                socketService.emit('userjoin', { waitingId: $scope.userFetchedId }, function (data) {
+                                                                    $log.log("user added");
+                                                                    $log.log(data);
+                                                                });
+                                                                $scope.loading = false;
+                                                                $log.log(result);
+
+
+
+                                                                //pop to show recording info
+                                                                //alert("hiiiiiiii");
+
+                                                                var modalInstance = $uibModal.open({
+                                                                    size: 'sm',
+                                                                    template: '\
+								                                <div class="modal-header bootstrap-modal-header">\
+								                                <h3 class="modal-title" id="modal-title">Info </h3>\
+								                                </div>\
+								                                <div class="modal-body bootstrap-modal-body" id="modal-body">\
+								                                <p>'+ 'This call will be recorded for quality and training purposes.' + ' </p>\
+								                                </div>\
+								                                <div class="modal-footer bootstrap-modal-footer">\
+								                                    <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>\
+								                                </div>\
+								                                ',
+                                                                    //templateUrl: "callDisconnectedDocModal.html",
+                                                                    controller: function ($scope, $uibModalInstance) {
+                                                                        $scope.ok = function () {
+                                                                            $uibModalInstance.close();
+                                                                            //add this for connect url (07/23/2018)
+
+                                                                            var ua = navigator.userAgent.toLowerCase();
+                                                                            var isAndroid = ua.indexOf("android") > -1;
+
+                                                                            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(ua)) {
+                                                                                //&& ua.indexOf("mobile");
+                                                                                var connecturldedetail = roomServices.getUserConnectUrlstorage();
+
+                                                                                if (isAndroid) {
+                                                                                    $scope.appStore = "PLAY";
+                                                                                    if (typeof connecturldedetail.thirdParty != 'undefined') {
+                                                                                        var url = "patientapp:///" + connecturldedetail.roomId + '/' + connecturldedetail.thirdParty;
+                                                                                        var docurl = "akosmd:///" + connecturldedetail.roomId + '/' + connecturldedetail.thirdParty;
+
+                                                                                    } else {
+                                                                                        var url = "patientapp:///" + connecturldedetail.roomId + '/' + connecturldedetail.type + '/**' + JSON.stringify(roomServices.getPatientId());
+                                                                                        var docurl = "akosmd:///" + connecturldedetail.roomId + '/' + connecturldedetail.type + '/**' + JSON.stringify(roomServices.getPatientId());
+
+                                                                                    }
+                                                                                } else {
+                                                                                    $scope.appStore = "APP";
+                                                                                    if (typeof connecturldedetail.thirdParty != 'undefined') {
+                                                                                        var url = "testAkos:///" + connecturldedetail.roomId + '/' + connecturldedetail.thirdParty;
+                                                                                        var docurl = "testAkosDoctor:///" + connecturldedetail.roomId + '/' + connecturldedetail.thirdParty;
+
+                                                                                    } else {
+                                                                                        var url = "testAkos:///" + connecturldedetail.roomId + '/' + connecturldedetail.type + '/**' + JSON.stringify(roomServices.getPatientId());
+                                                                                        var docurl = "testAkosDoctor:///" + connecturldedetail.roomId + '/' + connecturldedetail.type + '/**' + JSON.stringify(roomServices.getPatientId());
+
+                                                                                    }
+
+
+                                                                                }
+
+                                                                                setTimeout(function () {
+                                                                                    window.location = url;
+                                                                                }, 25);
+                                                                                window.location = docurl;
+                                                                            }
+                                                                            else {
+                                                                                $state.go('room.call', { id: roomServices.getDocAlias() });
+                                                                            }
+                                                                        };
+
+                                                                        $scope.cancel = function () {
+                                                                            $uibModalInstance.dismiss('cancel');
+                                                                        };
+                                                                    }
+                                                                });
+                                                                modalInstance.result.then(function (selectedItem) {
+                                                                    $scope.selected = selectedItem;
+                                                                }, function () {
+                                                                    $log.info('Modal dismissed at: ' + new Date());
+                                                                });
+
+                                                                //end-pop to show recording info
+
+
+                                                                //$state.go('room.call',{id:roomServices.getDocAlias()});
+                                                            } else {
+                                                                $scope.loading = false;
+                                                                alert("error");
+                                                            }
+                                                        })
+                                                } else {
+                                                    alert("error");
+                                                }
+                                            })
+
+                                    } else {
+                                        alert("error");
+                                    }
+
+
+                                })
+
+                        } else {
+
+
+                            var modalInstance = $uibModal.open({
+                                template: '\
+                                       <div class="modal-header bootstrap-modal-header">\
+                                       <h3 class="modal-title" id="modal-title"> Incorrect User Details </h3>\
+                                       </div>\
+                                       <div class="modal-body bootstrap-modal-body" id="modal-body">\
+                                       <p>'+ resultstatus.data.status_message + '</p>\
+                                       </div>\
+                                       <div class="modal-footer bootstrap-modal-footer">\
+                                           <button class="btn btn-primary" type="button" ng-click="cancel()">OK</button>\
+                                       </div>\
+                                       ',
+                                //templateUrl: "callDisconnectedDocModal.html",
+                                controller: ModalInstanceCtrl,
+                                scope: $scope,
+                                size: 'sm',
+                                resolve: {
+                                    sessionResolve: function () {
+                                        return '';
+                                    }
+                                }
+                            });
+                            modalInstance.result.then(function (selectedItem) {
+                                $scope.selected = selectedItem;
+                            }, function () {
+                                $log.info('Modal dismissed at: ' + new Date());
+                            });
+                        }
+
+                    })
+            }
+            $scope.afterVerifyNetworkCheck = function (x) {
+                if (roomServices.getDocAlias() != undefined) {
+
+                    if (JSON.parse(localStorage.getItem('connect_provider_settings')).type == "WC_NURSE") {
+                        $log.log(1234);
+
+                        $scope.userLocalDetails = roomServices.getUserDetailsLocalstorage();
+                        $log.log($scope.userLocalDetails);
+                        $scope.userLocalDetails.employerId = appConfig.employerId;
+                        
+                        if ($scope.userLocalDetails && $scope.userLocalDetails.id) {
+                           
+                            $scope.avoidsaveusermeting($scope.userLocalDetails.id);
+                        } else {
+                            roomServices.saveUserMeetingDetails($scope.userLocalDetails)
+                                .then(function (result) {
+                                    $log.log(result);
+                                    if (result.data.status_code == 200) {
+                                        $scope.avoidsaveusermeting(result.data.result.patient_id);
+
+                                    } else {
+                                        alert("error");
+                                    }
+                                })
+                        }
+                    } else {
+                        if (localStorage.getItem('userMeetingDetails') != '') {
+                            $state.go('room.medicalHistory', { 'id': roomServices.getDocAlias() });
+                        } else {
+                            $state.go('room.user', { 'id': roomServices.getDocAlias() });
+                        }
+                    }
+                }
+            }
     $scope.verifyOTP = function(x){
                 
 
@@ -992,240 +1253,15 @@
                     if(result.data.status_code == 200){
 
                         $scope.loading = false;
-                        //checkNetworkCallback(function (result) {
-                       //if (result.acode == 1) {
-                        if(roomServices.getDocAlias() != undefined){
-
-                            if(JSON.parse(localStorage.getItem('connect_provider_settings')).type == "WC_NURSE"){
-                                $log.log(1234);
-                                
-                                $scope.userLocalDetails = roomServices.getUserDetailsLocalstorage();
-                                $log.log($scope.userLocalDetails);
-                                $scope.userLocalDetails.employerId = appConfig.employerId;
-                                roomServices.saveUserMeetingDetails($scope.userLocalDetails)
-                                .then(function(result){
-                                    $log.log(result);
-                                    if(result.data.status_code == 200){ 
-                                        roomServices.savePatientId(result.data.result.patient_id);
-										roomServices.checkstatusinwatingroom({ patient_id: result.data.result.patient_id})
-                                        .then(function (resultstatus) {
-                                            //add for generate callid by patientid 
-                                            if (resultstatus.data.status_code == 200) {
-                                        //add for generate callid by patientid 
-                                        roomServices.generatecallidbypatientid({ patientId: result.data.result.patient_id, staffid:500,call_started: moment().format('YYYY-MM-DD') })
-                                            .then(function (result) {
-                                                $log.log(result);
-                                                if (result.data.status_code == 200) {
-                                                    
-                                                    $scope.call_id = result.data.result.call_id;
-                                                    roomServices.savePatientCallIdlocalstorage($scope.call_id);
-                                                    $scope.IdJson = {}; 
-                                        $scope.IdJson.email = $scope.userLocalDetails.email;  
-                                        if($scope.IdJson.email == ''){
-                                            $scope.IdJson.email = $scope.userLocalDetails.phone;
-                                        }
-
-
-
-
-
-                                        roomServices.getSavedUserId($scope.IdJson)
-                                        .then(function(result){
-                                            $log.log(result);
-                                            if(result.data.status_code == 200){
-
-
-                                                $scope.userFetchedId = result.data.result[0].id;
-                                                $scope.param = {};
-                                                $scope.param.docId = roomServices.getDocIdFromAlias();
-                                                
-                                                if(JSON.parse(localStorage.getItem('userMeetingDetails')).id != undefined){
-                                                    $scope.param.userId = JSON.parse(localStorage.getItem('userMeetingDetails')).id;    
-                                                }else{
-                                                    $scope.param.userId = $scope.userFetchedId;
-                                                    
-                                                }
-                                                    $scope.newLocalStorage = JSON.parse(localStorage.getItem('userMeetingDetails'));
-                                                    $scope.newLocalStorage.id = $scope.param.userId;
-                                                    localStorage.setItem("userMeetingDetails", JSON.stringify($scope.newLocalStorage));
-                                                //$scope.param.group_id = $scope.docGroupIdFromAlias;
-                                                $scope.param.groupId =  roomServices.getDocGroupIdFromAlias();
-                                                $scope.param.symptom = "";
-                                                $scope.param.allergy = "";
-                                                $scope.param.medication = "";
-                                                $scope.param.medical_condition = "";
-
-                                                /*added on 270718*/
-                                           $scope.param.state_of_injury = ($scope.newLocalStorage && $scope.newLocalStorage.state_of_injury) ? $scope.newLocalStorage.state_of_injury : '';
-                                           $scope.param.date_of_injury = ($scope.newLocalStorage && $scope.newLocalStorage.date_of_injury) ? $scope.newLocalStorage.date_of_injury : '';
-                                           $scope.param.employer_name = ($scope.newLocalStorage && $scope.newLocalStorage.employer_name) ? $scope.newLocalStorage.employer_name : '';
-
-                                                /*---------------*/
-                                                //for add call_id in watingroom table
-                                                $scope.param.call_id = JSON.stringify(roomServices.getPatientCallIdlocalstorage());
-
-
-                                                roomServices.addUserToWaiting($scope.param)
-                                                .then(function(result){
-                                                    if(result.data.status_code == 200){ 
-
-                                                        socketService.emit('userjoin',{waitingId:$scope.userFetchedId},function(data){
-                                                            $log.log("user added");
-                                                            $log.log(data);
-                                                        });
-                                                        $scope.loading = false;
-                                                        $log.log(result);
-
-
-
-								                       	//pop to show recording info
-								                    	//alert("hiiiiiiii");
-
-								                    	var modalInstance = $uibModal.open({
-								                    		size:'sm',
-								                            template:'\
-								                                <div class="modal-header bootstrap-modal-header">\
-								                                <h3 class="modal-title" id="modal-title">Info </h3>\
-								                                </div>\
-								                                <div class="modal-body bootstrap-modal-body" id="modal-body">\
-								                                <p>'+ 'This call will be recorded for quality and training purposes.' +' </p>\
-								                                </div>\
-								                                <div class="modal-footer bootstrap-modal-footer">\
-								                                    <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>\
-								                                </div>\
-								                                ',
-								                            //templateUrl: "callDisconnectedDocModal.html",
-								                        controller: function ($scope, $uibModalInstance) {
-													        $scope.ok = function () {
-													          $uibModalInstance.close();
-                                                              //add this for connect url (07/23/2018)
-															  
-															  var ua = navigator.userAgent.toLowerCase();
-                                                                var isAndroid = ua.indexOf("android") > -1;
-																
-																 if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|CriOS/i.test(ua)) {
-                                                                    //&& ua.indexOf("mobile");
-                                                                    var connecturldedetail = roomServices.getUserConnectUrlstorage();
-                                                                    
-                                                                    if (isAndroid) {
-                                                                        $scope.appStore = "PLAY";
-                                                                        if (typeof connecturldedetail.thirdParty != 'undefined') {
-                                                                            var url = "patientapp:///" + connecturldedetail.roomId + '/' + connecturldedetail.thirdParty;
-                                                                            var docurl = "akosmd:///" + connecturldedetail.roomId + '/' + connecturldedetail.thirdParty;
-                                                                        
-                                                                        } else {
-                                                                            var url = "patientapp:///" + connecturldedetail.roomId + '/' + connecturldedetail.type + '/**' + JSON.stringify(roomServices.getPatientId());
-                                                                            var docurl = "akosmd:///" + connecturldedetail.roomId + '/' + connecturldedetail.type + '/**' + JSON.stringify(roomServices.getPatientId());
-                                                                        
-                                                                        }
-                                                                    } else {
-                                                                        $scope.appStore = "APP";
-                                                                        if (typeof connecturldedetail.thirdParty != 'undefined') {
-                                                                            var url = "testAkos:///" + connecturldedetail.roomId + '/' + connecturldedetail.thirdParty;
-                                                                            var docurl = "testAkosDoctor:///" + connecturldedetail.roomId + '/' + connecturldedetail.thirdParty;
-                                                                        
-                                                                        } else {
-                                                                            var url = "testAkos:///" + connecturldedetail.roomId + '/' + connecturldedetail.type + '/**' + JSON.stringify(roomServices.getPatientId());
-                                                                            var docurl = "testAkosDoctor:///" + connecturldedetail.roomId + '/' + connecturldedetail.type + '/**' + JSON.stringify(roomServices.getPatientId());
-                                                                         
-                                                                        }
-
-                                                                        
-                                                                    }
-
-                                                                    setTimeout(function () {
-                                                                    window.location = url;
-                                                                    }, 25);
-                                                                    window.location = docurl;
-                                                                }
-                                                                else {                                             
-                                                                    $state.go('room.call', { id: roomServices.getDocAlias() });
-																}
-													        };
-													      
-													        $scope.cancel = function () {
-													          $uibModalInstance.dismiss('cancel');
-													        };
-													      }
-								                        });
-								                        modalInstance.result.then(function (selectedItem) {
-								                            $scope.selected = selectedItem;
-								                            }, function () {
-								                            $log.info('Modal dismissed at: ' + new Date());
-								                        });
-
-								                    	//end-pop to show recording info
-
-
-                                                        //$state.go('room.call',{id:roomServices.getDocAlias()});
-                                                    }else{
-                                                        $scope.loading = false;
-                                                        alert("error");
-                                                    }
-                                                    })                    
-                                            }else{
-                                                alert("error");
-                                            }
-                                            })
-
-                                                } else {
-                                                    alert("error");
-                                                }
-                                                
-                                                
-                                            })
-
-                                    } else {
-
-
-                                                    var modalInstance = $uibModal.open({
-                                                        template: '\
-                                       <div class="modal-header bootstrap-modal-header">\
-                                       <h3 class="modal-title" id="modal-title"> Incorrect User Details </h3>\
-                                       </div>\
-                                       <div class="modal-body bootstrap-modal-body" id="modal-body">\
-                                       <p>'+ resultstatus.data.status_message + '</p>\
-                                       </div>\
-                                       <div class="modal-footer bootstrap-modal-footer">\
-                                           <button class="btn btn-primary" type="button" ng-click="cancel()">OK</button>\
-                                       </div>\
-                                       ',
-                                                        //templateUrl: "callDisconnectedDocModal.html",
-                                                        controller: ModalInstanceCtrl,
-                                                        scope: $scope,
-                                                        size: 'sm',
-                                                        resolve: {
-                                                            sessionResolve: function () {
-                                                                return '';
-                                                            }
-                                                        }
-                                                    });
-                                                    modalInstance.result.then(function (selectedItem) {
-                                                        $scope.selected = selectedItem;
-                                                    }, function () {
-                                                        $log.info('Modal dismissed at: ' + new Date());
-                                                    });
-                                                }
-                                            
-                                        })									
-                                        
-                                    }else{
-                                        alert("error");
-                                    }
-                                    })
-                            }else{
-                                if(localStorage.getItem('userMeetingDetails') != ''){
-                                    $state.go('room.medicalHistory', { 'id':roomServices.getDocAlias()});    
-                                }else{
-                                    $state.go('room.user', {'id':roomServices.getDocAlias()});   
+                        if (appConfig.network_check_provider) {
+                            checkNetworkCallback(function (result) {
+                                if (result.acode == 1) {
+                                    $scope.afterVerifyNetworkCheck(x);
                                 }
-                            }
-                        }
-                  /*  }
-                    else if (result.acode == 0 || result.acode == 2) {
-                       
-                        var modalInstance = $uibModal.open({
-                            template: '<div class="modal-header bootstrap-modal-header">\
+                                else if (result.acode == 0 || result.acode == 2) {
+
+                                    var modalInstance = $uibModal.open({
+                                        template: '<div class="modal-header bootstrap-modal-header">\
                                           <h3 ng-if="'+ result.acode + '==2" class= "modal-title" id="modal-title"> Network Check </h3>\
                                             <h3 ng-if="'+ result.acode + '==0" class="modal-title" id="modal-title">Weak Signal </h3>\
                                             </div>\
@@ -1237,46 +1273,49 @@
                                                 <button class="btn btn-primary" type="button" ng-click="cancel()">OK </button>\
                                             </div>\
                                             ',
-                            controller: ModalInstanceCtrl,
-                            scope: $scope,
-                            size: 'sm',
-                            windowClass: 'sendpatient-email-pop-class',
-                            resolve: {
-                                modalProgressValue: function () {
-                                    return "";
-                                },
-                                CPTBilling: function () {
-                                    return "";
-                                },
-                                sessionResolve: function () {
-                                    return '';
-                                },
-                                meetingRoomURLResolve: function () {
-                                    return "";
-                                },
-                                emailMeetingLinkUrlResolve: function () {
-                                    return '';
-                                },
-                                lockEncounterData: function () {
-                                    return "";
-                                },
-                                disconnectData: function () {
-                                    return "";
+                                        controller: ModalInstanceCtrl,
+                                        scope: $scope,
+                                        size: 'sm',
+                                        windowClass: 'sendpatient-email-pop-class',
+                                        resolve: {
+                                            modalProgressValue: function () {
+                                                return "";
+                                            },
+                                            CPTBilling: function () {
+                                                return "";
+                                            },
+                                            sessionResolve: function () {
+                                                return '';
+                                            },
+                                            meetingRoomURLResolve: function () {
+                                                return "";
+                                            },
+                                            emailMeetingLinkUrlResolve: function () {
+                                                return '';
+                                            },
+                                            lockEncounterData: function () {
+                                                return "";
+                                            },
+                                            disconnectData: function () {
+                                                return "";
+                                            }
+                                        }
+
+                                    });
+                                    modalInstance.result.then(function (selectedItem) {
+                                        $scope.selected = selectedItem;
+                                    }, function () {
+                                        $log.info('Modal dismissed at: ' + new Date());
+                                    });
+
                                 }
-                            }
-
-                        });
-                        modalInstance.result.then(function (selectedItem) {
-                            $scope.selected = selectedItem;
-                        }, function () {
-                            $log.info('Modal dismissed at: ' + new Date());
-                        });
-
-                    }
-                    else {
-                        return false;
-                    }
-                });*/
+                                else {
+                                    return false;
+                                }
+                            });
+                        } else {
+                            $scope.afterVerifyNetworkCheck(x);
+                        }
                             }else{
                         $scope.loading = false;
                         var modalInstance = $uibModal.open({
@@ -1391,7 +1430,8 @@
         
         
 
-        if($state.current.name == 'inviteRoom'){
+        if ($state.current.name == 'inviteRoom') {
+           
             $rootScope.title = "Tell Us About Yourself";
             $rootScope.isCallScreenHidden = 1;
             // $log.log($state.params);
@@ -1399,269 +1439,268 @@
             $scope.inviteParam.invite_id = $state.params.inviteId;
             roomServices.getSessionFromInviteId($scope.inviteParam)
             .then(function(result){
-                if(result.data.status_code == 200){
-                    $scope.inviteSession = result.data.result[0].session_id;
-                    $scope.inviteToken = result.data.result[0].token;
+                if (result.data.status_code == 200) {
+                    if (result.data.result.length > 0) {
+                        $scope.inviteSession = result.data.result[0].session_id;
+                        $scope.inviteToken = result.data.result[0].token;
 
-                    //new add for get call id by inviteId
-                    $scope.call_id = result.data.result[0].call_id;
+                        //new add for get call id by inviteId
+                        $scope.call_id = result.data.result[0].call_id;
 
+                        roomServices.checkConnectCallBycallId({
+                            phone: null, call_id: $scope.call_id
+                        })
+                            .then(function (result) {
+                                if (result.data.status_code == 200) {
+
+                                }
+                                else if (result.data.status_code == 404 || result.data.status_code == 402) {
+                                    $rootScope.isCallScreenHidden = 2;
+                                }
+                                else {
+                                    // alert("error");
+                                }
+                            });
+                    } else {
+                        $rootScope.isCallScreenHidden = 2;
+                    }
+
+                } else {
+                    $rootScope.isCallScreenHidden = 2;
                 }
             })
             
             
-           /* $scope.inviteRoomForm = function(x){
-                $scope.xvalues = x;
-                $log.log($scope.xvalues);
-                //checkNetworkCallback(function(result){
-                    //console.log(result);
-                    //if(result.acode == 1){
-                        
-                        
-                        $log.log($scope.xvalues);
-                        //$scope.loading = true;
-                        $scope.thirdPartyPublisher = $scope.xvalues;
-                        $rootScope.isCallScreenHidden = 0;
-                        if($scope.xvalues.mobile){
-                            roomServices.verifyThirdPartyDoc($scope.xvalues.mobile)
-                            .then(function(result){
-                                if(result.data.status_code == 200){
-                                    let params = {};
-                                    params.id = result.data.result.id;
+           
+
+            $scope.commonThirdPartyCheckin = function (x) {
+                $rootScope.isCallScreenHidden = 0;
+                if ($scope.xvalues.mobile) {
+                    roomServices.verifyThirdPartyDoc($scope.xvalues.mobile)
+                        .then(function (result) {
+                            if (result.data.status_code == 200) {
+                                let params = {};
+                                params.id = result.data.result.id;
 
 
-                                    //add for update doctor Id in patient record by call id
-                                    roomServices.updatedoctoridbycallid({ docId: params.id, call_id: $scope.call_id,doctor_call_respond:1}).then(function (updateresult) {
-                                        $log.log(updateresult);
-                                        
-                                    })
+                                //add for update doctor Id in patient record by call id
+                                roomServices.updatedoctoridbycallid({ docId: params.id, call_id: $scope.call_id, doctor_call_respond: 1 }).then(function (updateresult) {
+                                    $log.log(updateresult);
+
+                                })
 
 
 
-                                    roomServices.setThirdPartyDocData($scope.xvalues);
-                                    roomServices.sendPushNotificationStaffAdmin(params)
-                                    .then(function(result){
+                                roomServices.setThirdPartyDocData($scope.xvalues);
+                                roomServices.sendPushNotificationStaffAdmin(params)
+                                    .then(function (result) {
                                         $log.log(result);
                                         //$scope.loading = false;
                                     })
-                                    
-                                }
-                            })
-                        }
-                        
-                        
-                        socketService.emit('otheruserjoin',{otherUserName:x.firstname+' '+x.lastname},function(data){
-                            $log.log("user added");
-                            $log.log(data);
-                        });
-        
-                        var session = OT.initSession(config.opentokAPIKey,$scope.inviteSession);
-                        socketService.on('callDisconnectedByDoc', function(data){
-                        console.log(data);
-                        $scope.callDisconnectedByDoc = function(){
-                            if(roomServices.getThirdPartyDocData() != undefined){
-                                let updateParams = {};
-                                updateParams.phone = roomServices.getThirdPartyDocData().mobile;
-                                roomServices.updateThirdPartyDoc(updateParams)
-                                .then(function(result){
-                                    if(result.data.status_code == 200){
+
+                            }
+                        })
+                }
+
+
+                socketService.emit('otheruserjoin', { otherUserName: x.firstname + ' ' + x.lastname }, function (data) {
+                    $log.log("user added");
+                    $log.log(data);
+                });
+
+                var session = OT.initSession(config.opentokAPIKey, $scope.inviteSession);
+                socketService.on('callDisconnectedByDoc', function (data) {
+                    console.log(data);
+                    $scope.callDisconnectedByDoc = function () {
+                        if (roomServices.getThirdPartyDocData() != undefined) {
+                            let updateParams = {};
+                            updateParams.phone = roomServices.getThirdPartyDocData().mobile;
+                            roomServices.updateThirdPartyDoc(updateParams)
+                                .then(function (result) {
+                                    if (result.data.status_code == 200) {
                                         let params = {};
                                         params.id = result.data.result.id;
                                         roomServices.sendPushNotificationStaffAdmin(params)
-                                        .then(function(result){
-                                            $log.log(result);
-                                            $scope.loading = false;
-                                        })
+                                            .then(function (result) {
+                                                $log.log(result);
+                                                $scope.loading = false;
+                                            })
                                     }
                                     $log.log(result);
                                 })
-                            }
-                            
-        
+                        }
+
+
                         var modalInstance = $uibModal.open({
                             templateUrl: "callDisconnectedDocModal.html",
                             controller: ModalInstanceCtrl,
                             scope: $scope,
-                            size:'sm',
+                            size: 'sm',
                             resolve: {
-                                sessionResolve :  function(){
+                                sessionResolve: function () {
                                     return '';
-                                } 
+                                }
                             }
-        
+
                         });
-        
+
                         modalInstance.result.then(function (selectedItem) {
                             $scope.selected = selectedItem;
-                            }, function () {
+                        }, function () {
                             $log.info('Modal dismissed at: ' + new Date());
                         });
-        
+
                     }
                     $scope.callDisconnectedByDoc();
                     session.disconnect();
-        
-                    });
-                        var subscriber;
-                        $scope.isDocPublishVideo = 1;
-                        $scope.isDocPublishAudio = 1;
-                        $scope.disconnectSession = function(role){
 
-                            //alert(role);
-                                //$scope.isCallScreenHidden = 1;
-                            var modalInstance = $uibModal.open({
-                                templateUrl: "CallEndThirdPartyPopUp.html",
-                                controller: ModalInstanceCtrl,
-                                scope: $scope,
-                                size:'sm',
-                                resolve: {
-                                    sessionResolve :  function(){
-                                        return session;
-                                    } 
-                                }
-        
-                            });
-        
-                            modalInstance.result.then(function (selectedItem) {
-                                $scope.selected = selectedItem;
-                                }, function () {
-                                $log.info('Modal dismissed at: ' + new Date());
-                            });
-        
+                });
+                var subscriber;
+                $scope.isDocPublishVideo = 1;
+                $scope.isDocPublishAudio = 1;
+                $scope.disconnectSession = function (role) {
+
+                    //alert(role);
+                    //$scope.isCallScreenHidden = 1;
+                    var modalInstance = $uibModal.open({
+                        templateUrl: "CallEndThirdPartyPopUp.html",
+                        controller: ModalInstanceCtrl,
+                        scope: $scope,
+                        size: 'sm',
+                        resolve: {
+                            sessionResolve: function () {
+                                return session;
+                            }
                         }
-        
-                        var layoutEl = document.getElementById("layout");
-                        var layout;
-                        $scope.layout = {};
-                        $scope.layout.animate = {};
-                        $scope.layout.animate.duration = 200; 
-                        $scope.layout.animate.easing = 'swing';
-                        $scope.layout.maxRatio= 3/2;
-                        $scope.layout.minRatio= 9/16;
-                        $scope.layout.fixedRatio= false;
-                        $scope.layout.animate= false;
-                        $scope.layout.bigClass= 'OT_big';
-                        $scope.layout.bigPercentage= 0.8;
-                        $scope.layout.bigFixedRatio= false;
-                        $scope.layout.bigMaxRatio= 3/2;
-                        $scope.layout.bigMinRatio= 9/16;
-                        $scope.layout.bigFirst= true;
-                        session.on('streamCreated', function(event) {
-                        //this will execute to test the network ---- 
-                            var el = document.createElement("div");
-                            el.classList.add('OT_'+event.stream.streamId);
-                            session.subscribe(event.stream,el);
-                            layoutEl.appendChild(el);
-                            createLayout(layoutEl,$scope.layout);
-                            el.onclick = function(){
-                                if ($(this).hasClass("OT_big")) {
-                                    $(this).removeClass("OT_big");
-                                } else {
-                                    $(this).addClass("OT_big");
-                                }
-                                createLayout(layoutEl,$scope.layout);        
-        
-                            }
-                        });
-        
-                        
-                            session.on("streamDestroyed", function(event) {
-                                var elem = document.querySelector('.OT_'+event.stream.streamId);
-                                elem.parentNode.removeChild(elem);
-                                //console.log(document.getElementsByClassName('OT_'+event.stream.streamId)[0]);
-                                //layoutEl.parentNode.removeChild('OT_'+event.stream.streamId);
-                                //layoutEl.removeChild(document.getElementsByClassName('OT_'+event.stream.streamId)[0]);
-                                createLayout(layoutEl,$scope.layout);
-        
-                            });
-        
-        
-                        // session.on('streamCreated', function(event) {
-                        //     $scope.isDocPublishing = true;
-                        //     session.subscribe(event.stream, 'doctorPublisher', {
-                        //         insertMode: 'append',
-                        //         width: '100%',
-                        //         height: '100%'
-                        //     });
-                        // });
-        
-                        session.on('sessionDisconnected', function(event) {
-                            console.log('You were disconnected from the session.', event.reason);
-                        });
-        
-                        session.connect($scope.inviteToken, function(error) {
-                            var layoutEl = document.getElementById("layout");
-                            var layout;
-                            $scope.layout = {};
-                            $scope.layout.animate = {};
-                            $scope.layout.animate.duration = 200; 
-                            $scope.layout.animate.easing = 'swing';
-                            $scope.layout.maxRatio= 3/2;
-                            $scope.layout.minRatio= 9/16;
-                            $scope.layout.fixedRatio= false;
-                            $scope.layout.animate= false;
-                            $scope.layout.bigClass= 'OT_big';
-                            $scope.layout.bigPercentage= 0.8;
-                            $scope.layout.bigFixedRatio= false;
-                            $scope.layout.bigMaxRatio= 3/2;
-                            $scope.layout.bigMinRatio= 9/16;
-                            $scope.layout.bigFirst= true;
-                            var el = document.createElement("div");
-                            
-                            layoutEl.appendChild(el);
-                            createLayout(layoutEl,$scope.layout);
-                            if (!error) {
-                                var publisherProperties = {name:$scope.thirdPartyPublisher.firstname+' '+$scope.thirdPartyPublisher.lastname,width:'900px',height:'500px'};
-                                var publisher = OT.initPublisher(el,publisherProperties, {
-                                    resolution: '320x240', 
-                                    frameRate: 1
-                                });
-                                session.publish(publisher);  
-                            } else {
-                                console.log('There was an error connecting to the session: ', error.code, error.message);
-                            }
-                        
-                            $scope.disableDocCallAudio = function(){
-                                if($scope.isDocPublishAudio == 1){
-                                   $scope.isDocPublishAudio = 0; 
-                                    publisher.publishAudio(false);
-                                }else{
-                                    $scope.isDocPublishAudio = 1;
-                                    publisher.publishAudio(true);
-                                }    
-                                $('#addPsuedoContent1 span i').toggleClass('afterContentIcon1');
-                            }
-        
-                            $scope.disableDocCallVideo = function(){
-                                if($scope.isDocPublishVideo == 1){
-                                   $scope.isDocPublishVideo = 0; 
-                                    publisher.publishVideo(false);
-        
-                                }else{
-                                    $scope.isDocPublishVideo = 1;
-                                    publisher.publishVideo(true);
-                                }    
-                                $('#addPsuedoContent span i').toggleClass('afterContentIcon');
-                            }
-                        });
-                        
-                   // }
-                    /*else if(result.acode == 0){
-                        
-                        $rootScope.isCallScreenHidden = 1;
-                        $("#bootstrapModalNetworkCheckFail").modal();
-                        
-                        
-                    }else{
-                        
-                        $rootScope.isCallScreenHidden = 1;
-                        //return false;
+
+                    });
+
+                    modalInstance.result.then(function (selectedItem) {
+                        $scope.selected = selectedItem;
+                    }, function () {
+                        $log.info('Modal dismissed at: ' + new Date());
+                    });
+
+                }
+
+                var layoutEl = document.getElementById("layout");
+                var layout;
+                $scope.layout = {};
+                $scope.layout.animate = {};
+                $scope.layout.animate.duration = 200;
+                $scope.layout.animate.easing = 'swing';
+                $scope.layout.maxRatio = 3 / 2;
+                $scope.layout.minRatio = 9 / 16;
+                $scope.layout.fixedRatio = false;
+                $scope.layout.animate = false;
+                $scope.layout.bigClass = 'OT_big';
+                $scope.layout.bigPercentage = 0.8;
+                $scope.layout.bigFixedRatio = false;
+                $scope.layout.bigMaxRatio = 3 / 2;
+                $scope.layout.bigMinRatio = 9 / 16;
+                $scope.layout.bigFirst = true;
+                session.on('streamCreated', function (event) {
+                    //this will execute to test the network ---- 
+                    var el = document.createElement("div");
+                    el.classList.add('OT_' + event.stream.streamId);
+                    session.subscribe(event.stream, el);
+                    layoutEl.appendChild(el);
+                    createLayout(layoutEl, $scope.layout);
+                    el.onclick = function () {
+                        if ($(this).hasClass("OT_big")) {
+                            $(this).removeClass("OT_big");
+                        } else {
+                            $(this).addClass("OT_big");
+                        }
+                        createLayout(layoutEl, $scope.layout);
+
                     }
-                    
-                })
-                if(!x.mobile) $rootScope.isCallScreenHidden = 0;
-                
-            }    */
+                });
+
+
+                session.on("streamDestroyed", function (event) {
+                    var elem = document.querySelector('.OT_' + event.stream.streamId);
+                    elem.parentNode.removeChild(elem);
+                    //console.log(document.getElementsByClassName('OT_'+event.stream.streamId)[0]);
+                    //layoutEl.parentNode.removeChild('OT_'+event.stream.streamId);
+                    //layoutEl.removeChild(document.getElementsByClassName('OT_'+event.stream.streamId)[0]);
+                    createLayout(layoutEl, $scope.layout);
+
+                });
+
+
+                // session.on('streamCreated', function(event) {
+                //     $scope.isDocPublishing = true;
+                //     session.subscribe(event.stream, 'doctorPublisher', {
+                //         insertMode: 'append',
+                //         width: '100%',
+                //         height: '100%'
+                //     });
+                // });
+
+                session.on('sessionDisconnected', function (event) {
+                    console.log('You were disconnected from the session.', event.reason);
+                });
+
+                session.connect($scope.inviteToken, function (error) {
+                    var layoutEl = document.getElementById("layout");
+                    var layout;
+                    $scope.layout = {};
+                    $scope.layout.animate = {};
+                    $scope.layout.animate.duration = 200;
+                    $scope.layout.animate.easing = 'swing';
+                    $scope.layout.maxRatio = 3 / 2;
+                    $scope.layout.minRatio = 9 / 16;
+                    $scope.layout.fixedRatio = false;
+                    $scope.layout.animate = false;
+                    $scope.layout.bigClass = 'OT_big';
+                    $scope.layout.bigPercentage = 0.8;
+                    $scope.layout.bigFixedRatio = false;
+                    $scope.layout.bigMaxRatio = 3 / 2;
+                    $scope.layout.bigMinRatio = 9 / 16;
+                    $scope.layout.bigFirst = true;
+                    var el = document.createElement("div");
+
+                    layoutEl.appendChild(el);
+                    createLayout(layoutEl, $scope.layout);
+                    if (!error) {
+                        var publisherProperties = { name: $scope.thirdPartyPublisher.firstname + ' ' + $scope.thirdPartyPublisher.lastname, width: '900px', height: '500px' };
+                        var publisher = OT.initPublisher(el, publisherProperties, {
+                            resolution: '320x240',
+                            frameRate: 1
+                        });
+                        session.publish(publisher);
+                    } else {
+                        console.log('There was an error connecting to the session: ', error.code, error.message);
+                    }
+
+                    $scope.disableDocCallAudio = function () {
+                        if ($scope.isDocPublishAudio == 1) {
+                            $scope.isDocPublishAudio = 0;
+                            publisher.publishAudio(false);
+                        } else {
+                            $scope.isDocPublishAudio = 1;
+                            publisher.publishAudio(true);
+                        }
+                        $('#addPsuedoContent1 span i').toggleClass('afterContentIcon1');
+                    }
+
+                    $scope.disableDocCallVideo = function () {
+                        if ($scope.isDocPublishVideo == 1) {
+                            $scope.isDocPublishVideo = 0;
+                            publisher.publishVideo(false);
+
+                        } else {
+                            $scope.isDocPublishVideo = 1;
+                            publisher.publishVideo(true);
+                        }
+                        $('#addPsuedoContent span i').toggleClass('afterContentIcon');
+                    }
+                });
+
+
+                if (!x.mobile) $rootScope.isCallScreenHidden = 0;
+            }
             $scope.inviteRoomForm = function(x){
                 $scope.xvalues = x;
                 $log.log($scope.xvalues);
@@ -1672,232 +1711,70 @@
                       })
                     .then(function (result) {
                         if (result.data.status_code == 200) {
-                        $rootScope.isCallScreenHidden = 0;
-                        if($scope.xvalues.mobile){
-                            roomServices.verifyThirdPartyDoc($scope.xvalues.mobile)
-                            .then(function(result){
-                                if(result.data.status_code == 200){
-                                    let params = {};
-                                    params.id = result.data.result.id;
-
-
-                                    //add for update doctor Id in patient record by call id
-                                    roomServices.updatedoctoridbycallid({ docId: params.id, call_id: $scope.call_id,doctor_call_respond:1}).then(function (updateresult) {
-                                        $log.log(updateresult);
-                                        
-                                    })
-
-
-
-                                    roomServices.setThirdPartyDocData($scope.xvalues);
-                                    roomServices.sendPushNotificationStaffAdmin(params)
-                                    .then(function(result){
-                                        $log.log(result);
-                                        //$scope.loading = false;
-                                    })
-                                    
-                                }
-                            })
-                        }
-                        
-                        
-                        socketService.emit('otheruserjoin',{otherUserName:x.firstname+' '+x.lastname},function(data){
-                            $log.log("user added");
-                            $log.log(data);
-                        });
-        
-                        var session = OT.initSession(config.opentokAPIKey,$scope.inviteSession);
-                        socketService.on('callDisconnectedByDoc', function(data){
-                        console.log(data);
-                        $scope.callDisconnectedByDoc = function(){
-                            if(roomServices.getThirdPartyDocData() != undefined){
-                                let updateParams = {};
-                                updateParams.phone = roomServices.getThirdPartyDocData().mobile;
-                                roomServices.updateThirdPartyDoc(updateParams)
-                                .then(function(result){
-                                    if(result.data.status_code == 200){
-                                        let params = {};
-                                        params.id = result.data.result.id;
-                                        roomServices.sendPushNotificationStaffAdmin(params)
-                                        .then(function(result){
-                                            $log.log(result);
-                                            $scope.loading = false;
-                                        })
+                            if (appConfig.network_check_provider) {
+                                checkNetworkCallback(function (result) {
+                                    if (result.acode == 1) {
+                                        $scope.commonThirdPartyCheckin(x);
                                     }
-                                    $log.log(result);
-                                })
-                            }
-                            
-        
-                        var modalInstance = $uibModal.open({
-                            templateUrl: "callDisconnectedDocModal.html",
-                            controller: ModalInstanceCtrl,
-                            scope: $scope,
-                            size:'sm',
-                            resolve: {
-                                sessionResolve :  function(){
-                                    return '';
-                                } 
-                            }
-        
-                        });
-        
-                        modalInstance.result.then(function (selectedItem) {
-                            $scope.selected = selectedItem;
-                            }, function () {
-                            $log.info('Modal dismissed at: ' + new Date());
-                        });
-        
-                    }
-                    $scope.callDisconnectedByDoc();
-                    session.disconnect();
-        
-                    });
-                        var subscriber;
-                        $scope.isDocPublishVideo = 1;
-                        $scope.isDocPublishAudio = 1;
-                        $scope.disconnectSession = function(role){
+                                    else if (result.acode == 0 || result.acode == 2) {
+                                        $rootScope.isCallScreenHidden = 0;
+                                        var modalInstance = $uibModal.open({
+                                            template: '<div class="modal-header bootstrap-modal-header">\
+                                          <h3 ng-if="'+ result.acode + '==2" class= "modal-title" id="modal-title"> Network Check </h3>\
+                                            <h3 ng-if="'+ result.acode + '==0" class="modal-title" id="modal-title">Weak Signal </h3>\
+                                            </div>\
+                                            <div class="modal-body bootstrap-modal-body" id="modal-body">\
+                                            <p ng-if="'+ result.acode + '==0">Unfortunately, your current signal strength will neither support a video nor an audio call.  Please try again from a different area with stronger signal.</p>\
+                                            <p ng-if="'+ result.acode + '==2">Sorry, No Video Device Found.</p>\
+                                            </div>\
+                                            <div class="modal-footer bootstrap-modal-footer">\
+                                                <button class="btn btn-primary" type="button" ng-click="cancelmodel()">OK </button>\
+                                            </div>\
+                                            ',
+                                            controller: ModalInstanceCtrl,
+                                            scope: $scope,
+                                            size: 'sm',
+                                            windowClass: 'sendpatient-email-pop-class',
+                                            resolve: {
+                                                modalProgressValue: function () {
+                                                    return "";
+                                                },
+                                                CPTBilling: function () {
+                                                    return "";
+                                                },
+                                                sessionResolve: function () {
+                                                    return '';
+                                                },
+                                                meetingRoomURLResolve: function () {
+                                                    return "";
+                                                },
+                                                emailMeetingLinkUrlResolve: function () {
+                                                    return '';
+                                                },
+                                                lockEncounterData: function () {
+                                                    return "";
+                                                },
+                                                disconnectData: function () {
+                                                    return "";
+                                                }
+                                            }
 
-                            //alert(role);
-                                //$scope.isCallScreenHidden = 1;
-                            var modalInstance = $uibModal.open({
-                                templateUrl: "CallEndThirdPartyPopUp.html",
-                                controller: ModalInstanceCtrl,
-                                scope: $scope,
-                                size:'sm',
-                                resolve: {
-                                    sessionResolve :  function(){
-                                        return session;
-                                    } 
-                                }
-        
-                            });
-        
-                            modalInstance.result.then(function (selectedItem) {
-                                $scope.selected = selectedItem;
-                                }, function () {
-                                $log.info('Modal dismissed at: ' + new Date());
-                            });
-        
-                        }
-        
-                        var layoutEl = document.getElementById("layout");
-                        var layout;
-                        $scope.layout = {};
-                        $scope.layout.animate = {};
-                        $scope.layout.animate.duration = 200; 
-                        $scope.layout.animate.easing = 'swing';
-                        $scope.layout.maxRatio= 3/2;
-                        $scope.layout.minRatio= 9/16;
-                        $scope.layout.fixedRatio= false;
-                        $scope.layout.animate= false;
-                        $scope.layout.bigClass= 'OT_big';
-                        $scope.layout.bigPercentage= 0.8;
-                        $scope.layout.bigFixedRatio= false;
-                        $scope.layout.bigMaxRatio= 3/2;
-                        $scope.layout.bigMinRatio= 9/16;
-                        $scope.layout.bigFirst= true;
-                        session.on('streamCreated', function(event) {
-                        //this will execute to test the network ---- 
-                            var el = document.createElement("div");
-                            el.classList.add('OT_'+event.stream.streamId);
-                            session.subscribe(event.stream,el);
-                            layoutEl.appendChild(el);
-                            createLayout(layoutEl,$scope.layout);
-                            el.onclick = function(){
-                                if ($(this).hasClass("OT_big")) {
-                                    $(this).removeClass("OT_big");
-                                } else {
-                                    $(this).addClass("OT_big");
-                                }
-                                createLayout(layoutEl,$scope.layout);        
-        
-                            }
-                        });
-        
-                        
-                            session.on("streamDestroyed", function(event) {
-                                var elem = document.querySelector('.OT_'+event.stream.streamId);
-                                elem.parentNode.removeChild(elem);
-                                //console.log(document.getElementsByClassName('OT_'+event.stream.streamId)[0]);
-                                //layoutEl.parentNode.removeChild('OT_'+event.stream.streamId);
-                                //layoutEl.removeChild(document.getElementsByClassName('OT_'+event.stream.streamId)[0]);
-                                createLayout(layoutEl,$scope.layout);
-        
-                            });
-        
-        
-                        // session.on('streamCreated', function(event) {
-                        //     $scope.isDocPublishing = true;
-                        //     session.subscribe(event.stream, 'doctorPublisher', {
-                        //         insertMode: 'append',
-                        //         width: '100%',
-                        //         height: '100%'
-                        //     });
-                        // });
-        
-                        session.on('sessionDisconnected', function(event) {
-                            console.log('You were disconnected from the session.', event.reason);
-                        });
-        
-                        session.connect($scope.inviteToken, function(error) {
-                            var layoutEl = document.getElementById("layout");
-                            var layout;
-                            $scope.layout = {};
-                            $scope.layout.animate = {};
-                            $scope.layout.animate.duration = 200; 
-                            $scope.layout.animate.easing = 'swing';
-                            $scope.layout.maxRatio= 3/2;
-                            $scope.layout.minRatio= 9/16;
-                            $scope.layout.fixedRatio= false;
-                            $scope.layout.animate= false;
-                            $scope.layout.bigClass= 'OT_big';
-                            $scope.layout.bigPercentage= 0.8;
-                            $scope.layout.bigFixedRatio= false;
-                            $scope.layout.bigMaxRatio= 3/2;
-                            $scope.layout.bigMinRatio= 9/16;
-                            $scope.layout.bigFirst= true;
-                            var el = document.createElement("div");
-                            
-                            layoutEl.appendChild(el);
-                            createLayout(layoutEl,$scope.layout);
-                            if (!error) {
-                                var publisherProperties = {name:$scope.thirdPartyPublisher.firstname+' '+$scope.thirdPartyPublisher.lastname,width:'900px',height:'500px'};
-                                var publisher = OT.initPublisher(el,publisherProperties, {
-                                    resolution: '320x240', 
-                                    frameRate: 1
+                                        });
+                                        modalInstance.result.then(function (selectedItem) {
+                                            $scope.selected = selectedItem;
+                                        }, function () {
+                                            $log.info('Modal dismissed at: ' + new Date());
+                                        });
+
+                                    }
+                                    else {
+                                        return false;
+                                    }
                                 });
-                                session.publish(publisher);  
+                                
                             } else {
-                                console.log('There was an error connecting to the session: ', error.code, error.message);
+                                $scope.commonThirdPartyCheckin(x);
                             }
-                        
-                            $scope.disableDocCallAudio = function(){
-                                if($scope.isDocPublishAudio == 1){
-                                   $scope.isDocPublishAudio = 0; 
-                                    publisher.publishAudio(false);
-                                }else{
-                                    $scope.isDocPublishAudio = 1;
-                                    publisher.publishAudio(true);
-                                }    
-                                $('#addPsuedoContent1 span i').toggleClass('afterContentIcon1');
-                            }
-        
-                            $scope.disableDocCallVideo = function(){
-                                if($scope.isDocPublishVideo == 1){
-                                   $scope.isDocPublishVideo = 0; 
-                                    publisher.publishVideo(false);
-        
-                                }else{
-                                    $scope.isDocPublishVideo = 1;
-                                    publisher.publishVideo(true);
-                                }    
-                                $('#addPsuedoContent span i').toggleClass('afterContentIcon');
-                            }
-                        });
-                        
-                   
-                if(!x.mobile) $rootScope.isCallScreenHidden = 0;
                 }
                 else if (result.data.status_code == 404 || result.data.status_code == 402) {
                             $rootScope.isCallScreenHidden = 0;
@@ -1965,6 +1842,9 @@
 
             $scope.enterRoomForm = function(useremailphone){
                 /*-------ab---determining the alias--------*/
+                if ($rootScope.wrongbrowser) {
+                    return;
+                }
              console.log($location.path());
             if($location.path().indexOf('cityhealth')!=-1){
                 $cookieStore.put('aliasname','cityhealth');
@@ -2333,80 +2213,128 @@
 
                 }       
             }
+            $scope.commonUserChackin = function () {
+                $log.log($scope.symptoms);
+                $scope.loading = true;
+                $scope.userLocalDetails = roomServices.getUserDetailsLocalstorage();
+                $scope.userLocalDetails.employerId = appConfig.employerId;
+                roomServices.saveUserMeetingDetails($scope.userLocalDetails)
+                    .then(function (result) {
+                        $log.log(result);
+                        if (result.data.status_code == 200) {
 
-            $scope.userCheckIn = function(docid,groupid){
-                checkNetworkCallback(function(result){ 
-                    console.log(result);
-                    if(result.acode == 1){
-                        $log.log($scope.symptoms);
-                        $scope.loading = true;
-                        $scope.userLocalDetails = roomServices.getUserDetailsLocalstorage();
-                        $scope.userLocalDetails.employerId = appConfig.employerId;
-                        roomServices.saveUserMeetingDetails($scope.userLocalDetails)
-                        .then(function(result){
-                            $log.log(result);
-                            if(result.data.status_code == 200){
-                                $scope.IdJson = {}; 
-                                $scope.IdJson.email = $scope.userLocalDetails.email;
-                                if($scope.IdJson.email == ''){
-                                    $scope.IdJson.email = $scope.userLocalDetails.phone;
-                                }        
-                                roomServices.getSavedUserId($scope.IdJson)
-                                .then(function(result){
-                                    if(result.data.status_code == 200){
-                                        $scope.userFetchedId = result.data.result[0].id;
-                                        $scope.param = {};
-                                        $scope.param.docId = docid;
-                                        $scope.param.groupId = groupid;
-                                        if(JSON.parse(localStorage.getItem('userMeetingDetails')).id != undefined){
-                                            
-                                            $scope.param.userId = JSON.parse(localStorage.getItem('userMeetingDetails')).id;    
-                                        }else{
-                                            $scope.param.userId = $scope.userFetchedId;
-                                            $scope.newLocalStorage = JSON.parse(localStorage.getItem('userMeetingDetails'));
-                                            $scope.newLocalStorage.id = $scope.userFetchedId; localStorage.setItem("userMeetingDetails", JSON.stringify($scope.newLocalStorage));
+                            roomServices.checkstatusinwatingroom({ patient_id: result.data.result.patient_id })
+                                .then(function (resultstatus) {
+                                    //add for generate callid by patientid 
+                                    if (resultstatus.data.status_code == 200) {
+                                        $scope.IdJson = {};
+                                        $scope.IdJson.email = $scope.userLocalDetails.email;
+                                        if ($scope.IdJson.email == '') {
+                                            $scope.IdJson.email = $scope.userLocalDetails.phone;
                                         }
-                                        $scope.param.symptom = JSON.stringify($scope.symptoms);
-                                        $scope.param.allergy = JSON.stringify(roomServices.getAllergyService());
-                                        $scope.param.medication = JSON.stringify(roomServices.getMedicationService());
-                                        $scope.param.medical_condition = JSON.stringify(roomServices.getConditionService());
-                                        /*added on 270718*/
-                                        $scope.param.date_of_injury = "";
-                                       $scope.param.state_of_injury = "";
-                                       $scope.param.employer_name = "";
-                                       /*----------------*/
-                                        roomServices.addUserToWaiting($scope.param)
-                                        .then(function(result){
-                                            if(result.data.status_code == 200){ 
-        
-                                                socketService.emit('userjoin',{waitingId:$scope.userFetchedId},function(data){
-                                                    $log.log("user added");
-                                                    $log.log(data);
-                                                });
-                                                $scope.loading = false;
-                                                $log.log(result);
-                                                $state.go('room.call');
-                                            }else{
-                                                $scope.loading = false;
-                                                alert("error");
+                                        roomServices.getSavedUserId($scope.IdJson)
+                                            .then(function (result) {
+                                                if (result.data.status_code == 200) {
+                                                    $scope.userFetchedId = result.data.result[0].id;
+                                                    $scope.param = {};
+                                                    $scope.param.docId = docid;
+                                                    $scope.param.groupId = groupid;
+                                                    if (JSON.parse(localStorage.getItem('userMeetingDetails')).id != undefined) {
+
+                                                        $scope.param.userId = JSON.parse(localStorage.getItem('userMeetingDetails')).id;
+                                                    } else {
+                                                        $scope.param.userId = $scope.userFetchedId;
+                                                        $scope.newLocalStorage = JSON.parse(localStorage.getItem('userMeetingDetails'));
+                                                        $scope.newLocalStorage.id = $scope.userFetchedId; localStorage.setItem("userMeetingDetails", JSON.stringify($scope.newLocalStorage));
+                                                    }
+                                                    $scope.param.symptom = JSON.stringify($scope.symptoms);
+                                                    $scope.param.allergy = JSON.stringify(roomServices.getAllergyService());
+                                                    $scope.param.medication = JSON.stringify(roomServices.getMedicationService());
+                                                    $scope.param.medical_condition = JSON.stringify(roomServices.getConditionService());
+                                                    /*added on 270718*/
+                                                    $scope.param.call_id = JSON.stringify(roomServices.getPatientCallIdlocalstorage());
+                                                    $scope.param.date_of_injury = "";
+                                                    $scope.param.state_of_injury = "";
+                                                    $scope.param.employer_name = "";
+                                                    /*----------------*/
+                                                    roomServices.addUserToWaiting($scope.param)
+                                                        .then(function (result) {
+                                                            if (result.data.status_code == 200) {
+
+                                                                socketService.emit('userjoin', { waitingId: $scope.userFetchedId }, function (data) {
+                                                                    $log.log("user added");
+                                                                    $log.log(data);
+                                                                });
+                                                                $scope.loading = false;
+                                                                $log.log(result);
+                                                                $state.go('room.call');
+                                                            } else {
+                                                                $scope.loading = false;
+                                                                alert("error");
+                                                            }
+                                                        })
+                                                } else {
+                                                    alert("error");
+                                                }
+                                            })
+
+                                    } else {
+
+
+                                        var modalInstance = $uibModal.open({
+                                            template: '\
+                                       <div class="modal-header bootstrap-modal-header">\
+                                       <h3 class="modal-title" id="modal-title"> Incorrect User Details </h3>\
+                                       </div>\
+                                       <div class="modal-body bootstrap-modal-body" id="modal-body">\
+                                       <p>'+ resultstatus.data.status_message + '</p>\
+                                       </div>\
+                                       <div class="modal-footer bootstrap-modal-footer">\
+                                           <button class="btn btn-primary" type="button" ng-click="cancel()">OK</button>\
+                                       </div>\
+                                       ',
+                                            //templateUrl: "callDisconnectedDocModal.html",
+                                            controller: ModalInstanceCtrl,
+                                            scope: $scope,
+                                            size: 'sm',
+                                            resolve: {
+                                                sessionResolve: function () {
+                                                    return '';
+                                                }
                                             }
-                                            })                    
-                                    }else{
-                                        alert("error");
+                                        });
+                                        modalInstance.result.then(function (selectedItem) {
+                                            $scope.selected = selectedItem;
+                                        }, function () {
+                                            $log.info('Modal dismissed at: ' + new Date());
+                                        });
                                     }
-                                    })
-                            }else{
-                                alert("error");
-                            }
-                            })
-                    }else if(result.acode == 0){
-                        $("#bootstrapModalNetworkCheckFail").modal();
-                        
-                        
-                    }else{
-                        return false;
-                    }
-                })
+
+                                })
+
+
+                        } else {
+                            alert("error");
+                        }
+                    })
+            }
+            $scope.userCheckIn = function (docid, groupid) {
+                if (appConfig.network_check_provider) {
+                    checkNetworkCallback(function (result) {
+                        console.log(result);
+                        if (result.acode == 1) {
+                            $scope.commonUserChackin();
+                        } else if (result.acode == 0) {
+                            $("#bootstrapModalNetworkCheckFail").modal();
+
+
+                        } else {
+                            return false;
+                        }
+                    })
+                } else {
+                    $scope.commonUserChackin();
+                }
                 
             }
         }
@@ -2696,14 +2624,7 @@
         if($scope.userInsuranceData.insuredName!=undefined && $scope.userInsuranceData.memberId!=undefined && $scope.userInsuranceData.groupId!=undefined && $scope.tradingPartnerId!=''){
            
         /*check eligibility starts*/
-        $http({
-            method:'POST',
-            url:config.serverBaseUrl+'/pokitdok/eligibility',
-            data:$.param({ 'patientId':$scope.patientId, 'dateOfBirth':$scope.dateOfBirth, 'fullName':$scope.userInsuranceData.insuredName, 'memberId':$scope.userInsuranceData.memberId, 'tradingPartnerId':$scope.tradingPartnerId }),
-            headers : {'Content-Type': "application/x-www-form-urlencoded"}
-        }).then(function(response){
-            console.log(response);
-            $rootScope.amountToPay = response.data.copayAmount;
+     
 
             /*-------------*/
             $http({
@@ -2712,10 +2633,18 @@
                 data:$.param({'patient_id':$scope.patientId,'patient_name':$scope.userInsuranceData.insuredName,'member_id':$scope.userInsuranceData.memberId,'group_number':$scope.userInsuranceData.groupId}),
                 headers : {'Content-Type': "application/x-www-form-urlencoded"}
             }).then(function(response){
-                if(response.data.status_code==201){
-                    if(para=='save'){
-                    var modalInstance = $uibModal.open({
-                            template:'\
+                if (response.data.status_code == 201) {
+                    $http({
+                        method: 'POST',
+                        url: config.serverBaseUrl + '/pokitdok/eligibility',
+                        data: $.param({ 'patientId': $scope.patientId, 'dateOfBirth': $scope.dateOfBirth, 'fullName': $scope.userInsuranceData.insuredName, 'memberId': $scope.userInsuranceData.memberId, 'tradingPartnerId': $scope.tradingPartnerId }),
+                        headers: { 'Content-Type': "application/x-www-form-urlencoded" }
+                    }).then(function (response) {
+                        console.log(response);
+                        $rootScope.amountToPay = response.data.copayAmount;
+                        if (para == 'save') {
+                            var modalInstance = $uibModal.open({
+                                template: '\
                                 <div class="modal-header bootstrap-modal-header">\
                                 <h3 class="modal-title" id="modal-title">Message </h3>\
                                 </div>\
@@ -2726,26 +2655,27 @@
                                     <button class="btn btn-primary" type="button" ng-click="cancel()">OK</button>\
                                 </div>\
                                 ',
-                            controller: ModalInstanceCtrl,
-                            scope: $scope,
-                            size:'sm',
-                            resolve: {
-                                sessionResolve :  function(){
-                                    return '';
-                                } 
-                            }
-                        });
-                       }
-                       else{
-                        if($rootScope.amountToPay!='' && $rootScope.amountToPay!=undefined){
-                           $state.go('billingdetails');    
-                        }else{ alert('Billing amount not found');  }
-                        
-                       }
+                                controller: ModalInstanceCtrl,
+                                scope: $scope,
+                                size: 'sm',
+                                resolve: {
+                                    sessionResolve: function () {
+                                        return '';
+                                    }
+                                }
+                            });
+                        }
+                        else {
+                            if ($rootScope.amountToPay != '' && $rootScope.amountToPay != undefined) {
+                                $state.go('billingdetails');
+                            } else { alert('Billing amount not found'); }
+
+                        }
+                    })
                 }
 
             })
-        })
+       
         /*check eligibility ends*/
 
             
@@ -2819,7 +2749,133 @@
       })
 
     };
+      $scope.commonProceedToChecking = function () {
+          var patientid = roomServices.getUserPatientData().patientId;
+          roomServices.checkstatusinwatingroom({ patient_id: patientid })
+              .then(function (resultstatus) {
+                  //add for generate callid by patientid 
+                  if (resultstatus.data.status_code == 200) {
+          var docid = $scope.docIdFromAlias;
+          var groupid = $scope.docGroupIdFromAlias;
+          $log.log($scope.symptoms);
+          $scope.loading = true;
+          $scope.userLocalDetails = roomServices.getUserDetailsLocalstorage();
+          $scope.userLocalDetails.employerId = appConfig.employerId;
+          roomServices.saveUserMeetingDetails($scope.userLocalDetails)
+              .then(function (result) {
+                  $log.log(result);
+                  if (result.data.status_code == 200) {
+                      $scope.IdJson = {};
+                      $scope.IdJson.email = $scope.userLocalDetails.email;
+                      if ($scope.IdJson.email == '') {
+                          $scope.IdJson.email = $scope.userLocalDetails.phone;
+                      }
+                      roomServices.getSavedUserId($scope.IdJson)
+                          .then(function (result) {
+                              if (result.data.status_code == 200) {
+                                  $scope.userFetchedId = result.data.result[0].id;
+                                  $scope.param = {};
+                                  $scope.param.docId = docid;
+                                  $scope.param.groupId = groupid;
+                                  if (JSON.parse(localStorage.getItem('userMeetingDetails')).id != undefined) {
 
+                                      $scope.param.userId = JSON.parse(localStorage.getItem('userMeetingDetails')).id;
+                                  } else {
+                                      $scope.param.userId = $scope.userFetchedId;
+                                      $scope.newLocalStorage = JSON.parse(localStorage.getItem('userMeetingDetails'));
+                                      $scope.newLocalStorage.id = $scope.userFetchedId; localStorage.setItem("userMeetingDetails", JSON.stringify($scope.newLocalStorage));
+                                  }
+                                  $scope.param.symptom = JSON.stringify(roomServices.getUsersymptomlocalstorage());
+                                  $scope.param.allergy = JSON.stringify(roomServices.getAllergyService());
+                                  $scope.param.medication = JSON.stringify(roomServices.getMedicationService());
+                                  $scope.param.medical_condition = JSON.stringify(roomServices.getConditionService());
+
+                                  $scope.param.call_id = JSON.stringify(roomServices.getPatientCallIdlocalstorage());
+                                  /*added on 270718*/
+                                  $scope.param.date_of_injury = "";
+                                  $scope.param.state_of_injury = "";
+                                  $scope.param.employer_name = "";
+                                  /*----------------*/
+                                  roomServices.addUserToWaiting($scope.param)
+                                      .then(function (result) {
+                                          if (result.data.status_code == 200) {
+
+                                              socketService.emit('userjoin', { waitingId: $scope.userFetchedId }, function (data) {
+                                                  $log.log("user added");
+                                                  $log.log(data);
+                                              });
+                                              $scope.loading = false;
+                                              $log.log(result);
+                                              $state.go('livecallIn');
+                                          } else {
+                                              $scope.loading = false;
+                                              alert("error");
+                                              /*---ab---user id not found*/
+                                              if ($cookieStore.get('aliasname') == 'cityhealth') {
+                                                  $state.go('insurancedetails');
+                                              }/*------------------------*/
+                                          }
+                                      })
+
+                                  //for update data based on callid(07102018)
+
+                                  roomServices.updatedatabycallid($scope.param)
+                                      .then(function (result) {
+                                          $log.log(result);
+
+                                          if (result.data.status_code == 200) {
+
+                                          }
+                                      });
+
+
+
+                              } else {
+                                 // alert("error");
+                                  /*---ab---user id not found*/
+                                  if ($cookieStore.get('aliasname') == 'cityhealth') {
+                                      $state.go('insurancedetails');
+                                  }/*------------------------*/
+                              }
+                          })
+                  } else {
+                      alert("error");
+                  }
+              })
+                  } else {
+
+
+                      var modalInstance = $uibModal.open({
+                          template: '\
+                                       <div class="modal-header bootstrap-modal-header">\
+                                       <h3 class="modal-title" id="modal-title"> Incorrect User Details </h3>\
+                                       </div>\
+                                       <div class="modal-body bootstrap-modal-body" id="modal-body">\
+                                       <p>'+ resultstatus.data.status_message + '</p>\
+                                       </div>\
+                                       <div class="modal-footer bootstrap-modal-footer">\
+                                           <button class="btn btn-primary" type="button" ng-click="cancel()">OK</button>\
+                                       </div>\
+                                       ',
+                          //templateUrl: "callDisconnectedDocModal.html",
+                          controller: ModalInstanceCtrl,
+                          scope: $scope,
+                          size: 'sm',
+                          resolve: {
+                              sessionResolve: function () {
+                                  return '';
+                              }
+                          }
+                      });
+                      modalInstance.result.then(function (selectedItem) {
+                          $scope.selected = selectedItem;
+                      }, function () {
+                          $log.info('Modal dismissed at: ' + new Date());
+                      });
+                  }
+
+              })
+      }
     $scope.withInsProceedToCheckin = function(){
         //$scope.dataParam.alias = $state.params.id;
         $scope.dataParam = {};
@@ -2844,96 +2900,76 @@
 						}
                         $scope.docIdFromAlias = result.data.result[0].id;
                         $scope.docGroupIdFromAlias = result.data.result[0].group_id;
-                            var docid = $scope.docIdFromAlias;
-                            var groupid = $scope.docGroupIdFromAlias;
+
+                        if (appConfig.network_check_provider) {
+                            checkNetworkCallback(function (result) {
+                                if (result.acode == 1) {
+                                    $scope.commonProceedToChecking();
+                                }
+                                else if (result.acode == 0 || result.acode == 2) {
+                                    var modalInstance = $uibModal.open({
+                                        template: '<div class="modal-header bootstrap-modal-header">\
+                                          <h3 ng-if="'+ result.acode + '==2" class= "modal-title" id="modal-title"> Network Check </h3>\
+                                            <h3 ng-if="'+ result.acode + '==0" class="modal-title" id="modal-title">Weak Signal </h3>\
+                                            </div>\
+                                            <div class="modal-body bootstrap-modal-body" id="modal-body">\
+                                            <p ng-if="'+ result.acode + '==0">Unfortunately, your current signal strength will neither support a video nor an audio call.  Please try again from a different area with stronger signal.</p>\
+                                            <p ng-if="'+ result.acode + '==2">Sorry, No Video Device Found.</p>\
+                                            </div>\
+                                            <div class="modal-footer bootstrap-modal-footer">\
+                                                <button class="btn btn-primary" type="button" ng-click="cancel()">OK </button>\
+                                            </div>\
+                                            ',
+                                        controller: ModalInstanceCtrl,
+                                        scope: $scope,
+                                        size: 'sm',
+                                        windowClass: 'sendpatient-email-pop-class',
+                                        resolve: {
+                                            modalProgressValue: function () {
+                                                return "";
+                                            },
+                                            CPTBilling: function () {
+                                                return "";
+                                            },
+                                            sessionResolve: function () {
+                                                return '';
+                                            },
+                                            meetingRoomURLResolve: function () {
+                                                return "";
+                                            },
+                                            emailMeetingLinkUrlResolve: function () {
+                                                return '';
+                                            },
+                                            lockEncounterData: function () {
+                                                return "";
+                                            },
+                                            disconnectData: function () {
+                                                return "";
+                                            }
+                                        }
+
+                                    });
+                                    modalInstance.result.then(function (selectedItem) {
+                                        $scope.selected = selectedItem;
+                                    }, function () {
+                                        $log.info('Modal dismissed at: ' + new Date());
+                                    });
+
+                                }
+                                else {
+                                    return false;
+                                }
+                            });
+                        } else {
+                            $scope.commonProceedToChecking();
+                        }
+
+
+
                 //checkNetworkCallback(function(result){
                     //console.log(result);
                     //if(result.acode == 1){
-                        $log.log($scope.symptoms);
-                        $scope.loading = true;
-                        $scope.userLocalDetails = roomServices.getUserDetailsLocalstorage();
-                        $scope.userLocalDetails.employerId = appConfig.employerId;
-                        roomServices.saveUserMeetingDetails($scope.userLocalDetails)
-                        .then(function(result){
-                            $log.log(result);
-                            if(result.data.status_code == 200){
-                                $scope.IdJson = {}; 
-                                $scope.IdJson.email = $scope.userLocalDetails.email;
-                                if($scope.IdJson.email == ''){
-                                    $scope.IdJson.email = $scope.userLocalDetails.phone;
-                                }        
-                                roomServices.getSavedUserId($scope.IdJson)
-                                .then(function(result){
-                                    if(result.data.status_code == 200){
-                                        $scope.userFetchedId = result.data.result[0].id;
-                                        $scope.param = {};
-                                        $scope.param.docId = docid;
-                                        $scope.param.groupId = groupid;
-                                        if(JSON.parse(localStorage.getItem('userMeetingDetails')).id != undefined){
-                                            
-                                            $scope.param.userId = JSON.parse(localStorage.getItem('userMeetingDetails')).id;    
-                                        }else{
-                                            $scope.param.userId = $scope.userFetchedId;
-                                            $scope.newLocalStorage = JSON.parse(localStorage.getItem('userMeetingDetails'));
-                                            $scope.newLocalStorage.id = $scope.userFetchedId; localStorage.setItem("userMeetingDetails", JSON.stringify($scope.newLocalStorage));
-                                        }
-                                        $scope.param.symptom = JSON.stringify(roomServices.getUsersymptomlocalstorage());
-                                        $scope.param.allergy = JSON.stringify(roomServices.getAllergyService());
-                                        $scope.param.medication = JSON.stringify(roomServices.getMedicationService());
-                                        $scope.param.medical_condition = JSON.stringify(roomServices.getConditionService());
-
-                                        $scope.param.call_id = JSON.stringify(roomServices.getPatientCallIdlocalstorage());
-                                        /*added on 270718*/
-                                        $scope.param.date_of_injury = "";
-                                       $scope.param.state_of_injury = "";
-                                       $scope.param.employer_name = "";  
-                                        /*----------------*/
-                                        roomServices.addUserToWaiting($scope.param)
-                                        .then(function(result){
-                                            if(result.data.status_code == 200){ 
-        
-                                                socketService.emit('userjoin',{waitingId:$scope.userFetchedId},function(data){
-                                                    $log.log("user added");
-                                                    $log.log(data);
-                                                });
-                                                $scope.loading = false;
-                                                $log.log(result);
-                                                $state.go('livecallIn');
-                                            }else{
-                                                $scope.loading = false;
-                                                alert("error");
-                                                /*---ab---user id not found*/
-                                        if($cookieStore.get('aliasname')==cityhealth){
-                                        $state.go('insurancedetails');
-                                        }/*------------------------*/
-                                            }
-                                            })
-
-                                        //for update data based on callid(07102018)
-                                        
-                                        roomServices.updatedatabycallid($scope.param)
-                                            .then(function (result) {
-                                                $log.log(result);
-                                                
-                                                if (result.data.status_code == 200) {
-                                                    
-                                                }
-                                            });
-
-
-
-                                    }else{
-                                        alert("error");
-                                        /*---ab---user id not found*/
-                                        if($cookieStore.get('aliasname')==cityhealth){
-                                        $state.go('insurancedetails');
-                                        }/*------------------------*/
-                                    }
-                                    })
-                            }else{
-                                alert("error");
-                            }
-                            })
+                       
                     //}else if(result.acode == 0){
                         //$("#bootstrapModalNetworkCheckFail").modal();
                         
@@ -3008,7 +3044,11 @@ var ModalInstanceCtrl = function ($scope,$rootScope,$uibModalInstance,$log,$stat
     $scope.cancel = function(){
         $uibModalInstance.dismiss('cancel');    
     }
-
+    $scope.cancelmodel = function () {
+       
+        $rootScope.isCallScreenHidden = 1;
+        $uibModalInstance.dismiss('cancel');
+    }
     $scope.gotoRoom = function(x){
         
         if(x == 2){

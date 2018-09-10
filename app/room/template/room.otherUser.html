@@ -1,5 +1,14 @@
 <loading></loading>
-<div class="row" ng-hide="isCallScreenHidden == 0" id="isCallScreenHidden">
+<div class="row" ng-show="isCallScreenHidden == 2">
+    <div class="col-md-12 text-center">
+        <div class="alert alert-info">
+            <p>
+                Sorry, but it appears that the video conference you are trying to join has already ended. Please make sure that you are using the latest link that was sent to you via email/text.
+            </p>
+        </div>
+    </div>
+</div>
+<div class="row" ng-hide="isCallScreenHidden == 0 || isCallScreenHidden == 2" id="isCallScreenHidden">
     <div class="panel panel-info">
         <div class="panel-heading text-center">Tell Us About Yourself </div> 
         <div class="panel-body">
@@ -52,7 +61,7 @@
     </div>
 </div>
  
-<div class="row room-call" ng-hide="isCallScreenHidden == 1" id="isCallScreenHidden2">
+<div class="row room-call" ng-hide="isCallScreenHidden == 1 || isCallScreenHidden==2" id="isCallScreenHidden2">
     <div class="col-md-12">
         <div id="videos">
             <p ng-if="isDocPublishing == false">
@@ -102,9 +111,10 @@
 
 <script type="text/ng-template" id="callDisconnectedDocModal.html">
     <div class="modal-header bootstrap-modal-header">
-        <h3 class="modal-title" id="modal-title">Call Disconnected By Doctor.</h3>
+        <h3 class="modal-title" id="modal-title">{{appConfig.messages['callDisconnected'].title}}</h3>
     </div>
     <div class="modal-body bootstrap-modal-body" id="modal-body">
+	 {{appConfig.messages['callDisconnected'].message}}
     </div>
     <div class="modal-footer bootstrap-modal-footer">
         <button class="btn btn-primary" type="button" ng-click="gotoRoom(3)">OK</button>
