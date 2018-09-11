@@ -143,60 +143,66 @@
             $scope.loading = true;
             let params = {};
             params.id = x;
+            params.msgtext = appConfig.messages['notifyMessage'].message;
             doctorServices.sendWCStaffNotification(params)
             .then(function(result){
                 if(result.data.status_code == 200){
                     $scope.loading = false;
-                    var modalInstance = $uibModal.open({
-                        template:'\
-                            <div class="modal-header bootstrap-modal-header">\
-                            <h3 class="modal-title" id="modal-title">'+ appConfig.messages['notifyMessage'].title+'</h3>\
-                            </div>\
-                            <div class="modal-body bootstrap-modal-body" id="modal-body">\
-                            <p class="text-center">'+ appConfig.messages['notifyMessage'].message+'</p>\
-                            </div>\
-                            <div class="modal-footer bootstrap-modal-footer">\
-                                <button class="btn btn-primary" type="button" ng-click="cancel()">OK</button>\
-                            </div>\
-                            ',
-                        controller: ModalInstanceCtrl,
-                        scope: $scope,
-                        size:'sm',
-                        windowClass: 'disconnect-pop1-class',
-                        resolve: {
-                        }
-                    });
-                    modalInstance.result.then(function (selectedItem) {
-                        $scope.selected = selectedItem;
-                        }, function () {
-                        $log.info('Modal dismissed at: ' + new Date());
-                    });    
+                    toastr.success('Notification sent successfully');
+                    //var modalInstance = $uibModal.open({
+                    //    template:'\
+                    //        <div class="modal-header bootstrap-modal-header">\
+                    //        <h3 class="modal-title" id="modal-title">'+ appConfig.messages['notifyMessage'].title+'</h3>\
+                    //        </div>\
+                    //        <div class="modal-body bootstrap-modal-body" id="modal-body">\
+                    //        <p class="text-center">'+ appConfig.messages['notifyMessage'].message+'</p>\
+                    //        </div>\
+                    //        <div class="modal-footer bootstrap-modal-footer">\
+                    //            <button class="btn btn-primary" type="button" ng-click="cancel()">OK</button>\
+                    //        </div>\
+                    //        ',
+                    //    controller: ModalInstanceCtrl,
+                    //    scope: $scope,
+                    //    size:'sm',
+                    //    windowClass: 'disconnect-pop1-class',
+                    //    resolve: {
+                    //    }
+                    //});
+                    //modalInstance.result.then(function (selectedItem) {
+                    //    $scope.selected = selectedItem;
+                    //    }, function () {
+                    //    $log.info('Modal dismissed at: ' + new Date());
+                    //});    
                 }else{
                     $scope.loading = false;
-                    var modalInstance = $uibModal.open({
-                        template:'\
-                            <div class="modal-header bootstrap-modal-header">\
-                            <h3 class="modal-title" id="modal-title">'+ appConfig.messages['notifyMessage_unsuccess'].title +'</h3>\
-                            </div>\
-                            <div class="modal-body bootstrap-modal-body" id="modal-body">\
-                            <p class="text-center">'+ appConfig.messages['notifyMessage_unsuccess'].message +'</p>\
-                            </div>\
-                            <div class="modal-footer bootstrap-modal-footer">\
-                                <button class="btn btn-primary" type="button" ng-click="cancel()">OK</button>\
-                            </div>\
-                            ',
-                        controller: ModalInstanceCtrl,
-                        scope: $scope,
-                        size:'sm',
-                        windowClass: 'disconnect-pop1-class',
-                        resolve: {
-                        }
-                    });
-                    modalInstance.result.then(function (selectedItem) {
-                        $scope.selected = selectedItem;
-                        }, function () {
-                        $log.info('Modal dismissed at: ' + new Date());
-                    });    
+                    try {
+                        toastr.error('Sorry, try again.');
+                    } catch(err){ }
+
+                    //var modalInstance = $uibModal.open({
+                    //    template:'\
+                    //        <div class="modal-header bootstrap-modal-header">\
+                    //        <h3 class="modal-title" id="modal-title">'+ appConfig.messages['notifyMessage_unsuccess'].title +'</h3>\
+                    //        </div>\
+                    //        <div class="modal-body bootstrap-modal-body" id="modal-body">\
+                    //        <p class="text-center">'+ appConfig.messages['notifyMessage_unsuccess'].message +'</p>\
+                    //        </div>\
+                    //        <div class="modal-footer bootstrap-modal-footer">\
+                    //            <button class="btn btn-primary" type="button" ng-click="cancel()">OK</button>\
+                    //        </div>\
+                    //        ',
+                    //    controller: ModalInstanceCtrl,
+                    //    scope: $scope,
+                    //    size:'sm',
+                    //    windowClass: 'disconnect-pop1-class',
+                    //    resolve: {
+                    //    }
+                    //});
+                    //modalInstance.result.then(function (selectedItem) {
+                    //    $scope.selected = selectedItem;
+                    //    }, function () {
+                    //    $log.info('Modal dismissed at: ' + new Date());
+                    //});    
                 }
                 
             })
@@ -221,11 +227,11 @@
     }
     
     
-    var ModalInstanceCtrl = function ($scope,$uibModalInstance){
-        $scope.cancel = function () {
-            $uibModalInstance.dismiss('cancel');
-        };    
-    }
+    //var ModalInstanceCtrl = function ($scope,$uibModalInstance){
+    //    $scope.cancel = function () {
+    //        $uibModalInstance.dismiss('cancel');
+    //    };    
+    //}
     
     
     

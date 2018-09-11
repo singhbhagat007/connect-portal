@@ -14,8 +14,7 @@ angular.module('AkosPCP').constant('config', {
     network_check_provider: true,
 	messages: {
        callDisconnected: { title: "Call disconnected by provider", message: "The call has been ended by your provider. Thank you for using Akos Connect video consultation." },
-        notifyMessage: { title: "Doctor Notification", message: "An Akos connect video call is on the way. Keep an eye on your email/text for a video conferencing link to join the teleconference." },
-        notifyMessage_unsuccess: { title: "Doctor Notification", message: "Sorry, Doctor Notification Not Sent." },
+        notifyMessage: { title: "Doctor Notification", message: "An Akos connect video call is on the way. Keep an eye on your email/text for a video conferencing link to join the teleconference." }
     }
     
 }); 
