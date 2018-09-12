@@ -747,14 +747,14 @@
 
                         } else {
 
-
+                            $scope.loading = false;
                             var modalInstance = $uibModal.open({
                                 template: '\
                                        <div class="modal-header bootstrap-modal-header">\
-                                       <h3 class="modal-title" id="modal-title"> Incorrect User Details </h3>\
+                                       <h3 class="modal-title" id="modal-title">'+ appConfig.messages['alreadyInConference'].title+' </h3>\
                                        </div>\
                                        <div class="modal-body bootstrap-modal-body" id="modal-body">\
-                                       <p>'+ resultstatus.data.status_message + '</p>\
+                                       <p>'+ appConfig.messages['alreadyInConference'].message +'</p>\
                                        </div>\
                                        <div class="modal-footer bootstrap-modal-footer">\
                                            <button class="btn btn-primary" type="button" ng-click="cancel()">OK</button>\
