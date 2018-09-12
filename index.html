@@ -61,6 +61,7 @@
     <script src="./bower_components/clipboard/dist/ngclipboard.min.js"></script>
     <script src="./bower_components/ngMask/dist/ngMask.min.js"></script>
     <script src="./bower_components/socket-cdn/socket.io.min.js"></script>
+    <script src="./node_modules/browser-detect/dist/browser-detect.umd.js"></script>
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script> -->
     <!-- ab-plivo(070718) -->
     <!--upload link>-->
@@ -210,34 +211,20 @@
         </div>
     </div>
     <script type="text/javascript">
-        //var key = new RegExp('Chrome', 'g');
-        //var str = navigator.userAgent;
-        //if (!key.test(str)) {
-        //    var modal = document.getElementById('myModal');
-        //    modal.style.display = "block";
-        //}
-        var browser = function () {
-            debugger
-            var userAgent = navigator.userAgent;
-            debugger
-            var browsers = {
-                chrome: /chrome/g, mozilla: /Firefox/g,safari: /Safari/g
-            };
+        
+	const userBrowser = browserDetect();
+	console.log(userBrowser);
+	
+	var supportedBrowsers = ["firefox", "chrome", "safari"];
+	if(supportedBrowsers.indexOf(userBrowser.name) == -1){
+	    var modal = document.getElementById('myModal');
+            modal.style.display = "block";
+	}
 
-            for (var key in browsers) {
-                if (browsers[key].test(userAgent)) {
-                    return true;
-                }
-            };
-
-            return false;
-        }
-
-
-        if (!browser()) {
+       /* if (!browser()) {
             var modal = document.getElementById('myModal');
             modal.style.display = "block";
-        }
+        }*/
         function closeModal() {
             window.open('', '_self', '').close();
             modal.style.display = "none";
