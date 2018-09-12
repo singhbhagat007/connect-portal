@@ -19,6 +19,7 @@
     <link href="./bower_components/toastr/toastr.css" rel="stylesheet" />
     <link href="./bower_components/angular-material/angular-material.min.css" rel="stylesheet" />
     <link href="./bower_components/angular-moment-picker/dist/angular-moment-picker.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
 
     <!-- endinject -->
     <!-- inject:css -->
@@ -185,7 +186,7 @@
                     <h4 class="modal-title">Unsupported Browser</h4>
                 </div>
                 <div class="modal-body">
-                    <p>Unfortunately the browser you are using is currently not supported. We only support latest Google Chrome/Firefox browser at this time. If you have Google Chrome/Firefox already installed, please open the portal using Google Chrome/Firefox otherwise please install one of these browsers by clicking on the respective icon below.</p>
+                    <p><strong>Warning! </strong>Unfortunately the browser you are using is currently not supported. We only support latest Google Chrome/Firefox browser at this time. If you have Google Chrome/Firefox already installed, please open the portal using Google Chrome/Firefox otherwise please install one of these browsers by clicking on the respective icon below.</p>
                     <div>
                         <div class="row">
                             <div class="col-md-3"></div>
@@ -204,28 +205,24 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" ng-click="cancel45()">Close this window</button>
+                        <button type="button" class="btn btn-default" onclick="closeWindow()">Close this window</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <script type="text/javascript">
-        
-	const userBrowser = browserDetect();
-	console.log(userBrowser);
 	
-	var supportedBrowsers = ["firefox", "chrome", "safari"];
-	if(supportedBrowsers.indexOf(userBrowser.name) == -1){
-	    var modal = document.getElementById('myModal');
-            modal.style.display = "block";
-	}
+	const userBrowser = browserDetect();
+        console.log(userBrowser);
 
-       /* if (!browser()) {
+        var supportedBrowsers = ["firefox", "chrome", "safari"];
+        if(supportedBrowsers.indexOf(userBrowser.name) == -1){
             var modal = document.getElementById('myModal');
             modal.style.display = "block";
-        }*/
-        function closeModal() {
+        }
+
+        function closeWindow() {
             window.open('', '_self', '').close();
             modal.style.display = "none";
         }
