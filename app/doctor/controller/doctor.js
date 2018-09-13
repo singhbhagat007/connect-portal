@@ -1957,8 +1957,8 @@
                 $log.log(result);
                 if(result.data.status_code == 200){
 
-                    //alert('https://tools.advinow.net/DoctorApp/SAML?pilot&token='+result.data.token);
-                    window.open('https://tools.advinow.net/DoctorApp/SAML?pilot&token='+$scope.encodeData(result.data.token), '_blank');
+                    //alert('https://tools.advinow.net/DoctorApp/SAML?prod&token='+result.data.token);
+                    window.open('https://tools.advinow.net/DoctorApp/SAML?prod&token='+$scope.encodeData(result.data.token), '_blank');
                     
                 }else{
                     $scope.loading = false;
