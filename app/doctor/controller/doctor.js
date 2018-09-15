@@ -700,6 +700,18 @@
             /*------------------------------------*/       
 
             $scope.docCall = function (x, callid) {
+            var tempdectordetails = JSON.parse(localStorage.getItem('pcpDocData'));
+            var updateparam ={};
+            updateparam.docid = tempdectordetails.id;
+            updateparam.groupid = tempdectordetails.group_id;
+            updateparam.patientid = x;
+            updateparam.callid = callid;
+
+        console.log(tempdectordetails);
+
+        doctorServices.updateDoctorId(updateparam)
+        .then(function(updateresult){
+            if(updateresult.data.status_code==200){
                 if (appConfig.network_check_provider) {
                 checkNetworkCallback('pcpDoctor',function(result){
                     if(result.acode == 1){
@@ -788,6 +800,8 @@
                         $log.log("doctor accepted the call");
                     });
                 }
+            }
+            })
             }
             
         }

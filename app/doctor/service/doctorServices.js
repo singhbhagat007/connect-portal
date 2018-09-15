@@ -402,7 +402,17 @@
                     .catch(function (message) {
                         return message;
                     })
-            }
+            },
+            /* doctor id update service*/
+			updateDoctorId : function(param){
+				return $http.post(config.serverBaseUrl+'/api/pcp/updatedoctorid',param)
+				.then(function(data){
+					return data;
+					})
+				.catch(function(message){
+					return message;
+					}) 
+			},  /* doctor logout service end*/
 
 		}
 	}
