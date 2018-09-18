@@ -35,7 +35,10 @@
             if(removeOnlienDoctor) removeOnlienDoctor.parentNode.removeChild(removeOnlienDoctor);
         }
         
-        
+        $scope.forgotpassword= function(){
+            $state.go('forgot');
+
+        }
         
         
         $scope.loginForm = function (x) {

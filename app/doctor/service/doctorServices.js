@@ -413,6 +413,36 @@
 					return message;
 					}) 
 			},  /* doctor logout service end*/
+			/* forgot password*/
+			getUserEmails : function(param){
+				return $http.post(config.serverBaseUrl+'/api/pcp/getUserEmails',param)
+				.then(function(data){
+					return data;
+					})
+				.catch(function(message){
+					return message;
+					}) 
+			},  /**/
+			/* forgot password*/
+			forgototpsend : function(param){
+				return $http.post(config.serverBaseUrl+'/api/pcp/forgotsendOTP',param)
+				.then(function(data){
+					return data;
+					})
+				.catch(function(message){
+					return message;
+					}) 
+			},  /*forgot password*/
+			setPassword : function(param){
+				return $http.post(config.serverBaseUrl+'/api/pcp/setPassword',param)
+				.then(function(data){
+					return data;
+					})
+				.catch(function(message){
+					return message;
+					}) 
+			}  /**/
+			
 
 		}
 	}
