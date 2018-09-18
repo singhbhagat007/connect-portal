@@ -25,11 +25,13 @@ angular.module('AkosPCP').controller('passwordCtrl', function ($scope,$rootScope
             
                 if(result.data.status_code==200){
           let staffemail = result.data.result.email;
-          let staffname = result.data.result.first_name+' '+(result.data.result.last_name?result.data.result.last_name:'');
+          let staffname = result.data.result.name;
+
           if(staffemail!='' && staffname!=''){
               $scope.stafftempemail = staffemail;
               $scope.stafftempname = staffname;
-             
+              $scope.stafftempid = result.data.result.id;
+
               doctorServices.forgototpsend({email:staffemail,id:result.data.result.id,name:staffname})
             .then(function(result){
              
@@ -247,9 +249,10 @@ doctorServices.setPassword({otp:preOtp,email:$scope.stafftempemail,password:newp
   $scope.resendPassOtp = function(){
     let staffname = $scope.stafftempname;
     let staffemail = $scope.stafftempemail;
+    let staffid=  $scope.stafftempid;
     if(!staffname || !staffemail){ return false; }
 
-     doctorServices.forgototpsend({email:staffemail,id:result.data.result.id,name:staffname})
+     doctorServices.forgototpsend({email:staffemail,id:staffid,name:staffname})
             .then(function(result){
               
                 if(result.data.status_code==200){
