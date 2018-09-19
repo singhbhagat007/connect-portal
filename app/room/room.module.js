@@ -101,6 +101,17 @@
             }
           }
         })
+      .state('room.callend', {
+          url: '/callend',
+          views:{
+            '@':{
+              templateUrl:templateUrlBase+'room.callend.html',
+              controller:'RoomCtrl',
+              controllerAs:'vm',
+              title:'Patient Live Call end'
+            }
+          }
+        })
       .state('insurancedetails',{
           url: '/room/cityHealth/insurancedetails',
           templateUrl:templateUrlBase+'room.insurancedetails.html',

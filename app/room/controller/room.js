@@ -241,6 +241,7 @@
                             $scope.userDetails.state= result.data.result[0].state;
                             $scope.userDetails.zip_code= result.data.result[0].zip_code;
                             $scope.userDetails.password= result.data.result[0].password;
+                            $scope.userDetails.registration_from =result.data.result[0].registration_from;
                             $scope.userDetails.state_of_injury = '';
                            $scope.userDetails.date_of_injury = '';
                            $scope.userDetails.employer_name = '';
@@ -433,6 +434,7 @@
                                     $scope.userDetails.state= result.data.result[0].state;
                                     $scope.userDetails.zip_code= result.data.result[0].zip_code;
                                     $scope.userDetails.password= result.data.result[0].password;
+                                    $scope.userDetails.registration_from =result.data.result[0].registration_from;
                                     $log.log($scope.userDetails);
                                     roomServices.saveUserDetailsLocalstorage($scope.userDetails);
                                     $scope.OTPParam = {};
@@ -749,7 +751,8 @@
                                 $log.log(result);
                                 if (result.data.status_code == 200) {
 
-
+                                $scope.userLocalDetails.registration_from=result.data.result.registration_from;
+                                roomServices.setUserMeetingDetails($scope.userLocalDetails);
                                     //add this for connect url (07/23/2018)
                                    // roomServices.savePatientId(result.data.result.patient_id);
                                     $scope.dynamicavoidsavemeeting(result.data.result.patient_id, $scope.call_id);
@@ -1196,6 +1199,8 @@
                                 .then(function (result) {
                                     $log.log(result);
                                     if (result.data.status_code == 200) {
+                                        $scope.userLocalDetails.registration_from=result.data.result.registration_from;
+                                        roomServices.setUserMeetingDetails($scope.userLocalDetails);
                                         $scope.avoidsaveusermeting(result.data.result.patient_id);
 
                                     } else {
@@ -1922,6 +1927,7 @@
                         $log.log(result);
                         if (result.data.status_code == 200) {
                             $scope.param.id = result.data.result.patient_id;
+                            $scope.param.registration_from=result.data.result.registration_from;
                             roomServices.setUserMeetingDetails($scope.param);
 
                             /*---ab---saving some temporary patient details*/
@@ -2265,7 +2271,6 @@
                 $scope.loading = true;
                 $scope.userLocalDetails = roomServices.getUserDetailsLocalstorage();
                 $scope.userLocalDetails.employerId = appConfig.employerId;
-                debugger
                 if ($scope.userLocalDetails && $scope.userLocalDetails.id) {
                     $scope.userchackinavoidsavemeeting($scope.userLocalDetails.id,docid,groupid);
                 } else {
@@ -2273,9 +2278,9 @@
                         .then(function (result) {
                             $log.log(result);
                             if (result.data.status_code == 200) {
-                                debugger
                                 $scope.userchackinavoidsavemeeting(result.data.result.patient_id, docid, groupid);
-
+                                $scope.userLocalDetails.registration_from=result.data.result.registration_from;
+                                roomServices.setUserMeetingDetails($scope.userLocalDetails);
 
                             } else {
                                 $scope.loading = false;
@@ -2692,15 +2697,71 @@
           $scope.loading = true;
           $scope.userLocalDetails = roomServices.getUserDetailsLocalstorage();
                       $scope.userLocalDetails.employerId = appConfig.employerId;
-                    
-                      debugger
                       if ($scope.userLocalDetails && $scope.userLocalDetails.id) {
+                        $scope.userFetchedId = $scope.userLocalDetails.id;
+                                                $scope.param = {};
+                                                  $scope.param.docId = docid;
+                                                  $scope.param.groupId = groupid;
+                                                  if (JSON.parse(localStorage.getItem('userMeetingDetails')).id != undefined) {
+
+                                                      $scope.param.userId = JSON.parse(localStorage.getItem('userMeetingDetails')).id;
+                                                  } else {
+                                                      $scope.param.userId = $scope.userFetchedId;
+                                                      $scope.newLocalStorage = JSON.parse(localStorage.getItem('userMeetingDetails'));
+                                                      $scope.newLocalStorage.id = $scope.userFetchedId; localStorage.setItem("userMeetingDetails", JSON.stringify($scope.newLocalStorage));
+                                                  }
+                                                  $scope.param.symptom = JSON.stringify(roomServices.getUsersymptomlocalstorage());
+                                                  $scope.param.allergy = JSON.stringify(roomServices.getAllergyService());
+                                                  $scope.param.medication = JSON.stringify(roomServices.getMedicationService());
+                                                  $scope.param.medical_condition = JSON.stringify(roomServices.getConditionService());
+
+                                                  $scope.param.call_id = JSON.stringify(roomServices.getPatientCallIdlocalstorage());
+                                                  /*added on 270718*/
+                                                  $scope.param.date_of_injury = "";
+                                                  $scope.param.state_of_injury = "";
+                                                  $scope.param.employer_name = "";
+                                                  /*----------------*/
+                                                  roomServices.addUserToWaiting($scope.param)
+                                                      .then(function (result) {
+                                                          if (result.data.status_code == 200) {
+
+                                                              socketService.emit('userjoin', { waitingId: $scope.userFetchedId }, function (data) {
+                                                                  $log.log("user added");
+                                                                  $log.log(data);
+                                                              });
+                                                              $scope.loading = false;
+                                                              $log.log(result);
+                                                              $state.go('livecallIn');
+                                                          } else {
+                                                              $scope.loading = false;
+                                                              alert("error");
+                                                              /*---ab---user id not found*/
+                                                              if ($cookieStore.get('aliasname') == 'cityhealth') {
+                                                                  $state.go('insurancedetails');
+                                                              }/*------------------------*/
+                                                          }
+                                                      })
+
+                                                  //for update data based on callid(07102018)
+
+                                                  roomServices.updatedatabycallid($scope.param)
+                                                      .then(function (result) {
+                                                          $log.log(result);
+
+                                                          if (result.data.status_code == 200) {
+
+                                                          }
+                                                      });
+
+
 
                       } else {
                           roomServices.saveUserMeetingDetails($scope.userLocalDetails)
                               .then(function (result) {
+                            
                                   $log.log(result);
                                   if (result.data.status_code == 200) {
+
                                       $scope.IdJson = {};
                                       $scope.IdJson.email = $scope.userLocalDetails.email;
                                       if ($scope.IdJson.email == '') {
@@ -2938,6 +2999,7 @@ var ModalInstanceCtrl = function ($scope,$rootScope,$uibModalInstance,$log,$stat
             });
 
             sessionResolve.disconnect();
+            
             $state.go('invite');
             $rootScope.isCallScreenHidden = 1;
             $uibModalInstance.dismiss('cancel'); 
@@ -2955,7 +3017,12 @@ var ModalInstanceCtrl = function ($scope,$rootScope,$uibModalInstance,$log,$stat
 
     $scope.callEndPatient = function(){
         sessionResolve.disconnect();
+        let temppatientdetails = JSON.parse(localStorage.getItem("userMeetingDetails"));
+       if(temppatientdetails && temppatientdetails.registration_from && temppatientdetails.registration_from.toLowerCase()=='connect'){
+        $state.go('room.callend');
+       }else{
         $state.go('room');
+    }
         $uibModalInstance.dismiss('cancel');    
 
     }
@@ -2972,7 +3039,12 @@ var ModalInstanceCtrl = function ($scope,$rootScope,$uibModalInstance,$log,$stat
         
         if(x == 2){
             //sessionResolve.disconnect();
+        let temppatientdetails = JSON.parse(localStorage.getItem("userMeetingDetails"));
+       if(temppatientdetails && temppatientdetails.registration_from && temppatientdetails.registration_from.toLowerCase()=='connect'){
+        $state.go('room.callend');
+       }else{
             $state.go('room');
+        }
             $uibModalInstance.dismiss('cancel'); 
         }
         if(x == 3){
@@ -2995,6 +3067,7 @@ var ModalInstanceCtrl = function ($scope,$rootScope,$uibModalInstance,$log,$stat
                 })
             }
             //sessionResolve.disconnect();
+            
             $state.go('invite');
             $rootScope.isCallScreenHidden = 1;
             $uibModalInstance.dismiss('cancel');    
