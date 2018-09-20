@@ -875,6 +875,7 @@
                                                     .then(function (resultcallid) {
                                                         $log.log(result);
                                                         if (resultcallid.data.status_code == 200) {
+                                                             
                                                             $scope.call_id = resultcallid.data.result.call_id;
                                                             roomServices.savePatientCallIdlocalstorage($scope.call_id);
                                                             $scope.docNameFromAlias = result.data.result[0].name;
@@ -910,6 +911,12 @@
                                                                         alert("error");
                                                                     }
                                                                 })
+                                                        roomServices.updatetransactionid({ transactionId: $scope.clientUrlParam.transactionId,  call_id:$scope.call_id  })
+                                                         .then(function (resuleupdateid) {
+                                                        if (resuleupdateid.data.status_code == 200) {
+
+                                                        }
+                                                       });
                                                         } else {
                                                             $scope.loading = false;
                                                             alert("error");
