@@ -122,6 +122,11 @@
         /* login controller end*/
         
         $rootScope.callOnlineDoctor = function(){
+             // socketService.emit('create','room1',function(data){
+             //                               // $log.log("call end");
+             //                              //  $log.log(data);
+             //                              console.log('socket add');
+             //        });  
             let waitingname = 1;
             var compiledHTML = $compile("<onlinedoctortemplate   name = \"'"+waitingname+"'\"  ></chattemplate>")($scope); //<div chattemplate></div>
             $('#contentBlock').append(compiledHTML);
@@ -385,6 +390,7 @@
       
             $scope.openChat = function(x){
                  
+               //  if(x.group_id==0){
                 if ($scope.docData.id == x.pcp_doctor_id) {
                     
                     var index = $scope.chatRoom.indexOf(x.patient_id);
@@ -409,6 +415,34 @@
                         $scope.chatterName = x.first_name + ' ' + x.last_name;
                     }
                 }
+            //    }else{
+
+            //     debugger
+            //        //    if(x.patient_id==$scope.docData.id || x.pcp_doctor_id==$scope.docData.id){
+            //         var index = $scope.chatRoom.indexOf(x.patient_id);
+            //         if (index == -1) {
+
+            //             if (x.msg != undefined && x.msg != '') {
+            //                 $scope.text = x.msg;
+            //             } else {
+            //                 $scope.text = '';
+            //             }
+            //             $scope.chatRoom.push(x.patient_id);
+            //             if ($scope.chatRoom.length > 2)
+            //                 $rootScope.chatOff($scope.chatRoom[0]);
+            //             var waitingname = x.first_name + ' ' + x.last_name;
+            //             var compiledeHTML = $compile("<chattemplate  sendertext = \"'" + $scope.text + "'\"   datatemplateid = " + x.patient_id + "  sendername = \"'" + $scope.docData.name + "'\" senderid = '" + $scope.docData.id + "' sender = \"'doctor'\"     id = " + x.patient_id + " name = \"'" + waitingname + "'\"  ></chattemplate>")($scope); //<div chattemplate></div>
+            //             if ($scope.chatRoom.length > 1) {
+            //                 document.getElementsByClassName('chatBox')[0].style.right = '300px';
+            //             }
+            //             $('#chatRoom').append(compiledeHTML);
+            //             $("#chatBody_" + x.patient_id).html('');
+            //             $scope.chatWaitingId = x.patient_id;
+            //             $scope.chatterName = x.first_name + ' ' + x.last_name;
+            //         }
+            //    // }
+              
+            // }
             }
             $rootScope.chatOff = function(x){
                 console.log($scope.chatRoom);
@@ -1995,7 +2029,7 @@
 
 
 
-var ModalInstanceCtrl = function ($scope,$rootScope, $uibModalInstance,modalProgressValue,CPTBilling,$uibModal,socketService,$log,$state,sessionResolve,doctorServices,meetingRoomURLResolve,emailMeetingLinkUrlResolve,lockEncounterData,pdfChartingService,disconnectData) {
+var ModalInstanceCtrl = function ($scope,$rootScope, $uibModalInstance,modalProgressValue,CPTBilling,$uibModal,socketService,$log,$state,sessionResolve,doctorServices,meetingRoomURLResolve,emailMeetingLinkUrlResolve,lockEncounterData,pdfChartingService,disconnectData,appConfig) {
 
     $scope.lockPpoupEncounter = function(){
         $scope.loading = true;
@@ -2104,12 +2138,13 @@ var ModalInstanceCtrl = function ($scope,$rootScope, $uibModalInstance,modalProg
         var disconnectData = {};
         disconnectData.waitngUserId = sessionResolve.waitingUserId;
         disconnectData.callDisconnectByWhom = x;
-        /*socketService.emit('callDisconnectedByDoc',{waitingId:"test"},function(data){
+        socketService.emit('callDisconnectedByDoc',{waitingId:"test"},function(data){
             $log.log("call end");
             $log.log(data);
-        });*/
+        });
 
         if(x == 1){
+            $scope.reason=appConfig.messages['callDisconnectedByProvider'].message;
             $scope.stopArchiveParam = {};
             $scope.stopArchiveParam.patientId = sessionResolve.waitingUserId;
             $scope.stopArchiveParam.archiveId =doctorServices.getDocArchiveId();
@@ -2121,6 +2156,8 @@ var ModalInstanceCtrl = function ($scope,$rootScope, $uibModalInstance,modalProg
 
             $rootScope.pcpDoctorOpentokSession.disconnect();
 
+        }else{
+            $scope.reason=appConfig.messages['callDisconnectedByClient'].message;
         }
 
         $scope.callSuccess();
@@ -2173,6 +2210,7 @@ var ModalInstanceCtrl = function ($scope,$rootScope, $uibModalInstance,modalProg
         $scope.makeCallRecordParam.archive_id = doctorServices.getDocArchiveId();
         $scope.makeCallRecordParam.call_started = doctorServices.getCallStartedAt();
         $scope.makeCallRecordParam.call_ended =  doctorServices.getCallEndedAt();
+        $scope.makeCallRecordParam.reason =  $scope.reason;
         doctorServices.makeCallRecord($scope.makeCallRecordParam)
         .then(function(result){
             if(result.data.status_code == 200){
