@@ -3,8 +3,8 @@
 	<div class="col-md-12">
         <div id="videos" >
             <div class="alert alert-info" style="text-align: center;" ng-if="isDocPublishing == false">
-                <p ng-if="calltype">Hello <strong>{{patientNamemsg}}!</strong> Thanks for joining our consultation room. Our nurses are aware of your arrival in this waiting room and they will be with you shortly.</p>
-                <p ng-if="!calltype">Hello <strong>{{patientNamemsg}}!</strong> Thanks for joining my personal consultation room. I am aware of your arrival in this waiting room and will be with you shortly.</p>
+                <p ng-if="calltype">Hello <strong>{{patientNamemsg}}!</strong> {{appConfig.messages['joinCallMsgBymultiple'].message}}</p>
+                <p ng-if="!calltype">Hello <strong>{{patientNamemsg}}!</strong> {{appConfig.messages['joinCallMsgBysingle'].message}}</p>
                 <i>Please make sure you allow the portal to access your camera and microphone when prompted.</i>
             </div>
             <div id="layout"></div>

@@ -1306,3 +1306,44 @@ div.doc_dash_waiting_room_div div.doc_user_waiting_box ul li:nth-child(3) span i
         background: #25406B;
         color: #fff;
     }
+     .forgot-pass {    
+    color: #5f5151;margin-top: 5%; }
+ .passstep {     height: 60px;
+    width: 100%;
+    background: #f3f4f5;
+    text-align: center;
+    padding-top: 12%;
+    border-radius: 5%;
+    border: 1px solid grey;
+    box-shadow: 3px 7px #888888;
+     }  
+  .activepassstep { 
+  height: 65px;
+    width: 110%;
+    color: white;
+    text-align: center;
+    background: #25406b;
+    padding-top: 12px;
+    border-radius: 5%;
+    box-shadow: 3px 8px #959596;
+     } 
+     .meta-dir{ 
+     font-size: 10px; }  
+     .flowsteps { margin-top: 8%;    margin-left: 3%; }
+     .passstep1ins { color: grey; }
+     .passfootersubmit { padding-top: 3%;text-align: right; }
+
+   .passfootersubmitverify { text-align: left;padding-top: 10px;margin-left: 3%; }  
+
+   #register .good,#register .short,#register .strong,#register .weak
+   {
+    font-weight:700;font-size:larger;
+  }
+  .short { color:red; }
+  .weak { color:orange; }
+  .good { color:#2D98F3; }
+  .strong { color:#32cd32; } 
+  .weak1 {  width:100px;background-color:#ff0;border-radius:5px; }
+  .short1 {  width:50px;background-color:red;border-radius:5px;  }
+  .good1 {  width:150px;background-color:orange;border-radius:5px;  }
+  .strong1 {  width:200px;background-color:green;border-radius:5px;  }

@@ -9,25 +9,12 @@
         if ($rootScope.wrongbrowser) {
             $state.go('login'); 
         }
-        // $scope.testScope = "test";
-        // $rootScope.$emit('event',$scope.testScope);
-        // $scope.$on('event', function(events,args){
-        //     alert(1);
-        //     $log.log(events);
-        //     $log.log(args);
-        // })
 
         $scope.clientURL = $location.absUrl().split("/#!")[0];
         $scope.$on('$destroy', function (event) {
-            //socket.removeAllListeners();
             socketService.removeAllListeners();
-            //console.log('destroy triggered!');
         });
-        //var vm = this;
         
-        // on doc side: - doc get msg ---> .on()
-        //on patient side : -- patient send msg --> /emit()
-        //socketService.connect();
         /* login controller start*/
         $rootScope.title = "Login";
 
@@ -48,7 +35,10 @@
             if(removeOnlienDoctor) removeOnlienDoctor.parentNode.removeChild(removeOnlienDoctor);
         }
         
-        
+        $scope.forgotpassword= function(){
+            $state.go('forgot');
+
+        }
         
         
         $scope.loginForm = function (x) {
@@ -64,7 +54,6 @@
             doctorServices.doctorLogin($scope.loginData)
             .then(function(result){
                 if(result.data.status_code == 200){
-                    
                     $scope.loading = false;
                     localStorage.setItem('doc_token',result.data.result.token);
                     localStorage.setItem('pcpDocData',JSON.stringify(result.data.result));
@@ -84,13 +73,11 @@
                         doctorServices.getRoomFromGroupId($rootScope.docData.group_id)
                         .then(function(result){
                             if(result.data.status_code == 200){
-                                //$scope.universalRoom = result.data.result[0].room;        
                                 $rootScope.docData.room_alias = result.data.result[0].room;
                                 var data = JSON.parse(localStorage.getItem('pcpDocData'));
                                 data.room_alias = result.data.result[0].room;
                                 localStorage.setItem('pcpDocData', JSON.stringify(data));
                                 $scope.getProviderSettingScope(result.data.result[0].room);
-								//added on 070818
 								$rootScope.$emit('grouproomalias', data);
                             }else{
                                 alert("error");
@@ -100,14 +87,10 @@
                     socketService.emit('doctorGoneOnline', { docId: docid }, function (data) {
                         $log.log(data);
                     });
-                    //$location.path('/doctor'); 
                     $state.go('doctor');
                 }else{
-
-
                     $('#showInvalidMsg').html('<div class="alert alert-danger alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'+result.data.status_message+'</div>');
                     $scope.loading = false;
-                    //alert("error");
                     return false;
                 }
                 
@@ -139,6 +122,11 @@
         /* login controller end*/
         
         $rootScope.callOnlineDoctor = function(){
+             // socketService.emit('create','room1',function(data){
+             //                               // $log.log("call end");
+             //                              //  $log.log(data);
+             //                              console.log('socket add');
+             //        });  
             let waitingname = 1;
             var compiledHTML = $compile("<onlinedoctortemplate   name = \"'"+waitingname+"'\"  ></chattemplate>")($scope); //<div chattemplate></div>
             $('#contentBlock').append(compiledHTML);
@@ -146,7 +134,6 @@
         }
         /*added on 230818*/
         var checkNetworkCallback = function(role,callbackNetworkCheck){
-
                 doctorServices.sessiontokenapikey()
                 .then(function(result){
                     if(result.data.status_code == 200){
@@ -163,9 +150,6 @@
                         var session = OT.initSession(config.opentokAPIKey,$scope.OT_network_session);
 
                         callbackInitPublisher(role,function(callback1){
-
-                            
-
                             var ot_piblisher = document.querySelector('.OT_publisher');
                             if(ot_piblisher != undefined){
                                 
@@ -366,29 +350,6 @@
         }
         /*--------------*/
         
-        /* index controller start */
-        // if(JSON.parse(localStorage.getItem('connect_provider_settings')) != undefined && JSON.parse(localStorage.getItem('connect_provider_settings')).type == "WC_NURSE"){
-        //     $scope.onlineDoctorAvailable = 1;
-        //     var waitingname = 12;
-        //     var onlineDoctorId =   document.createElement('div');
-        //     alert(1);
-	       // onlineDoctorId.classList.add('onlineDoctorClass');
-	       // document.querySelector('#contentBlock').appendChild(onlineDoctorId);
-	       // $log.log(onlineDoctorId);
-	       // onlineDoctorId.innerHTML = "<button>this is funny </button>";
-	       // onlineDoctorId.onclick = function(){
-	       //     alert(1);
-	       // }
-        //     var compiledeHTML = $compile("<onlinedoctortemplate   name = \"'"+waitingname+"'\"  ></chattemplate>")($scope); //<div chattemplate></div>
-	        
-        // }else{
-        //     $scope.onlineDoctorAvailable = 0;
-        //}
-        
-        
-        
-        /* index controller end */
-        
         /* doctor dashboard controller */
         if(localStorage.getItem('doc_token') && $state.current.name == 'doctor'){
             $rootScope.chatOn = 0;
@@ -399,19 +360,14 @@
                 $("li#" + data).css('cursor', 'not-allowed');
                 $("li#" + data).attr("title", "Already on another Call");
             }
-			//added on 070818
+			
 			$rootScope.$on('grouproomalias', function (event, data) {
               var data = JSON.parse(localStorage.getItem('pcpDocData'));
               data.room = data.room_alias;
               $scope.docData = data ;
 
           });
-            // setInterval(function(){
-            //     $scope.getWaitingUserList();
-            // }, 30000);
-            //msg x
-            //userid y
-            //docid z
+            
             $scope.chatRoom = [];
             socketService.on('chatSend', function(data){
                 console.log(data);
@@ -433,10 +389,8 @@
             
       
             $scope.openChat = function(x){
-                // if($('chattemplate').length > 0){
-                //     $('.chatBox').addClass('chatBoxRight');
-                // }
-                //var index = $scope.chatRoom.indexOf(x.patient_id); 
+                 
+               //  if(x.group_id==0){
                 if ($scope.docData.id == x.pcp_doctor_id) {
                     
                     var index = $scope.chatRoom.indexOf(x.patient_id);
@@ -453,34 +407,50 @@
                         var waitingname = x.first_name + ' ' + x.last_name;
                         var compiledeHTML = $compile("<chattemplate  sendertext = \"'" + $scope.text + "'\"   datatemplateid = " + x.patient_id + "  sendername = \"'" + $scope.docData.name + "'\" senderid = '" + $scope.docData.id + "' sender = \"'doctor'\"     id = " + x.patient_id + " name = \"'" + waitingname + "'\"  ></chattemplate>")($scope); //<div chattemplate></div>
                         if ($scope.chatRoom.length > 1) {
-                            //$('#chatBox')[$scope.chatRoom.length-1].style.right = '318px'
                             document.getElementsByClassName('chatBox')[0].style.right = '300px';
-                            //document.getElementsByClassName('span')[0].style.right = '318px';
-                            // $('span')[0].style.right='311px'
-                            //$('#chatclosebutton')[0].style.right = '311px';
-
                         }
                         $('#chatRoom').append(compiledeHTML);
                         $("#chatBody_" + x.patient_id).html('');
-                        //$rootScope.chatOn = 1;
-
                         $scope.chatWaitingId = x.patient_id;
                         $scope.chatterName = x.first_name + ' ' + x.last_name;
                     }
                 }
+            //    }else{
+
+            //     debugger
+            //        //    if(x.patient_id==$scope.docData.id || x.pcp_doctor_id==$scope.docData.id){
+            //         var index = $scope.chatRoom.indexOf(x.patient_id);
+            //         if (index == -1) {
+
+            //             if (x.msg != undefined && x.msg != '') {
+            //                 $scope.text = x.msg;
+            //             } else {
+            //                 $scope.text = '';
+            //             }
+            //             $scope.chatRoom.push(x.patient_id);
+            //             if ($scope.chatRoom.length > 2)
+            //                 $rootScope.chatOff($scope.chatRoom[0]);
+            //             var waitingname = x.first_name + ' ' + x.last_name;
+            //             var compiledeHTML = $compile("<chattemplate  sendertext = \"'" + $scope.text + "'\"   datatemplateid = " + x.patient_id + "  sendername = \"'" + $scope.docData.name + "'\" senderid = '" + $scope.docData.id + "' sender = \"'doctor'\"     id = " + x.patient_id + " name = \"'" + waitingname + "'\"  ></chattemplate>")($scope); //<div chattemplate></div>
+            //             if ($scope.chatRoom.length > 1) {
+            //                 document.getElementsByClassName('chatBox')[0].style.right = '300px';
+            //             }
+            //             $('#chatRoom').append(compiledeHTML);
+            //             $("#chatBody_" + x.patient_id).html('');
+            //             $scope.chatWaitingId = x.patient_id;
+            //             $scope.chatterName = x.first_name + ' ' + x.last_name;
+            //         }
+            //    // }
+              
+            // }
             }
             $rootScope.chatOff = function(x){
                 console.log($scope.chatRoom);
                 $("chattemplate#"+x+" .chatBox").remove();
-                             
-               
-               // $("chattemplate#"+x).remove();
                 var index = $scope.chatRoom.indexOf(x);
                 $scope.chatRoom.splice(index,1);
                 if ($scope.chatRoom.length == 1) {
                     document.getElementsByClassName('chatBox')[0].style.right = '0px';
-                    //$('#chatclosebutton')[0].style.right = '11px'
-
                 }
             }
             $scope.getWaitingUserList = function(){
@@ -513,9 +483,8 @@
 
             })
 
-            //$scope.userWaitingList = [];
+          
             socketService.on('userjoin', function(waitingId){
-                console.log('11111111');
                 $('body').after('<audio controls autoplay  style="display: none;"><source src="'+$scope.clientURL+'/assets/audio/notification48.mp3" type="audio/mp3"></audio>');
                 $scope.waitingParam = {};
                 $scope.waitingParam.pcp_doctor_id = $scope.docData.id;
@@ -524,61 +493,33 @@
                 doctorServices.getWaitingUserListFromUserId($scope.waitingParam)
                 .then(function(result){
                     if(result.data.status_code == 200 && result.data.result.length > 0){
-
                         if($scope.userWaitingList.length == 0){
-                            
                             $scope.userWaitingList.push(result.data.result[0]); 
-                            }else{
-                                for(var i=0;i<$scope.userWaitingList.length;i++){
-                                    if($scope.userWaitingList[i].patient_id != result.data.result[0].patient_id){
+                        } else {
+                            var existpatientflag = false;
+                            for (var i = 0; i < $scope.userWaitingList.length; i++) {
+                                if ($scope.userWaitingList[i].patient_id == result.data.result[0].patient_id) {
+                                    existpatientflag = true;
+                                } 
+                            }
+                            if (!existpatientflag){
                                         $scope.userWaitingList.push(result.data.result[0]); 
                                         toastr.info( result.data.result[0].first_name+ ' has checked In');    
-                                    }else{
-
-                                        var index = $scope.userWaitingList.indexOf(result.data.result[0].patient_id);
+                                    } else {
+                                        
+                                var index = $scope.userWaitingList.findIndex(x => x.patient_id == result.data.result[0].patient_id);
                                         $scope.userWaitingList.splice(index,1);
                                         console.log($scope.userWaitingList);
-
                                         $scope.userWaitingList.push(result.data.result[0]);
                                     }
-                                }        
+                                       
                             }
-                            
-                        
-                        // var index = $scope.userWaitingList[0].indexOf(result.data.result[0].id);
-                     //    alert(index);
-                        
-                        // if(index == -1){
-                        //  $scope.userWaitingList.push(result.data.result[0]); 
-                        //  toastr.info( result.data.result[0].first_name+ ' has checked In');
-                        // }else{
-                        //  $scope.userWaitingList.splice(index,1);
-                        //  $scope.userWaitingList.push(result.data.result[0]); 
-                        //  //toastr.info( result.data.result[0].first_name+ ' has checked In');
-                        // }
                     }else{
-                            //alert("error");
+                            
                         }
                     
                     });    
             });
-
-            // socketService.on('userleft', function(data){
-
-            //     if($scope.userWaitingList.length >= 1){
-            //         toastr.info(data.name+ ' has left');
-            //         var index = $scope.userWaitingList.indexOf(data.waitingId);
-            //         if(index == -1){
-            //             $scope.userWaitingList.splice(index,1);
-            //         }    
-            //     }
-
-
-
-
-            //     });
-
-            
             
             if($scope.docData.room_alias != ''){
                 $scope.docData.room = $scope.docData.room_alias;
@@ -793,27 +734,21 @@
 
 
             }
-            /*------------------------------------*/
-  
- //$scope.docCall = function(x,callid){
-               
- //                       doctorServices.saveCallStartedAt(new Date());
- //                       doctorServices.saveWaitingUserId(x);
- //                       $state.go('doctor.call');
- //                       doctorServices.updatestatusBycallId({ call_id: callid, status: "In progress" })
- //                           .then(function (result) {
- //                               $log.log(result);
- //                               if (result.data.status_code == 200) {
- //                               }
- //                           })
- //                       socketService.emit('doctorAcceptedCall',{patientId:x},function(data){
- //                           $log.log("doctor accepted the call");    
- //                       });
-                   
-        
- //           }          
+            /*------------------------------------*/       
 
             $scope.docCall = function (x, callid) {
+            var tempdectordetails = JSON.parse(localStorage.getItem('pcpDocData'));
+            var updateparam ={};
+            updateparam.docid = tempdectordetails.id;
+            updateparam.groupid = tempdectordetails.group_id;
+            updateparam.patientid = x;
+            updateparam.callid = callid;
+
+        console.log(tempdectordetails);
+
+        doctorServices.updateDoctorId(updateparam)
+        .then(function(updateresult){
+            if(updateresult.data.status_code==200){
                 if (appConfig.network_check_provider) {
                 checkNetworkCallback('pcpDoctor',function(result){
                     if(result.acode == 1){
@@ -903,6 +838,8 @@
                     });
                 }
             }
+            })
+            }
             
         }
         /* doctor dashboard controller end*/ 
@@ -956,43 +893,6 @@
         			$scope.loginParams.email = result.data.result[0].email;
         			$scope.loginParams.password = result.data.result[0].password;
         			$scope.loginForm($scope.loginParams);	
-
-        			// doctorServices.doctorLogin($scope.loginData)
-		         //    .then(function(result){
-		         //    	if(result.data.status_code == 200){
-		         //    		$scope.loading = false;
-		         //    		localStorage.setItem('doc_token',result.data.result.token);
-		         //            localStorage.setItem('pcpDocData',JSON.stringify(result.data.result));
-		         //            $rootScope.docData = JSON.parse(localStorage.getItem('pcpDocData'));//$cookieStore.get('pcpDocData')
-		         //            tokenValidatorService.setDocAuthToken(result.data.result.token); 
-
-		         //            if($rootScope.docData.group_id == 0){
-		         //               if($rootScope.docData.room_alias != ''){
-		         //                    $scope.connectProviderSettingParam = $rootScope.docData.room_alias;
-		         //                    $rootScope.docData.room = $rootScope.docData.room_alias;
-		         //                    $scope.getProviderSettingScope($scope.connectProviderSettingParam);
-		         //                }else{
-		         //                    $scope.connectProviderSettingParam = $rootScope.docData.room;
-		         //                    $scope.getProviderSettingScope($scope.connectProviderSettingParam);
-		         //                } 
-		         //            }else{
-		         //                doctorServices.getRoomFromGroupId($rootScope.docData.group_id)
-		         //                .then(function(result){
-		         //                    if(result.data.status_code == 200){
-		         //                        //$scope.universalRoom = result.data.result[0].room;        
-		         //                        $rootScope.docData.room_alias = result.data.result[0].room;
-		         //                        var data = JSON.parse(localStorage.getItem('pcpDocData'));
-		         //                        data.room_alias = result.data.result[0].room;
-		         //                        localStorage.setItem('pcpDocData', JSON.stringify(data));
-		         //                        $scope.getProviderSettingScope(result.data.result[0].room);
-		         //                    }else{
-		         //                        alert("error");
-		         //                    }
-		         //                });
-		         //            }
-
-		         //    	}
-		         //    })
 		        }
         	})
         }else{
@@ -1145,16 +1045,6 @@
 
             $scope.oneAtATime = true;    
 
-            // $scope.dynamicOTLayout = function(children){
-            //     max slot = 3, width, height, rows
-            //     rows = (children % 3 == 0 ) ? (children / 3) : ((children / 3) + 1)
-                
-            //     width = width / rows, height = height / rows
-            // }
-            
-            
-            
-
             $rootScope.title = "Doctor Live Call";
             $scope.waitingUserId = doctorServices.fetchWaitingUserId();
             $scope.param = {};
@@ -1196,13 +1086,6 @@
                     var OTmaxslot = 3, OTwidth, OTheight, OTrows, OT100Width = 100, OT100Height = 100, OTXaxis,OTYaxis;
                     $scope.isDocPublishVideo = 1;
                     $scope.isDocPublishAudio = 1;
-                    // session.on('streamCreated', function(event) {
-                    //     session.subscribe(event.stream, 'subscriber', {
-                    //                 insertMode: 'append',
-                    //                 width: '100%',
-                    //                 height: '100%'
-                    //             });
-                    //     });
                     
                     $scope.docPublisher = JSON.parse(localStorage.getItem('pcpDocData')).name;  
                     var layoutEl = document.getElementById("layout");
@@ -1383,9 +1266,6 @@
                                 $scope.meetingBaseUrl = $location.$$absUrl.split('#!');
                                 $scope.meetingBaseUrl = $scope.meetingBaseUrl[0];
                                 $scope.meetingBaseUrl = $scope.meetingBaseUrl+'/#!/room/'+$rootScope.docData.room_alias+'?inviteId='+result.data.result[0].invite_id;
-								/*added opn 310718*/
-                                //doctorServices.setInviteUrl($scope.meetingBaseUrl);
-                                //$state.go('inviteRoom',{id:$rootScope.docData.room_alias,sessionId:$scope.userCallDetails.session,token:$scope.userCallDetails.token});
                                 $scope.loading = false;
                                 var modalInstance = $uibModal.open({
                                     templateUrl: "inviteThirdPersonCallDoc.html",
@@ -1498,20 +1378,6 @@
                                         $scope.param = {};
                                         $scope.param.id = $scope.waitingUserId;
 
-                     /*doctorServices.getUserCallDetails($scope.param)
-                                        .then(function(result){
-                             console.log(result);   
-							$scope.param1 = {};
-							$scope.param1.destNumber = numToDial;
-							$scope.param1.roomId = roomId;            
-                            var sessionIdTemp = result.data.result[0];
-                            $scope.param1.sessionId = sessionIdTemp.session;
-
-                            doctorServices.plivoMakeCall($scope.param1)
-                            .then(function(result){
-                            console.log(result);
-                            });
-                                        });*/
                                         doctorServices.sessiontokenapikey()
                                         .then(function(response){                                            console.log(response.data);
                                             $scope.param1 = {};
@@ -2142,8 +2008,8 @@
                 $log.log(result);
                 if(result.data.status_code == 200){
 
-                    //alert('https://tools.advinow.net/DoctorApp/SAML?pilot&token='+result.data.token);
-                    window.open('https://tools.advinow.net/DoctorApp/SAML?pilot&token='+$scope.encodeData(result.data.token), '_blank');
+                    //alert('https://tools.advinow.net/DoctorApp/SAML?prod&token='+result.data.token);
+                    window.open('https://tools.advinow.net/DoctorApp/SAML?prod&token='+$scope.encodeData(result.data.token), '_blank');
                     
                 }else{
                     $scope.loading = false;
@@ -2163,7 +2029,7 @@
 
 
 
-var ModalInstanceCtrl = function ($scope,$rootScope, $uibModalInstance,modalProgressValue,CPTBilling,$uibModal,socketService,$log,$state,sessionResolve,doctorServices,meetingRoomURLResolve,emailMeetingLinkUrlResolve,lockEncounterData,pdfChartingService,disconnectData) {
+var ModalInstanceCtrl = function ($scope,$rootScope, $uibModalInstance,modalProgressValue,CPTBilling,$uibModal,socketService,$log,$state,sessionResolve,doctorServices,meetingRoomURLResolve,emailMeetingLinkUrlResolve,lockEncounterData,pdfChartingService,disconnectData,appConfig) {
 
     $scope.lockPpoupEncounter = function(){
         $scope.loading = true;
@@ -2272,12 +2138,13 @@ var ModalInstanceCtrl = function ($scope,$rootScope, $uibModalInstance,modalProg
         var disconnectData = {};
         disconnectData.waitngUserId = sessionResolve.waitingUserId;
         disconnectData.callDisconnectByWhom = x;
-        /*socketService.emit('callDisconnectedByDoc',{waitingId:"test"},function(data){
+        socketService.emit('callDisconnectedByDoc',{waitingId:"test"},function(data){
             $log.log("call end");
             $log.log(data);
-        });*/
+        });
 
         if(x == 1){
+            $scope.reason=appConfig.messages['callDisconnectedByProvider'].message;
             $scope.stopArchiveParam = {};
             $scope.stopArchiveParam.patientId = sessionResolve.waitingUserId;
             $scope.stopArchiveParam.archiveId =doctorServices.getDocArchiveId();
@@ -2289,6 +2156,8 @@ var ModalInstanceCtrl = function ($scope,$rootScope, $uibModalInstance,modalProg
 
             $rootScope.pcpDoctorOpentokSession.disconnect();
 
+        }else{
+            $scope.reason=appConfig.messages['callDisconnectedByClient'].message;
         }
 
         $scope.callSuccess();
@@ -2341,6 +2210,7 @@ var ModalInstanceCtrl = function ($scope,$rootScope, $uibModalInstance,modalProg
         $scope.makeCallRecordParam.archive_id = doctorServices.getDocArchiveId();
         $scope.makeCallRecordParam.call_started = doctorServices.getCallStartedAt();
         $scope.makeCallRecordParam.call_ended =  doctorServices.getCallEndedAt();
+        $scope.makeCallRecordParam.reason =  $scope.reason;
         doctorServices.makeCallRecord($scope.makeCallRecordParam)
         .then(function(result){
             if(result.data.status_code == 200){

@@ -16,6 +16,7 @@
       $urlRouterProvider.otherwise('/');
       
       var templateUrlBase = './app/doctor/template/';
+       var templateUrl = './app/common/template/';
     	$stateProvider
     	.state('doctor', {
           url: '/dashboard',
@@ -94,6 +95,14 @@
         controller:'DoctorCtrl',
         controllerAs:'vm',
         title:'Login'
+
+        })
+      .state('forgot',{
+        url:'/forgot',
+        templateUrl:templateUrl+'forgotPassword.html',
+        controller:'passwordCtrl',
+        controllerAs:'vm',
+        title:'forgot password'
 
         })
         .state('upload_location', {

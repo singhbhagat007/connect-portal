@@ -437,6 +437,15 @@
                     .catch(function (message) {
                         return message;
                     })
+            },
+            updatetransactionid: function (param) {
+                return $http.post(config.serverBaseUrl + '/api/pcp/updatetransactionid', param)
+                    .then(function (data) {
+                        return data;
+                    })
+                    .catch(function (message) {
+                        return message;
+                    })
             }
 
 		}
