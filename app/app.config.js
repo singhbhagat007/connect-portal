@@ -1,8 +1,8 @@
 angular.module('AkosPCP').constant('config', {
 
-     serverBaseUrl: 'https://sandbox.connect-api.akosmd.com',
-     socketBaseUrl: 'https://sandbox.connect-api.akosmd.com',
-    opentokAPIKey: 45732912
+      serverBaseUrl: 'https://sandbox.connect-api.akosmd.com',
+      socketBaseUrl: 'https://sandbox.connect-api.akosmd.com',
+     opentokAPIKey: 45732912
    
 }).constant('appConfig', {
     employerId: '',
@@ -15,7 +15,9 @@ angular.module('AkosPCP').constant('config', {
         joinCallMsgBysingle:{title:"",message:"Thanks for joining my personal consultation room. I am aware of your arrival in this waiting room and will be with you shortly."},
         joinCallMsgBymultiple:{title:"",message:"Thanks for joining our consultation room. Our providers are aware of your arrival in this waiting room and they will be with you shortly."},
         callDisconnectedByProvider:{title:"",message:"call disconnected by provider"},
-        callDisconnectedByClient:{title:"",message:"call disconnected by client"}
+        callDisconnectedByClient:{title:"",message:"call disconnected by client"},
+        validClienturltransactionId:{title:"Unable to check in",message:"Sorry but we are not able to check you in at this time. Please contact the system administrator.\n Invalid transaction Id"},
+        validClienturlpatientId:{title:"Unable to check in",message:"Sorry but we are not able to check you in at this time. Please contact the system administrator.\n Invalid patient Id"}
     }
     
 }); 

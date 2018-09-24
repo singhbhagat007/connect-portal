@@ -852,13 +852,14 @@
                 $scope.clientUrlParam.transactionId = $state.params.transactionId;
                 roomServices.checkClientUrl($scope.clientUrlParam)
                 .then(function(result){
+                
                     if(result.data.status_code == 200){
                         $scope.loading = false;
                         $scope.dataParam = {};    
                         $scope.dataParam.alias = $state.params.id;
                         $scope.userData = {};
                         $scope.userData.id = $state.params.patientId;
-                    $scope.userData.first_name = result.data.result.first_name;
+                        $scope.userData.first_name = result.data.result.first_name;
                         $scope.userData.last_name = result.data.result.last_name;
                         localStorage.setItem('userMeetingDetails',JSON.stringify($scope.userData));
                         roomServices.getDocFromAlias($scope.dataParam)
@@ -959,17 +960,19 @@
                             }
                         }) 
                         return true;    
-                    }else{
+                    }else if(result.data.status_code == 404){
+                        
                         $scope.loading = false;
                         $scope.invalidClientURL = 1;
-
-                        var modalInstance = $uibModal.open({
+                        var msgshow;
+                        if(result.data.status_message=='invalid transactionId'){
+                              var modalInstance = $uibModal.open({
                             template: '\
                                 <div class="modal-header bootstrap-modal-header">\
-                                <h3 class="modal-title" id="modal-title"> Unable to check in </h3>\
+                                <h3 class="modal-title" id="modal-title"> '+ appConfig.messages['validClienturltransactionId'].title+' </h3>\
                                 </div>\
                                 <div class="modal-body bootstrap-modal-body" id="modal-body">\
-                                <p>'+ result.data.status_message + ' </p>\
+                                <p>'+appConfig.messages['validClienturltransactionId'].message + ' </p>\
                                 </div>\
                                 <div class="modal-footer bootstrap-modal-footer">\
                                     <button class="btn btn-primary" type="button" ng-click="cancel()">OK</button>\
@@ -988,11 +991,66 @@
                         modalInstance.result.then(function (selectedItem) {
                             $scope.selected = selectedItem;
                         }, function () {
-
-
-
                             $log.info('Modal dismissed at: ' + new Date());
                         });
+                        }else if(result.data.status_message=='invalid patient'){
+                                 var modalInstance = $uibModal.open({
+                            template: '\
+                                <div class="modal-header bootstrap-modal-header">\
+                                <h3 class="modal-title" id="modal-title"> '+ appConfig.messages['validClienturltransactionId'].title+' </h3>\
+                                </div>\
+                                <div class="modal-body bootstrap-modal-body" id="modal-body">\
+                                <p >'+ appConfig.messages['validClienturlpatientId'].message + ' </p>\
+                                </div>\
+                                <div class="modal-footer bootstrap-modal-footer">\
+                                    <button class="btn btn-primary" type="button" ng-click="cancel()">OK</button>\
+                                </div>\
+                                ',
+                            //templateUrl: "callDisconnectedDocModal.html",
+                            controller: ModalInstanceCtrl,
+                            scope: $scope,
+                            size: 'sm',
+                            resolve: {
+                                sessionResolve: function () {
+                                    return '';
+                                }
+                            }
+                        });
+                        modalInstance.result.then(function (selectedItem) {
+                            $scope.selected = selectedItem;
+                        }, function () {
+                            $log.info('Modal dismissed at: ' + new Date());
+                        });
+                        }
+
+                        // var modalInstance = $uibModal.open({
+                        //     template: '\
+                        //         <div class="modal-header bootstrap-modal-header">\
+                        //         <h3 class="modal-title" id="modal-title"> '+ appConfig.messages['validClienturltransactionId'].title+' </h3>\
+                        //         </div>\
+                        //         <div class="modal-body bootstrap-modal-body" id="modal-body">\
+                        //         <p ng-show="msgshow == 1">'+appConfig.messages['validClienturltransactionId'].message + ' </p>\
+                        //         <p ng-show="msgshow == 2">'+ appConfig.messages['validClienturlpatientId'].message + ' </p>\
+                        //         </div>\
+                        //         <div class="modal-footer bootstrap-modal-footer">\
+                        //             <button class="btn btn-primary" type="button" ng-click="cancel()">OK</button>\
+                        //         </div>\
+                        //         ',
+                        //     //templateUrl: "callDisconnectedDocModal.html",
+                        //     controller: ModalInstanceCtrl,
+                        //     scope: $scope,
+                        //     size: 'sm',
+                        //     resolve: {
+                        //         sessionResolve: function () {
+                        //             return '';
+                        //         }
+                        //     }
+                        // });
+                        // modalInstance.result.then(function (selectedItem) {
+                        //     $scope.selected = selectedItem;
+                        // }, function () {
+                        //     $log.info('Modal dismissed at: ' + new Date());
+                        // });
                         
                         return false; 
                     }
